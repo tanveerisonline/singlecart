@@ -5,6 +5,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -87,11 +88,13 @@ export default function CheckoutPage() {
       const response = await axios.post("/api/orders", orderData);
       
       if (response.status === 200 || response.status === 201) {
+        toast.success("Order placed successfully!");
         cart.clearCart();
         router.push(`/orders/${response.data.id}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Order creation failed", error);
+      toast.error(error.response?.data || "Something went wrong while creating your order.");
     } finally {
       setLoading(false);
     }
