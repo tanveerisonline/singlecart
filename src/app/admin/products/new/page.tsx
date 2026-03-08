@@ -32,7 +32,8 @@ import {
   Award,
   X,
   AlertTriangle,
-  Grid
+  Grid,
+  RefreshCcw
 } from "lucide-react";
 import Image from "next/image";
 import MediaModal from "@/components/admin/MediaModal";

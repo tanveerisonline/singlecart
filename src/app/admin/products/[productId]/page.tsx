@@ -61,6 +61,7 @@ interface Tag {
 }
 
 type TabType = "general" | "images" | "inventory" | "setup" | "seo" | "shipping" | "status";
+type SelectionMode = "thumbnail" | "images" | "sizeChart";
 
 export default function EditProductPage({ params }: { params: Promise<{ productId: string }> }) {
   const router = useRouter();
@@ -77,6 +78,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
   const [saving, setSaving] = useState(false);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectionMode, setSelectionMode] = useState<SelectionMode>("images");
   
   const [data, setData] = useState({
     name: "",
@@ -90,6 +92,9 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     brandId: "",
     tagIds: [] as string[],
     images: [] as string[],
+    thumbnailUrl: "",
+    sizeChartUrl: "",
+    hasWatermark: false,
     productType: "PHYSICAL",
     tax: "0",
     isFeatured: false,
@@ -140,6 +145,9 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           brandId: p.brandId || "",
           tagIds: p.tags?.map((t: any) => t.id) || [],
           images: p.images?.map((img: any) => img.url) || [],
+          thumbnailUrl: p.thumbnailUrl || "",
+          sizeChartUrl: p.sizeChartUrl || "",
+          hasWatermark: p.hasWatermark || false,
           productType: p.productType || "PHYSICAL",
           tax: p.tax?.toString() || "0",
           isFeatured: p.isFeatured || false,
@@ -187,10 +195,17 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     }
   }, [data.price, data.discount]);
 
-  const onSelectImage = (url: string) => {
-    if (!data.images.includes(url)) {
-      setData({ ...data, images: [...data.images, url] });
+  const onSelectMedia = (url: string) => {
+    if (selectionMode === "thumbnail") {
+      setData({ ...data, thumbnailUrl: url });
+    } else if (selectionMode === "sizeChart") {
+      setData({ ...data, sizeChartUrl: url });
+    } else if (selectionMode === "images") {
+      if (!data.images.includes(url)) {
+        setData({ ...data, images: [...data.images, url] });
+      }
     }
+    setIsMediaModalOpen(false);
   };
 
   const removeImage = (url: string) => {
@@ -248,8 +263,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (data.images.length === 0) {
-      toast.error("Please select at least one image.");
+    if (!data.thumbnailUrl && data.images.length === 0) {
+      toast.error("Please provide at least a thumbnail or one product image.");
       setActiveTab("images");
       return;
     }
@@ -292,7 +307,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
 
   const tabs = [
     { id: "general", label: "General", icon: FileText },
-    { id: "images", label: "Product Images", icon: ImageIcon },
+    { id: "images", label: "Product Media", icon: ImageIcon },
     { id: "inventory", label: "Inventory", icon: Package },
     { id: "setup", label: "Setup", icon: Settings },
     { id: "seo", label: "SEO", icon: Globe },
@@ -510,53 +525,144 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
               </div>
             )}
 
-            {/* Images Tab */}
+            {/* Product Media Tab */}
             {activeTab === "images" && (
-              <div className="p-8 space-y-8">
+              <div className="p-8 space-y-10">
                 <div className="border-b border-gray-50 pb-6 flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">Product Media</h2>
-                    <p className="text-sm text-gray-500 mt-1">Upload and manage product photos.</p>
+                    <p className="text-sm text-gray-500 mt-1">Manage thumbnails, product gallery, and assets.</p>
                   </div>
                   <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
                     <ImageIcon className="h-6 w-6" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {data.images.map((url, i) => (
-                    <div key={i} className="relative aspect-square rounded-2xl overflow-hidden group border border-gray-100 shadow-sm bg-gray-50">
-                      <Image src={url} alt="Product" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button 
-                          onClick={() => removeImage(url)}
-                          className="p-2 bg-white rounded-xl text-rose-600 shadow-lg hover:bg-rose-50 transition-colors"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {/* Left Column - Specific Assets */}
+                  <div className="space-y-8">
+                    {/* Thumbnail */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center justify-between">
+                        Thumbnail*
+                        <span className="text-[9px] lowercase font-medium text-gray-400">*Recommended 600x600px</span>
+                      </label>
+                      <div 
+                        onClick={() => { setSelectionMode("thumbnail"); setIsMediaModalOpen(true); }}
+                        className={`relative aspect-square max-w-[200px] rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
+                          ${data.thumbnailUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                      >
+                        {data.thumbnailUrl ? (
+                          <>
+                            <img src={data.thumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <RefreshCcw className="h-6 w-6 text-white" />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all mb-2">
+                              <Plus className="h-6 w-6" />
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Image</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Size Chart */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Size Chart</label>
+                      <div 
+                        onClick={() => { setSelectionMode("sizeChart"); setIsMediaModalOpen(true); }}
+                        className={`relative h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex items-center gap-4 px-6
+                          ${data.sizeChartUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                      >
+                        {data.sizeChartUrl ? (
+                          <>
+                            <div className="h-20 w-20 rounded-lg overflow-hidden border border-gray-200">
+                              <img src={data.sizeChartUrl} alt="Size Chart" className="w-full h-full object-cover" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-bold text-gray-900">Chart Selected</p>
+                              <p className="text-[10px] text-gray-500">Click to change</p>
+                            </div>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setData({...data, sizeChartUrl: ""}); }}
+                              className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <div className="p-2 rounded-lg bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all">
+                              <Plus className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Size Chart</p>
+                              <p className="text-[9px] text-gray-400 mt-0.5">Recommended for fashion products</p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Watermark Toggle */}
+                    <div className="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-indigo-600 rounded-lg text-white">
+                            <Info className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-indigo-900">Apply Watermark</p>
+                            <p className="text-[10px] text-indigo-700/70">Protect your product images</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setData({...data, hasWatermark: !data.hasWatermark})}
+                          className={`w-12 h-6 rounded-full relative transition-colors ${data.hasWatermark ? "bg-indigo-600" : "bg-gray-300"}`}
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.hasWatermark ? "right-1 shadow-sm" : "left-1"}`} />
                         </button>
                       </div>
-                      {i === 0 && (
-                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-indigo-600 text-white text-[8px] font-bold rounded-full uppercase tracking-widest shadow-sm">
-                          Main
+                    </div>
+                  </div>
+
+                  {/* Right Column - Gallery */}
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center justify-between">
+                      Gallery Images
+                      <span className="text-[9px] lowercase font-medium text-gray-400">*Recommended 600x600px</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {data.images.map((url, i) => (
+                        <div key={i} className="relative aspect-square rounded-2xl overflow-hidden group border border-gray-100 shadow-sm bg-gray-50">
+                          <img src={url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button 
+                              onClick={() => removeImage(url)}
+                              className="p-2 bg-white rounded-xl text-rose-600 shadow-lg hover:bg-rose-50 transition-colors"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
                         </div>
-                      )}
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => { setSelectionMode("images"); setIsMediaModalOpen(true); }}
+                        className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all gap-2 group"
+                      >
+                        <div className="p-3 rounded-full bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all">
+                          <Plus className="h-6 w-6" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Add to Gallery</span>
+                      </button>
                     </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setIsMediaModalOpen(true)}
-                    className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all gap-2 group"
-                  >
-                    <div className="p-3 rounded-full bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all">
-                      <Plus className="h-6 w-6" />
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Add Media</span>
-                  </button>
-                </div>
-                
-                <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 flex items-center gap-3">
-                  <Info className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  <p className="text-xs text-blue-800 font-medium">The first image will be used as the primary product cover.</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -634,7 +740,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       </div>
                     </div>
 
-                    {/* Discount */}
+                    {/* Discount (%) */}
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Discount (%)</label>
                       <div className="relative">
@@ -694,7 +800,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                   <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                     <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-indigo-600" />
-                      Variant Management
+                      Add New Variants
                     </h3>
                     <p className="text-xs text-gray-500 leading-relaxed mb-6">
                       Create variations like size, color, or material. Select attributes first, then generate combinations.
@@ -810,6 +916,21 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-6">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Base Price</label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                        <input
+                          required
+                          type="number"
+                          step="0.01"
+                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none font-bold text-lg text-indigo-600"
+                          placeholder="0.00"
+                          value={data.price}
+                          onChange={(e) => setData({ ...data, price: e.target.value })}
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
                         <Layers className="h-3 w-3" /> Category
@@ -1099,7 +1220,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
       <MediaModal 
         isOpen={isMediaModalOpen}
         onClose={() => setIsMediaModalOpen(false)}
-        onSelect={onSelectImage}
+        onSelect={onSelectMedia}
       />
 
       <ConfirmModal 
