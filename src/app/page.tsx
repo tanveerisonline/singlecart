@@ -1,65 +1,131 @@
-import Image from "next/image";
+import { db } from "@/lib/db";
+import ProductCard from "@/components/ProductCard";
+import HomeSlider from "@/components/HomeSlider";
+import { Sparkles, Zap, TrendingUp, ShoppingBag } from "lucide-react";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+export default async function Home() {
+  const products = await db.product.findMany({
+    include: {
+      images: true,
+      category: true,
+    },
+    where: {
+      isActive: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const settings = await db.storeSetting.findUnique({
+    where: { id: "default" },
+  });
+
+  const layout = settings?.homeLayout || "default";
+
+  // Layout 1: Default (Standard with Slider)
+  if (layout === "default") {
+    return (
+      <div className="bg-white">
+        <HomeSlider />
+        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+          <div className="flex items-center gap-2 mb-8">
+            <Sparkles className="h-6 w-6 text-indigo-600" />
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+              New Arrivals
+            </h2>
+          </div>
+
+          {products.length === 0 ? (
+            <div className="text-center py-20 bg-gray-50 rounded-xl text-gray-500">
+              No products available at the moment.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product as any} />
+              ))}
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+    );
+  }
+
+  // Layout 2: Grid Focus (No Slider, clean grid)
+  if (layout === "grid") {
+    return (
+      <div className="bg-gray-50 min-h-screen pb-20">
+        <div className="bg-white border-b py-12 mb-12">
+          <div className="mx-auto max-w-7xl px-4 text-center">
+            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Our Catalog</h1>
+            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+              Discover our full range of premium products selected just for you.
+            </p>
+          </div>
         </div>
-      </main>
-    </div>
-  );
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product as any} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Layout 3: Elegant Premium (Centered typography, elegant spacing)
+  if (layout === "elegant") {
+    return (
+      <div className="bg-[#fafafa] min-h-screen">
+        <HomeSlider />
+        <div className="mx-auto max-w-7xl px-4 py-24">
+          <div className="text-center mb-20 space-y-4">
+            <span className="text-indigo-600 font-bold tracking-[0.2em] text-xs uppercase">Premium Selection</span>
+            <h2 className="text-5xl font-serif text-gray-900">Featured Curations</h2>
+            <div className="h-1 w-20 bg-indigo-600 mx-auto mt-4"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => (
+              <div key={product.id} className="group cursor-pointer">
+                <ProductCard product={product as any} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Layout 4: Compact Dense (High density, informative)
+  if (layout === "compact") {
+    return (
+      <div className="bg-white">
+        <div className="bg-indigo-900 text-white py-2 text-center text-sm font-medium">
+          Free shipping on all orders over ${settings?.freeShippingThreshold || 100}
+        </div>
+        <div className="mx-auto max-w-[1600px] px-4 py-8">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b">
+            <div className="flex items-center gap-4">
+              <div className="bg-indigo-100 p-2 rounded-lg">
+                <ShoppingBag className="h-5 w-5 text-indigo-600" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 uppercase tracking-widest">Shop All</h2>
+            </div>
+            <div className="text-sm text-gray-500 font-medium">{products.length} Products</div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product as any} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
