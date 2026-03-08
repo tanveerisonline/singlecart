@@ -50,7 +50,10 @@ export async function POST(req: Request) {
       stockStatus,
       discount,
       salePrice,
-      wholesalePriceType
+      wholesalePriceType,
+      thumbnailUrl,
+      sizeChartUrl,
+      hasWatermark
     } = body;
 
     // Validation
@@ -95,6 +98,9 @@ export async function POST(req: Request) {
         discount: parseSafeFloat(discount) || 0,
         salePrice: parseSafeFloat(salePrice) || 0,
         wholesalePriceType: wholesalePriceType || null,
+        thumbnailUrl: thumbnailUrl || null,
+        sizeChartUrl: sizeChartUrl || null,
+        hasWatermark: hasWatermark || false,
         tags: {
           connect: tagIds.map((id: string) => ({ id }))
         },

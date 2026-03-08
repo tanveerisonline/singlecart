@@ -102,7 +102,10 @@ export async function PATCH(
       stockStatus,
       discount,
       salePrice,
-      wholesalePriceType
+      wholesalePriceType,
+      thumbnailUrl,
+      sizeChartUrl,
+      hasWatermark
     } = body;
 
     if (!productId) {
@@ -142,8 +145,8 @@ export async function PATCH(
       data: {
         name,
         slug,
-        description: description || "",
-        shortDescription: shortDescription || "",
+        description,
+        shortDescription,
         productType: productType || "PHYSICAL",
         tax: parseSafeFloat(tax) || 0,
         price: parsedPrice,
@@ -155,6 +158,9 @@ export async function PATCH(
         discount: parseSafeFloat(discount) || 0,
         salePrice: parseSafeFloat(salePrice) || 0,
         wholesalePriceType: wholesalePriceType || null,
+        thumbnailUrl: thumbnailUrl || null,
+        sizeChartUrl: sizeChartUrl || null,
+        hasWatermark: hasWatermark || false,
         tags: {
           set: tagIds.map((id: string) => ({ id }))
         },
