@@ -79,7 +79,12 @@ model Product {
   stockStatus        String           @default("in_stock")
   discount           Float            @default(0)
   salePrice          Float            @default(0)
+  saleStartDate      DateTime?
+  saleEndDate        DateTime?
+  unit               String?
   wholesalePriceType String?
+  isRandomRelated    Boolean          @default(false)
+  crossSellIds       String?          // Comma-separated IDs or JSON string
   metaTitle          String?
   metaDescription    String?
   weight             Float?

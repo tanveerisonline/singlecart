@@ -15,6 +15,12 @@ const parseSafeInt = (value: any) => {
   return isNaN(parsed) ? null : parsed;
 };
 
+const parseSafeDate = (value: any) => {
+  if (!value || value === "") return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : date;
+};
+
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -53,7 +59,12 @@ export async function POST(req: Request) {
       wholesalePriceType,
       thumbnailUrl,
       sizeChartUrl,
-      hasWatermark
+      hasWatermark,
+      saleStartDate,
+      saleEndDate,
+      unit,
+      isRandomRelated,
+      crossSellIds
     } = body;
 
     // Validation
@@ -97,7 +108,12 @@ export async function POST(req: Request) {
         stockStatus: stockStatus || "in_stock",
         discount: parseSafeFloat(discount) || 0,
         salePrice: parseSafeFloat(salePrice) || 0,
+        saleStartDate: parseSafeDate(saleStartDate),
+        saleEndDate: parseSafeDate(saleEndDate),
+        unit: unit || null,
         wholesalePriceType: wholesalePriceType || null,
+        isRandomRelated: isRandomRelated || false,
+        crossSellIds: crossSellIds || null,
         thumbnailUrl: thumbnailUrl || null,
         sizeChartUrl: sizeChartUrl || null,
         hasWatermark: hasWatermark || false,
@@ -144,5 +160,31 @@ export async function POST(req: Request) {
       return new NextResponse("Unique constraint violation: Slug or SKU already exists.", { status: 400 });
     }
     return new NextResponse(`Server Error: ${error.message}`, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const products = await db.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        stock: true,
+        isActive: true,
+        images: {
+          take: 1
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error("[PRODUCTS_GET_ERROR]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

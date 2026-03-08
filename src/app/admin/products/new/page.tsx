@@ -30,12 +30,12 @@ import {
   FileText,
   BarChart,
   Globe,
+  RefreshCcw,
   Award,
   X,
   AlertTriangle,
-  Grid,
-  RefreshCcw,
-  ArrowRight
+  ShoppingCart,
+  Zap
 } from "lucide-react";
 import Image from "next/image";
 import MediaModal from "@/components/admin/MediaModal";
@@ -62,6 +62,11 @@ interface Tag {
   name: string;
 }
 
+interface ProductInfo {
+  id: string;
+  name: string;
+}
+
 type TabType = "general" | "images" | "inventory" | "setup" | "seo" | "shipping" | "status";
 type SelectionMode = "thumbnail" | "images" | "sizeChart";
 
@@ -74,7 +79,10 @@ export default function NewProductPage() {
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductInfo[]>([]);
+  
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState<SelectionMode>("images");
   
@@ -106,7 +114,12 @@ export default function NewProductPage() {
     stockStatus: "in_stock",
     discount: "0",
     salePrice: "0.00",
-    wholesalePriceType: ""
+    wholesalePriceType: "",
+    saleStartDate: "",
+    saleEndDate: "",
+    unit: "",
+    isRandomRelated: false,
+    crossSellIds: [] as string[]
   });
 
   // For variant generation
@@ -116,18 +129,25 @@ export default function NewProductPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catRes, attrRes, brandRes, tagRes] = await Promise.all([
+        setLoading(true);
+        const [catRes, attrRes, brandRes, tagRes, allProdRes] = await Promise.all([
           axios.get("/api/categories"),
           axios.get("/api/admin/attributes"),
           axios.get("/api/brands"),
-          axios.get("/api/tags")
+          axios.get("/api/tags"),
+          axios.get("/api/products")
         ]);
+        
         setCategories(catRes.data);
         setAttributes(attrRes.data);
         setBrands(brandRes.data);
         setAvailableTags(tagRes.data);
+        setAllProducts(allProdRes.data);
       } catch (error) {
         console.error("Fetch error:", error);
+        toast.error("Failed to load dependency data");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -169,6 +189,20 @@ export default function NewProductPage() {
         ? current.filter(id => id !== tagId)
         : [...current, tagId];
       return { ...prev, tagIds: updated };
+    });
+  };
+
+  const toggleCrossSell = (prodId: string) => {
+    setData(prev => {
+      const current = prev.crossSellIds || [];
+      if (current.includes(prodId)) {
+        return { ...prev, crossSellIds: current.filter(id => id !== prodId) };
+      }
+      if (current.length >= 3) {
+        toast.error("Maximum 3 products for cross-selling.");
+        return prev;
+      }
+      return { ...prev, crossSellIds: [...current, prodId] };
     });
   };
 
@@ -214,7 +248,6 @@ export default function NewProductPage() {
   const handleNext = () => {
     const currentIndex = TAB_ORDER.indexOf(activeTab);
     if (currentIndex < TAB_ORDER.length - 1) {
-      // Basic validation for first step
       if (activeTab === "general" && !data.name) {
         toast.error("Please enter a product name");
         return;
@@ -246,11 +279,12 @@ export default function NewProductPage() {
     }
 
     try {
-      setLoading(true);
+      setSaving(true);
       const productData = {
         ...data,
         isActive: status,
-        variants: variants
+        variants: variants,
+        crossSellIds: data.crossSellIds.join(",")
       };
       await axios.post("/api/products", productData);
       toast.success(status ? "Product published successfully!" : "Product saved as draft!");
@@ -261,7 +295,7 @@ export default function NewProductPage() {
       const message = error.response?.data || "Failed to save product. Please check all fields.";
       toast.error(message);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -304,7 +338,7 @@ export default function NewProductPage() {
           <div className="flex gap-3">
             <button
               type="button"
-              disabled={loading}
+              disabled={saving}
               onClick={() => onSubmit(false)}
               className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all"
             >
@@ -312,7 +346,7 @@ export default function NewProductPage() {
             </button>
             <button
               type="button"
-              disabled={loading}
+              disabled={saving}
               onClick={() => onSubmit(true)}
               className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
             >
@@ -324,6 +358,13 @@ export default function NewProductPage() {
       </div>
     );
   };
+
+  if (loading && categories.length === 0) return (
+    <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
+      <RefreshCcw className="h-10 w-10 animate-spin text-indigo-500 mb-4 opacity-20" />
+      <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading catalog data...</p>
+    </div>
+  );
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-20">
@@ -814,7 +855,7 @@ export default function NewProductPage() {
                                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                     isSelected 
                                     ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100" 
-                                    : "bg-white text-gray-500 border-gray-200 hover:border-indigo-300"
+                                    : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
                                   }`}
                                 >
                                   {val.value}
@@ -897,37 +938,85 @@ export default function NewProductPage() {
 
             {/* Setup Tab */}
             {activeTab === "setup" && (
-              <div className="p-8 space-y-8">
+              <div className="p-8 space-y-10">
                 <div className="border-b border-gray-50 pb-6 flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">Store Setup</h2>
-                    <p className="text-sm text-gray-500 mt-1">Classification and organization details.</p>
+                    <h2 className="text-xl font-bold text-gray-900">Product Setup</h2>
+                    <p className="text-sm text-gray-500 mt-1">Configure classifications, sale status, and cross-selling.</p>
                   </div>
                   <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
                     <Settings className="h-6 w-6" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Base Price</label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                        <input
-                          required
-                          type="number"
-                          step="0.01"
-                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none font-bold text-lg text-indigo-600"
-                          placeholder="0.00"
-                          value={data.price}
-                          onChange={(e) => setData({ ...data, price: e.target.value })}
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {/* Left Column - Sale & Units */}
+                  <div className="space-y-8">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-amber-500" />
+                        Sale Status
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Start Date</label>
+                          <input
+                            type="date"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                            value={data.saleStartDate}
+                            onChange={(e) => setData({ ...data, saleStartDate: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">End Date</label>
+                          <input
+                            type="date"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                            value={data.saleEndDate}
+                            onChange={(e) => setData({ ...data, saleEndDate: e.target.value })}
+                          />
+                        </div>
                       </div>
                     </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Measurement Unit</label>
+                      <input
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                        placeholder="e.g. 10 Pieces, 1 KG, 1 Ltr"
+                        value={data.unit}
+                        onChange={(e) => setData({ ...data, unit: e.target.value })}
+                      />
+                      <p className="text-[9px] text-gray-400 ml-1 italic">*Specify the measurement unit for display.</p>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                            <Layers className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">Random Related Products</p>
+                            <p className="text-[10px] text-gray-500">Pick 6 products automatically</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setData({...data, isRandomRelated: !data.isRandomRelated})}
+                          className={`w-12 h-6 rounded-full relative transition-colors ${data.isRandomRelated ? "bg-indigo-600" : "bg-gray-300"}`}
+                        >
+                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.isRandomRelated ? "right-1 shadow-sm" : "left-1"}`} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Relations */}
+                  <div className="space-y-8">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <Layers className="h-3 w-3" /> Category
+                        <Layers className="h-3 w-3" /> Categories*
                       </label>
                       <select
                         required
@@ -942,11 +1031,12 @@ export default function NewProductPage() {
                           </option>
                         ))}
                       </select>
+                      {!data.categoryId && <p className="text-[9px] text-rose-500 ml-1 font-bold">Categories is required</p>}
                     </div>
                     
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <Award className="h-3 w-3" /> Brand
+                        <Award className="h-3 w-3" /> Brands
                       </label>
                       <select
                         className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none cursor-pointer font-bold text-sm"
@@ -961,42 +1051,41 @@ export default function NewProductPage() {
                         ))}
                       </select>
                     </div>
-                  </div>
 
-                  <div className="space-y-6">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <TagIcon className="h-3 w-3" /> Tags
+                        <ShoppingCart className="h-3 w-3" /> Cross Sell Products
                       </label>
                       <div className="p-4 bg-gray-50 border border-gray-100 rounded-2xl space-y-4">
                         <div className="flex flex-wrap gap-2">
-                          {availableTags.map(tag => {
-                            const isSelected = data.tagIds.includes(tag.id);
+                          {data.crossSellIds.map(id => {
+                            const prod = allProducts.find(p => p.id === id);
                             return (
-                              <button
-                                key={tag.id}
-                                type="button"
-                                onClick={() => toggleTag(tag.id)}
-                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-                                  isSelected 
-                                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100" 
-                                  : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
-                                }`}
-                              >
-                                {tag.name}
-                                {isSelected && <X className="h-3 w-3" />}
-                              </button>
+                              <div key={id} className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold shadow-md shadow-indigo-100 animate-in zoom-in-95">
+                                {prod?.name}
+                                <button type="button" onClick={() => toggleCrossSell(id)}><X className="h-3 w-3" /></button>
+                              </div>
                             );
                           })}
-                          {availableTags.length === 0 && (
-                            <p className="text-[10px] text-gray-400 italic">No tags created yet.</p>
-                          )}
                         </div>
-                        <div className="pt-2 border-t border-gray-200/50">
-                          <Link href="/admin/tags" className="text-[10px] font-bold text-indigo-600 hover:underline uppercase tracking-widest flex items-center gap-1">
-                            <PlusCircle className="h-3 w-3" /> Manage Tags
-                          </Link>
+                        <div className="relative group">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                          <select
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                toggleCrossSell(e.target.value);
+                                e.target.value = "";
+                              }
+                            }}
+                            className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl outline-none text-[10px] font-bold text-gray-600 cursor-pointer"
+                          >
+                            <option value="">Search & Select (Max 3)</option>
+                            {allProducts.filter(p => !data.crossSellIds.includes(p.id)).map(p => (
+                              <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                          </select>
                         </div>
+                        <p className="text-[9px] text-gray-400 italic text-center">*Choose a maximum of 3 products for effective cross-selling.</p>
                       </div>
                     </div>
                   </div>

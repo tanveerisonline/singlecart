@@ -15,6 +15,12 @@ const parseSafeInt = (value: any) => {
   return isNaN(parsed) ? null : parsed;
 };
 
+const parseSafeDate = (value: any) => {
+  if (!value || value === "") return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : date;
+};
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ productId: string }> }
@@ -105,7 +111,12 @@ export async function PATCH(
       wholesalePriceType,
       thumbnailUrl,
       sizeChartUrl,
-      hasWatermark
+      hasWatermark,
+      saleStartDate,
+      saleEndDate,
+      unit,
+      isRandomRelated,
+      crossSellIds
     } = body;
 
     if (!productId) {
@@ -157,7 +168,12 @@ export async function PATCH(
         stockStatus: stockStatus || "in_stock",
         discount: parseSafeFloat(discount) || 0,
         salePrice: parseSafeFloat(salePrice) || 0,
+        saleStartDate: parseSafeDate(saleStartDate),
+        saleEndDate: parseSafeDate(saleEndDate),
+        unit: unit || null,
         wholesalePriceType: wholesalePriceType || null,
+        isRandomRelated: isRandomRelated || false,
+        crossSellIds: crossSellIds || null,
         thumbnailUrl: thumbnailUrl || null,
         sizeChartUrl: sizeChartUrl || null,
         hasWatermark: hasWatermark || false,
