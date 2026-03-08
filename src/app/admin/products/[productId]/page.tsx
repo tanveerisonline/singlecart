@@ -24,6 +24,7 @@ import {
   Tag as TagIcon, 
   ShieldCheck,
   ChevronRight,
+  ChevronLeft,
   Monitor,
   Package,
   FileText,
@@ -62,6 +63,8 @@ interface Tag {
 
 type TabType = "general" | "images" | "inventory" | "setup" | "seo" | "shipping" | "status";
 type SelectionMode = "thumbnail" | "images" | "sizeChart";
+
+const TAB_ORDER: TabType[] = ["general", "images", "inventory", "setup", "seo", "shipping", "status"];
 
 export default function EditProductPage({ params }: { params: Promise<{ productId: string }> }) {
   const router = useRouter();
@@ -261,11 +264,36 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     setVariants([...variants, ...newVariants]);
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNext = () => {
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    if (currentIndex < TAB_ORDER.length - 1) {
+      if (activeTab === "general" && !data.name) {
+        toast.error("Please enter a product name");
+        return;
+      }
+      setActiveTab(TAB_ORDER[currentIndex + 1]);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const handleBack = () => {
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(TAB_ORDER[currentIndex - 1]);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const onSubmit = async (status: boolean) => {
     if (!data.thumbnailUrl && data.images.length === 0) {
       toast.error("Please provide at least a thumbnail or one product image.");
       setActiveTab("images");
+      return;
+    }
+
+    if (!data.categoryId) {
+      toast.error("Please select a category in the Setup tab.");
+      setActiveTab("setup");
       return;
     }
 
@@ -273,6 +301,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
       setSaving(true);
       const productData = {
         ...data,
+        isActive: status,
         variants: variants
       };
       await axios.patch(`/api/products/${productId}`, productData);
@@ -315,6 +344,56 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     { id: "status", label: "Status", icon: ShieldCheck },
   ];
 
+  const renderStepButtons = () => {
+    const isFirst = activeTab === TAB_ORDER[0];
+    const isLast = activeTab === TAB_ORDER[TAB_ORDER.length - 1];
+
+    return (
+      <div className="flex items-center justify-between p-8 bg-gray-50 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={handleBack}
+          disabled={isFirst}
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm text-gray-600 hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back
+        </button>
+
+        {!isLast ? (
+          <button
+            type="button"
+            onClick={handleNext}
+            className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all group"
+          >
+            Save & Continue
+            <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </button>
+        ) : (
+          <div className="flex gap-3">
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => onSubmit(false)}
+              className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all"
+            >
+              Save as Draft
+            </button>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => onSubmit(true)}
+              className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Update & Publish
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
       <RefreshCcw className="h-10 w-10 animate-spin text-indigo-500 mb-4 opacity-20" />
@@ -332,7 +411,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Modify product details and manage variants.</p>
+            <p className="text-sm text-gray-500 mt-0.5">Step {TAB_ORDER.indexOf(activeTab) + 1} of {TAB_ORDER.length}: {tabs.find(t => t.id === activeTab)?.label}</p>
           </div>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
@@ -352,14 +431,6 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           >
             Discard
           </button>
-          <button
-            onClick={onSubmit}
-            disabled={saving}
-            className="flex-1 md:flex-none px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 disabled:bg-indigo-300 transition-all flex items-center justify-center shadow-lg shadow-indigo-100"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {saving ? "Updating..." : "Update Product"}
-          </button>
         </div>
       </div>
 
@@ -371,21 +442,29 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Product Navigation</p>
             </div>
             <nav className="p-2 space-y-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
-                    activeTab === tab.id 
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-100 scale-[1.02]" 
-                    : "text-gray-500 hover:bg-gray-50 hover:text-indigo-600"
-                  }`}
-                >
-                  <tab.icon className={`h-4 w-4 ${activeTab === tab.id ? "text-white" : "text-gray-400"}`} />
-                  {tab.label}
-                  {activeTab === tab.id && <ChevronRight className="h-4 w-4 ml-auto" />}
-                </button>
-              ))}
+              {tabs.map((tab, index) => {
+                const isActive = activeTab === tab.id;
+                const isCompleted = TAB_ORDER.indexOf(activeTab) > index;
+                
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
+                      isActive 
+                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-100 scale-[1.02]" 
+                      : isCompleted ? "text-indigo-600 hover:bg-indigo-50" : "text-gray-400 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className={`h-5 w-5 flex items-center justify-center rounded-full text-[10px] border-2 ${
+                      isActive ? "border-white" : isCompleted ? "border-indigo-600 bg-indigo-600 text-white" : "border-gray-200"
+                    }`}>
+                      {isCompleted ? <Check className="h-3 w-3" /> : index + 1}
+                    </div>
+                    {tab.label}
+                  </button>
+                );
+              })}
             </nav>
           </div>
         </div>
@@ -1113,7 +1192,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
                             placeholder="0"
                             value={data.length}
-                            onChange={(e) => setData({ ...data, length: e.target.value })}
+                            onChange={(e) => setData({ ...data, height: e.target.value })}
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -1213,6 +1292,9 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                 </div>
               </div>
             )}
+
+            {/* Steps Navigation Footer */}
+            {renderStepButtons()}
           </div>
         </div>
       </div>
