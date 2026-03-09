@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, CreditCard, ShieldCheck, Truck } from "lucide-react";
+import { ThemeSetting } from "@prisma/client";
 
-export default function Footer() {
+interface FooterProps {
+  theme?: ThemeSetting | null;
+}
+
+export default function Footer({ theme }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -17,15 +22,21 @@ export default function Footer() {
               Experience the best in curated fashion and lifestyle products. Quality and style delivered to your doorstep.
             </p>
             <div className="flex gap-4">
-              <Link href="#" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
-                <Facebook className="h-5 w-5" />
-              </Link>
-              <Link href="#" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
-                <Instagram className="h-5 w-5" />
-              </Link>
-              <Link href="#" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
-                <Twitter className="h-5 w-5" />
-              </Link>
+              {theme?.facebookUrl && (
+                <Link href={theme.facebookUrl} target="_blank" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                  <Facebook className="h-5 w-5" />
+                </Link>
+              )}
+              {theme?.instagramUrl && (
+                <Link href={theme.instagramUrl} target="_blank" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                  <Instagram className="h-5 w-5" />
+                </Link>
+              )}
+              {theme?.twitterUrl && (
+                <Link href={theme.twitterUrl} target="_blank" className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                  <Twitter className="h-5 w-5" />
+                </Link>
+              )}
             </div>
           </div>
 
@@ -57,15 +68,21 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0" />
-                <span className="text-gray-500 text-sm">123 Commerce Way, Digital City, 90210</span>
+                <span className="text-gray-500 text-sm">
+                  {theme?.address || "123 Commerce Way, Digital City, 90210"}
+                </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary shrink-0" />
-                <span className="text-gray-500 text-sm">+1 (234) 567-890</span>
+                <span className="text-gray-500 text-sm">
+                  {theme?.contactPhone || "+1 (234) 567-890"}
+                </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary shrink-0" />
-                <span className="text-gray-500 text-sm">support@shop.com</span>
+                <span className="text-gray-500 text-sm">
+                  {theme?.contactEmail || "support@shop.com"}
+                </span>
               </li>
             </ul>
           </div>

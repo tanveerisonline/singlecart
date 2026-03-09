@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Product, ProductImage, Category, Review, Tag, ProductVariant, Brand } from "@prisma/client";
+import { Product, ProductImage, Category, Review, Tag, ProductVariant, Brand, ThemeSetting } from "@prisma/client";
 import { 
   Star, Check, Info, ShieldCheck, Truck, RefreshCw, ChevronRight, 
   Tag as TagIcon, Layers, Award, Package, Ruler, Weight as WeightIcon, 
@@ -13,6 +13,7 @@ import ProductImageGallery from "@/components/ProductImageGallery";
 import ReviewForm from "@/components/ReviewForm";
 import ProductCarousel from "@/components/ProductCarousel";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ProductWithRelations extends Product {
   images: ProductImage[];
@@ -28,13 +29,15 @@ interface ProductPageClientProps {
   relatedProducts: any[];
   recentProducts: any[];
   crossSellProducts: any[];
+  theme?: ThemeSetting | null;
 }
 
 export default function ProductPageClient({ 
   product, 
   relatedProducts, 
   recentProducts,
-  crossSellProducts
+  crossSellProducts,
+  theme
 }: ProductPageClientProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     product.variants.length > 0 ? product.variants[0] : undefined
@@ -248,17 +251,25 @@ export default function ProductPageClient({
                 )}
 
                 {/* Trust Badges */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4 pt-2">
                   {product.isSafeCheckout && (
-                    <div className="p-3 bg-cyan-50/50 rounded-2xl border border-cyan-100 flex items-center gap-3">
-                      <div className="p-2 bg-cyan-500 text-white rounded-xl shadow-md shadow-cyan-100"><ShieldCheck className="h-4 w-4" /></div>
-                      <span className="text-[9px] font-black text-cyan-900 uppercase tracking-tight">Safe Checkout</span>
+                    <div className="relative h-16 w-full">
+                      <Image 
+                        src={theme?.safeCheckoutImage || "/safe-checkout.png"} 
+                        alt="Safe Checkout" 
+                        fill 
+                        className="object-contain object-left"
+                      />
                     </div>
                   )}
                   {product.isSecureCheckout && (
-                    <div className="p-3 bg-violet-50/50 rounded-2xl border border-violet-100 flex items-center gap-3">
-                      <div className="p-2 bg-violet-500 text-white rounded-xl shadow-md shadow-violet-100"><CreditCard className="h-4 w-4" /></div>
-                      <span className="text-[9px] font-black text-violet-900 uppercase tracking-tight">Secure Payment</span>
+                    <div className="relative h-16 w-full">
+                      <Image 
+                        src={theme?.secureCheckoutImage || "/secure-payment.png"} 
+                        alt="Secure Payment" 
+                        fill 
+                        className="object-contain object-left"
+                      />
                     </div>
                   )}
                 </div>
@@ -280,7 +291,7 @@ export default function ProductPageClient({
                     </div>
                     <div>
                       <p className="text-sm font-black">{item.title}</p>
-                      <p className="text-[10px] text-primary/20 font-bold leading-tight mt-1">{item.desc}</p>
+                      <p className="text-[10px] text-white/60 font-bold leading-tight mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}

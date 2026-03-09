@@ -47,35 +47,40 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
 
-  const product = await db.product.findUnique({
-    where: { slug },
-    include: {
-      images: {
-        orderBy: {
-          order: "asc",
-        },
-      },
-      category: true,
-      tags: true,
-      variants: true,
-      brand: true,
-      reviews: {
-        where: {
-          isApproved: true,
-        },
-        include: {
-          user: {
-            select: {
-              name: true,
-            },
+  const [product, theme] = await Promise.all([
+    db.product.findUnique({
+      where: { slug },
+      include: {
+        images: {
+          orderBy: {
+            order: "asc",
           },
         },
-        orderBy: {
-          createdAt: "desc",
+        category: true,
+        tags: true,
+        variants: true,
+        brand: true,
+        reviews: {
+          where: {
+            isApproved: true,
+          },
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
       },
-    },
-  });
+    }),
+    db.themeSetting.findFirst({
+      where: { id: "default" }
+    })
+  ]);
 
   if (!product) {
     notFound();
@@ -157,6 +162,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       relatedProducts={relatedProducts as any} 
       recentProducts={recentProducts as any}
       crossSellProducts={crossSellProducts as any}
+      theme={theme}
     />
   );
 }
