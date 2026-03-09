@@ -1,13 +1,14 @@
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { sliderId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ sliderId: string }> }
 ) {
   try {
+    const { sliderId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== "ADMIN") {
@@ -16,7 +17,7 @@ export async function DELETE(
 
     const sliderImage = await db.sliderImage.delete({
       where: {
-        id: params.sliderId,
+        id: sliderId,
       },
     });
 
@@ -28,22 +29,23 @@ export async function DELETE(
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { sliderId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ sliderId: string }> }
 ) {
   try {
+    const { sliderId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { title, link, imageUrl, order, isActive } = body;
 
     const sliderImage = await db.sliderImage.update({
       where: {
-        id: params.sliderId,
+        id: sliderId,
       },
       data: {
         title,

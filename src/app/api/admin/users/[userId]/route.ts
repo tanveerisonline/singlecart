@@ -6,9 +6,10 @@ import bcrypt from "bcrypt";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== "ADMIN") {
@@ -19,7 +20,7 @@ export async function PATCH(
     const { name, email, password, role } = body;
 
     const existingUser = await db.user.findUnique({
-      where: { id: params.userId }
+      where: { id: userId }
     });
 
     if (!existingUser) {
@@ -47,7 +48,7 @@ export async function PATCH(
     }
 
     const user = await db.user.update({
-      where: { id: params.userId },
+      where: { id: userId },
       data: updateData,
       select: {
         id: true,
@@ -67,9 +68,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== "ADMIN") {
@@ -77,7 +79,7 @@ export async function DELETE(
     }
 
     const userToDelete = await db.user.findUnique({
-      where: { id: params.userId }
+      where: { id: userId }
     });
 
     if (!userToDelete) {
@@ -94,7 +96,7 @@ export async function DELETE(
     }
 
     await db.user.delete({
-      where: { id: params.userId }
+      where: { id: userId }
     });
 
     return new NextResponse("User deleted", { status: 200 });

@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   // Fetch Related Products (Same category, excluding current)
-  const relatedProducts = await db.product.findMany({
+  let relatedProducts = await db.product.findMany({
     where: {
       categoryId: product.categoryId,
       id: { not: product.id },
@@ -92,11 +92,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
       images: true,
       category: true,
     },
-    take: 10,
+    take: 15, // Take more if we want to shuffle
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  if (product.isRandomRelated && relatedProducts.length > 0) {
+    relatedProducts = relatedProducts
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 10);
+  } else {
+    relatedProducts = relatedProducts.slice(0, 10);
+  }
 
   // Fetch Recent Products
   const recentProducts = await db.product.findMany({
@@ -114,11 +122,41 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
   });
 
+  // Fetch Cross-sell products if IDs exist
+  let crossSellProducts: any[] = [];
+  if (product.crossSellIds) {
+    try {
+      // Handle potential formats: JSON string array or comma-separated string
+      let ids: string[] = [];
+      if (product.crossSellIds.startsWith('[')) {
+        ids = JSON.parse(product.crossSellIds);
+      } else {
+        ids = product.crossSellIds.split(',').map(id => id.trim()).filter(id => id);
+      }
+
+      if (ids.length > 0) {
+        crossSellProducts = await db.product.findMany({
+          where: {
+            id: { in: ids },
+            isActive: true,
+          },
+          include: {
+            images: true,
+            category: true,
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Error parsing crossSellIds:", e);
+    }
+  }
+
   return (
     <ProductPageClient 
       product={product} 
       relatedProducts={relatedProducts as any} 
-      recentProducts={recentProducts as any} 
+      recentProducts={recentProducts as any}
+      crossSellProducts={crossSellProducts as any}
     />
   );
 }

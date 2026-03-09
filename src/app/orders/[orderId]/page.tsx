@@ -5,12 +5,12 @@ import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 
 interface OrderPageProps {
-  params: {
+  params: Promise<{
     orderId: string;
-  };
+  }>;
 }
 
-export default async function OrderDetailsPage({ params }: { params: Promise<{ orderId: string }> }) {
+export default async function OrderDetailsPage({ params }: OrderPageProps) {
   const session = await getServerSession(authOptions);
   const { orderId } = await params;
 

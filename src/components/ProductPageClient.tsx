@@ -6,7 +6,7 @@ import {
   Star, Check, Info, ShieldCheck, Truck, RefreshCw, ChevronRight, 
   Tag as TagIcon, Layers, Award, Package, Ruler, Weight as WeightIcon, 
   Settings, Share2, Eye, ShoppingCart, Sparkles, Zap, Timer, 
-  ShieldAlert, CreditCard, Facebook, Twitter, Mail
+  ShieldAlert, CreditCard, Facebook, Twitter, Mail, Box
 } from "lucide-react";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductImageGallery from "@/components/ProductImageGallery";
@@ -27,12 +27,14 @@ interface ProductPageClientProps {
   product: ProductWithRelations;
   relatedProducts: any[];
   recentProducts: any[];
+  crossSellProducts: any[];
 }
 
 export default function ProductPageClient({ 
   product, 
   relatedProducts, 
-  recentProducts 
+  recentProducts,
+  crossSellProducts
 }: ProductPageClientProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     product.variants.length > 0 ? product.variants[0] : undefined
@@ -88,7 +90,7 @@ export default function ProductPageClient({
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 items-start">
           {/* Left: Gallery */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white p-4 rounded-[32px] shadow-sm border border-gray-100">
+            <div className="bg-white p-4 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
               <div className="relative">
                 <ProductImageGallery images={product.images} productName={product.name} />
                 {/* Badges Overlay */}
@@ -427,6 +429,13 @@ export default function ProductPageClient({
 
         {/* Carousel Sections */}
         <div className="mt-20 space-y-16">
+          {crossSellProducts.length > 0 && (
+            <ProductCarousel 
+              title="Frequently Bought Together" 
+              products={crossSellProducts} 
+              autoSlide={true}
+            />
+          )}
           <ProductCarousel 
             title="Related Products" 
             products={relatedProducts} 

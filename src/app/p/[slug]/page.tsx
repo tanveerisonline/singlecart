@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
 interface StaticPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: StaticPageProps): Promise<Metadata> {
   const { slug } = await params;
   const page = await db.page.findUnique({
     where: { slug, isActive: true },
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function StaticPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function StaticPage({ params }: StaticPageProps) {
   const { slug } = await params;
   const page = await db.page.findUnique({
     where: {
