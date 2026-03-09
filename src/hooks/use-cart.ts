@@ -22,20 +22,26 @@ export const useCart = create<CartStore>()(
       items: [],
       addItem: (product: Product, variant?: ProductVariant) => {
         const currentItems = get().items;
+        
+        // Find if item with same variant already exists
         const existingItem = currentItems.find((item) => 
-          item.id === product.id && item.selectedVariant?.id === variant?.id
+          item.id === product.id && 
+          ((!item.selectedVariant && !variant) || (item.selectedVariant?.id === variant?.id))
         );
 
         if (existingItem) {
           set({
             items: currentItems.map((item) =>
-              item.id === product.id && item.selectedVariant?.id === variant?.id
+              item.id === product.id && 
+              ((!item.selectedVariant && !variant) || (item.selectedVariant?.id === variant?.id))
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             ),
           });
         } else {
-          set({ items: [...get().items, { ...product, quantity: 1, selectedVariant: variant }] });
+          // If product doesn't have a variant price, use product price
+          const price = variant?.price || product.price;
+          set({ items: [...get().items, { ...product, price: Number(price), quantity: 1, selectedVariant: variant }] });
         }
         
         const label = variant ? `${product.name} (${variant.name})` : product.name;
