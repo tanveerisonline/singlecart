@@ -17,7 +17,7 @@ export default function AddToCartButton({ product, variant, disabled }: AddToCar
     <button
       onClick={() => cart.addItem(product, variant)}
       disabled={disabled}
-      className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-indigo-600 px-8 py-4 text-base font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-lg shadow-indigo-100"
+      className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-primary px-8 py-4 text-base font-bold text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-lg"
     >
       <ShoppingCart className="h-5 w-5" />
       Add to cart

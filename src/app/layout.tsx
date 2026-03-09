@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthContext from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "sonner";
+import { db } from "@/lib/db";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,17 +23,33 @@ export const metadata: Metadata = {
   authors: [{ name: "Shop Team" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch theme settings
+  const theme = await db.themeSetting.findFirst({
+    where: { id: "default" }
+  }).catch(() => null);
+
+  const primaryColor = theme?.primaryColor || "#4f46e5";
+  const favicon = theme?.faviconUrl || "/favicon.ico";
+
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href={favicon} sizes="any" />
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root {
+            --primary: ${primaryColor} !important;
+          }
+        `}} />
+      </head>
       <body className={inter.className}>
         <AuthContext>
           <Toaster position="top-center" richColors />
-          <Navbar />
+          <Navbar logoUrl={theme?.logoUrl} />
           <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             {children}
           </main>

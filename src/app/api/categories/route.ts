@@ -1,22 +1,50 @@
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const categories = await db.category.findMany({
-      include: {
-        parent: true,
-        _count: {
-          select: { products: true }
-        }
-      },
-      orderBy: {
-        name: "asc"
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+    const search = searchParams.get("search") || "";
+
+    const where = {
+      OR: [
+        { name: { contains: search } },
+        { description: { contains: search } },
+      ],
+    };
+
+    const [categories, total] = await Promise.all([
+      db.category.findMany({
+        where,
+        include: {
+          parent: true,
+          _count: {
+            select: { products: true }
+          }
+        },
+        orderBy: {
+          createdAt: "desc"
+        },
+        skip,
+        take: limit,
+      }),
+      db.category.count({ where })
+    ]);
+
+    return NextResponse.json({
+      categories,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
       }
     });
-    return NextResponse.json(categories);
   } catch (error) {
     console.error("[CATEGORIES_GET]", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -32,7 +60,18 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, slug, description, parentId } = body;
+    const { 
+      name, 
+      slug, 
+      description, 
+      parentId,
+      imageUrl,
+      iconUrl,
+      metaTitle,
+      metaDescription,
+      metaImageUrl,
+      isActive 
+    } = body;
 
     if (!name || !slug) {
       return new NextResponse("Name and slug are required", { status: 400 });
@@ -56,7 +95,13 @@ export async function POST(req: Request) {
         name,
         slug,
         description,
-        parentId: parentId || null
+        parentId: parentId || null,
+        imageUrl,
+        iconUrl,
+        metaTitle,
+        metaDescription,
+        metaImageUrl,
+        isActive: isActive !== undefined ? isActive : true
       }
     });
 

@@ -80,9 +80,9 @@ export default function ProductPageClient({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Breadcrumbs */}
         <nav className="flex mb-8 text-xs font-bold uppercase tracking-widest text-gray-400">
-          <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
           <ChevronRight className="h-3 w-3 mx-2" />
-          <Link href={`/search?category=${product.category.slug}`} className="hover:text-indigo-600 transition-colors">{product.category.name}</Link>
+          <Link href={`/search?category=${product.category.slug}`} className="hover:text-primary transition-colors">{product.category.name}</Link>
           <ChevronRight className="h-3 w-3 mx-2" />
           <span className="text-gray-900 truncate">{product.name}</span>
         </nav>
@@ -96,7 +96,7 @@ export default function ProductPageClient({
                 {/* Badges Overlay */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
                   {product.isFeatured && (
-                    <div className="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
+                    <div className="bg-primary text-white px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
                       <Sparkles className="h-3.5 w-3.5" /> Featured
                     </div>
                   )}
@@ -129,13 +129,13 @@ export default function ProductPageClient({
                   </div>
                 )}
                 {product.isEncourageView && (
-                  <div className="flex-1 bg-indigo-50 border border-indigo-100 p-4 rounded-[24px] flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
+                  <div className="flex-1 bg-primary/10 border border-primary/20 p-4 rounded-[24px] flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 text-primary rounded-xl">
                       <Eye className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-black text-indigo-900 uppercase tracking-tighter">{randomViewCount} users</p>
-                      <p className="text-[10px] text-indigo-600 font-bold uppercase">Viewing right now</p>
+                      <p className="text-xs font-black text-primary/90 uppercase tracking-tighter">{randomViewCount} users</p>
+                      <p className="text-[10px] text-primary font-bold uppercase">Viewing right now</p>
                     </div>
                   </div>
                 )}
@@ -153,7 +153,7 @@ export default function ProductPageClient({
                     <Link 
                       key={tag.id} 
                       href={`/search?tag=${tag.slug}`}
-                      className="px-3 py-1 bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-indigo-600 hover:text-white transition-all border border-gray-100"
+                      className="px-3 py-1 bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-primary hover:text-white transition-all border border-gray-100"
                     >
                       #{tag.name}
                     </Link>
@@ -173,7 +173,7 @@ export default function ProductPageClient({
                   </div>
                   {product.brand && (
                     <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-tighter">
-                      <Award className="h-4 w-4 mr-1.5 text-indigo-500" />
+                      <Award className="h-4 w-4 mr-1.5 text-primary" />
                       {product.brand.name}
                     </div>
                   )}
@@ -183,7 +183,7 @@ export default function ProductPageClient({
               {/* Price & Delivery */}
               <div className="space-y-2">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-4xl font-black text-indigo-600">${currentPrice.toFixed(2)}</span>
+                  <span className="text-4xl font-black text-primary">${currentPrice.toFixed(2)}</span>
                   {originalPrice && originalPrice > currentPrice && (
                     <span className="text-lg text-gray-400 line-through font-bold">${originalPrice.toFixed(2)}</span>
                   )}
@@ -216,7 +216,7 @@ export default function ProductPageClient({
                         onClick={() => setSelectedVariant(v)}
                         className={`px-5 py-3 rounded-2xl text-xs font-black transition-all border-2 ${
                           selectedVariant?.id === v.id
-                            ? "border-indigo-600 bg-indigo-50 text-indigo-600 shadow-md shadow-indigo-100"
+                            ? "border-primary bg-primary/10 text-primary shadow-md"
                             : "border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200"
                         }`}
                       >
@@ -266,7 +266,7 @@ export default function ProductPageClient({
             </div>
 
             {/* Features Info */}
-            <div className="bg-indigo-900 rounded-[32px] p-8 text-white shadow-xl shadow-indigo-200/50 space-y-6">
+            <div className="bg-primary/90 rounded-[32px] p-8 text-white shadow-xl space-y-6">
               <h3 className="text-lg font-black tracking-tight">Purchase Protection</h3>
               <div className="grid grid-cols-1 gap-4">
                 {[
@@ -275,12 +275,12 @@ export default function ProductPageClient({
                   { icon: Truck, title: product.isFreeShipping ? "Free Delivery" : "Fast Shipping", desc: product.estimatedDeliveryText || "Reliable shipping to your doorstep" }
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4 bg-white/10 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
-                    <div className="p-2.5 bg-white rounded-xl text-indigo-900 mt-0.5">
+                    <div className="p-2.5 bg-white rounded-xl text-primary mt-0.5">
                       <item.icon className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-black">{item.title}</p>
-                      <p className="text-[10px] text-indigo-200 font-bold leading-tight mt-1">{item.desc}</p>
+                      <p className="text-[10px] text-primary/20 font-bold leading-tight mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -303,7 +303,7 @@ export default function ProductPageClient({
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex items-center gap-2 px-8 py-4 rounded-[24px] text-sm font-black transition-all ${
                     activeTab === tab.id 
-                      ? "bg-white text-indigo-600 shadow-sm" 
+                      ? "bg-white text-primary shadow-sm" 
                       : "text-gray-400 hover:text-gray-600"
                   }`}
                 >
@@ -327,7 +327,7 @@ export default function ProductPageClient({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div className="space-y-8">
                     <h4 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                      <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+                      <div className="p-2 bg-primary/10 rounded-xl text-primary">
                         <Package className="h-5 w-5" />
                       </div>
                       Basic Info
@@ -352,7 +352,7 @@ export default function ProductPageClient({
 
                   <div className="space-y-8">
                     <h4 className="text-xl font-black text-gray-900 flex items-center gap-3">
-                      <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+                      <div className="p-2 bg-primary/10 rounded-xl text-primary">
                         <ShieldCheck className="h-5 w-5" />
                       </div>
                       Policies & Shipping
@@ -411,7 +411,7 @@ export default function ProductPageClient({
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed mb-4">{review.comment}</p>
                             <div className="flex items-center gap-2">
-                              <div className="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-black text-indigo-600 border border-indigo-200 uppercase">
+                              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-black text-primary border border-primary/20 uppercase">
                                 {review.user.name?.[0] || "U"}
                               </div>
                               <span className="text-xs font-black text-gray-900">{review.user.name || "Verified Customer"}</span>

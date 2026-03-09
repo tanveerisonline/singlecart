@@ -23,14 +23,17 @@ import {
   Layers,
   Award,
   MessageSquare,
-  ChevronRight
+  ChevronRight,
+  Palette
 } from "lucide-react";
+import Image from "next/image";
 
 interface AdminSidebarProps {
   session: any;
+  logoUrl?: string | null;
 }
 
-export default function AdminSidebar({ session }: AdminSidebarProps) {
+export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
   const pathname = usePathname();
   const [isProductsOpen, setIsProductsOpen] = useState(pathname.startsWith("/admin/products") || 
                                                      pathname.startsWith("/admin/attributes") || 
@@ -64,6 +67,7 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
     { label: "Staff", icon: Shield, href: "/admin/users" },
     { label: "Coupons", icon: Ticket, href: "/admin/coupons" },
     { label: "Slider", icon: Globe, href: "/admin/slider" },
+    { label: "Theme Setting", icon: Palette, href: "/admin/theme" },
     { label: "Settings", icon: Settings, href: "/admin/settings" },
   ];
 
@@ -71,10 +75,24 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden lg:flex">
       <div className="p-6 border-b border-gray-50">
         <Link href="/" className="flex items-center gap-2">
-          <div className="bg-indigo-600 p-1.5 rounded-lg">
-            <ShoppingBag className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-gray-900">ShopAdmin</span>
+          {logoUrl ? (
+            <div className="relative h-8 w-full">
+              <Image
+                src={logoUrl}
+                alt="Store Logo"
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
+          ) : (
+            <>
+              <div className="bg-primary p-1.5 rounded-lg">
+                <ShoppingBag className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold tracking-tight text-gray-900 uppercase">ShopAdmin</span>
+            </>
+          )}
         </Link>
       </div>
       
@@ -86,12 +104,12 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
           href="/admin"
           className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${
             isActive("/admin") 
-            ? "bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100" 
-            : "text-gray-600 hover:bg-gray-50 hover:text-indigo-600"
+            ? "bg-primary/10 text-primary shadow-sm shadow-primary/5" 
+            : "text-gray-600 hover:bg-gray-50 hover:text-primary"
           }`}
         >
           <LayoutDashboard className={`h-5 w-5 mr-3 transition-colors ${
-            isActive("/admin") ? "text-indigo-600" : "text-gray-400 group-hover:text-indigo-500"
+            isActive("/admin") ? "text-primary" : "text-gray-400 group-hover:text-primary"
           }`} />
           Dashboard
         </Link>
@@ -102,13 +120,13 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
             onClick={toggleProducts}
             className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${
               isProductsOpen || isSubActive("/admin/products")
-              ? "text-indigo-600" 
-              : "text-gray-600 hover:bg-gray-50 hover:text-indigo-600"
+              ? "text-primary" 
+              : "text-gray-600 hover:bg-gray-50 hover:text-primary"
             }`}
           >
             <div className="flex items-center">
               <Package className={`h-5 w-5 mr-3 transition-colors ${
-                isProductsOpen || isSubActive("/admin/products") ? "text-indigo-600" : "text-gray-400 group-hover:text-indigo-500"
+                isProductsOpen || isSubActive("/admin/products") ? "text-primary" : "text-gray-400 group-hover:text-primary"
               }`} />
               Products
             </div>
@@ -123,12 +141,12 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
                   href={subItem.href}
                   className={`flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 group ${
                     isActive(subItem.href)
-                    ? "text-indigo-600 bg-indigo-50/50" 
-                    : "text-gray-500 hover:text-indigo-600 hover:bg-gray-50"
+                    ? "text-primary bg-primary/5" 
+                    : "text-gray-500 hover:text-primary hover:bg-gray-50"
                   }`}
                 >
                   <subItem.icon className={`h-4 w-4 mr-2.5 transition-colors ${
-                    isActive(subItem.href) ? "text-indigo-600" : "text-gray-400 group-hover:text-indigo-500"
+                    isActive(subItem.href) ? "text-primary" : "text-gray-400 group-hover:text-primary"
                   }`} />
                   {subItem.label}
                 </Link>
@@ -144,12 +162,12 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
             href={item.href}
             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${
               isActive(item.href) 
-              ? "bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100" 
-              : "text-gray-600 hover:bg-gray-50 hover:text-indigo-600"
+              ? "bg-primary/10 text-primary shadow-sm shadow-primary/5" 
+              : "text-gray-600 hover:bg-gray-50 hover:text-primary"
             }`}
           >
             <item.icon className={`h-5 w-5 mr-3 transition-colors ${
-              isActive(item.href) ? "text-indigo-600" : "text-gray-400 group-hover:text-indigo-500"
+              isActive(item.href) ? "text-primary" : "text-gray-400 group-hover:text-primary"
             }`} />
             {item.label}
           </Link>
@@ -159,7 +177,7 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
       {/* User Profile Section */}
       <div className="p-4 border-t border-gray-100 bg-gray-50/50">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="h-9 w-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm border border-indigo-200">
+          <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">
             {session.user.name?.[0] || session.user.email?.[0].toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">

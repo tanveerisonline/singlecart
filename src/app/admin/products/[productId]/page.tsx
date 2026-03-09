@@ -36,14 +36,8 @@ import {
   X,
   AlertTriangle,
   Weight as WeightIcon,
-  Monitor,
-  Truck,
-  Box,
-  FileText,
-  Eye,
-  Sparkles,
-  Zap,
-  ShoppingCart
+  ShoppingCart,
+  Zap
 } from "lucide-react";
 import Image from "next/image";
 import MediaModal from "@/components/admin/MediaModal";
@@ -935,7 +929,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                     isSelected 
                                     ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100" 
-                                    : "bg-white text-gray-500 border-gray-200 hover:border-indigo-300"
+                                    : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
                                   }`}
                                 >
                                   {val.value}

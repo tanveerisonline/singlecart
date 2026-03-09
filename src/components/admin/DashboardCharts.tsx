@@ -61,7 +61,7 @@ export default function DashboardCharts({ revenueData, categoryData }: Dashboard
                 }}
                 itemStyle={{ fontSize: '12px', fontWeight: 'bold', color: '#111827' }}
                 labelStyle={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.05em' }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                formatter={(value: any) => [`$${(value || 0).toLocaleString()}`, '']}
               />
               <Area 
                 type="monotone" 

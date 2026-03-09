@@ -14,7 +14,9 @@ import {
   ChevronRight,
   Info,
   Tag,
-  Edit
+  Edit,
+  Download,
+  Upload
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -60,6 +62,49 @@ export default function TagsPage() {
   useEffect(() => {
     fetchTags();
   }, []);
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(tags, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tags-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Tags exported successfully!");
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const content = event.target?.result as string;
+        const importedData = JSON.parse(content);
+        
+        if (!Array.isArray(importedData)) {
+          throw new Error("Invalid format: Expected an array of tags.");
+        }
+
+        setSaving(true);
+        await axios.post("/api/tags/bulk", { tags: importedData });
+        toast.success(`${importedData.length} tags imported successfully!`);
+        fetchTags();
+      } catch (error: any) {
+        console.error("Import error:", error);
+        toast.error(error.message || "Failed to import tags. Check file format.");
+      } finally {
+        setSaving(false);
+        if (e.target) e.target.value = "";
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const handleNameChange = (name: string) => {
     const slug = name.toLowerCase()
@@ -144,29 +189,43 @@ export default function TagsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Product Tags</h1>
           <p className="text-gray-500 text-sm mt-1">Manage descriptive labels for better product filtering and SEO.</p>
         </div>
-        <button
-          onClick={() => {
-            if (isAdding) handleCancel();
-            else setIsAdding(true);
-          }}
-          className={`px-4 py-2 rounded-xl flex items-center transition-all shadow-sm font-semibold text-sm ${
-            isAdding 
-              ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50" 
-              : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-sm"
-          }`}
-        >
-          {isAdding ? (
-            <>
-              <X className="h-4 w-4 mr-2" />
-              Cancel
-            </>
-          ) : (
-            <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add Tag
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center">
+            <Upload className="h-4 w-4 mr-2" />
+            Import
+            <input type="file" accept=".json" className="hidden" onChange={handleImport} disabled={saving} />
+          </label>
+          <button
+            onClick={handleExport}
+            className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </button>
+          <button
+            onClick={() => {
+              if (isAdding) handleCancel();
+              else setIsAdding(true);
+            }}
+            className={`px-4 py-2 rounded-xl flex items-center transition-all shadow-sm font-semibold text-sm ${
+              isAdding 
+                ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50" 
+                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-sm"
+            }`}
+          >
+            {isAdding ? (
+              <>
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </>
+            ) : (
+              <>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add Tag
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {isAdding && (

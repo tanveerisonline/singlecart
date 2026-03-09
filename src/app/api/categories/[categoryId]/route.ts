@@ -52,7 +52,18 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { name, slug, description, parentId } = body;
+    const { 
+      name, 
+      slug, 
+      description, 
+      parentId,
+      imageUrl,
+      iconUrl,
+      metaTitle,
+      metaDescription,
+      metaImageUrl,
+      isActive 
+    } = body;
 
     const category = await db.category.update({
       where: { id: categoryId },
@@ -60,7 +71,13 @@ export async function PATCH(
         name,
         slug,
         description,
-        parentId: parentId || null
+        parentId: parentId || null,
+        imageUrl,
+        iconUrl,
+        metaTitle,
+        metaDescription,
+        metaImageUrl,
+        isActive: isActive !== undefined ? isActive : true
       }
     });
 

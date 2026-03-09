@@ -102,7 +102,7 @@ export default function HomeSlider() {
                   >
                     <Link
                       href={images[currentIndex].link!}
-                      className="inline-block bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-indigo-600 hover:text-white transition-colors"
+                      className="inline-block bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-primary hover:text-white transition-colors"
                     >
                       Shop Now
                     </Link>
