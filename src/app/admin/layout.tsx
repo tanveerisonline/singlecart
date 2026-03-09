@@ -43,12 +43,12 @@ export default async function AdminLayout({
             />
           </div>
           <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all relative">
+            <button className="p-2 text-gray-400 hover:text-primary hover:opacity-90/5 rounded-xl transition-all relative">
               <Bell className="h-5 w-5" />
               <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white"></span>
             </button>
             <div className="h-8 w-px bg-gray-200 mx-2"></div>
-            <Link href="/admin/settings" className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
+            <Link href="/admin/settings" className="p-2 text-gray-400 hover:text-primary hover:opacity-90/5 rounded-xl transition-all">
               <Settings className="h-5 w-5" />
             </Link>
           </div>

@@ -153,7 +153,7 @@ export default function ProductPageClient({
                     <Link 
                       key={tag.id} 
                       href={`/search?tag=${tag.slug}`}
-                      className="px-3 py-1 bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-primary hover:text-white transition-all border border-gray-100"
+                      className="px-3 py-1 bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:opacity-90 hover:text-white transition-all border border-gray-100"
                     >
                       #{tag.name}
                     </Link>
@@ -316,7 +316,7 @@ export default function ProductPageClient({
 
             <div className="p-10">
               {activeTab === "description" && (
-                <div className="prose prose-indigo max-w-none">
+                <div className="prose prose-primary max-w-none">
                   <div className="text-gray-600 leading-relaxed whitespace-pre-line text-lg">
                     {product.description}
                   </div>

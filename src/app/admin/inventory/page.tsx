@@ -111,7 +111,7 @@ export default function InventoryPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Inventory", value: products.length, icon: Package, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Total Inventory", value: products.length, icon: Package, color: "text-primary", bg: "bg-primary/10" },
           { label: "Low Stock Items", value: lowStockCount, icon: AlertCircle, color: "text-amber-600", bg: "bg-amber-50" },
           { label: "Out of Stock", value: outOfStockCount, icon: XCircle, color: "text-rose-600", bg: "bg-rose-50" },
         ].map((stat) => (
@@ -130,11 +130,11 @@ export default function InventoryPage() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search by name or SKU..." 
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -150,7 +150,7 @@ export default function InventoryPage() {
         <div className="overflow-x-auto">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32">
-              <RefreshCcw className="h-10 w-10 animate-spin text-indigo-400 mb-4" />
+              <RefreshCcw className="h-10 w-10 animate-spin text-primary mb-4" />
               <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Fetching inventory...</p>
             </div>
           ) : (
@@ -238,11 +238,11 @@ export default function InventoryPage() {
                                 type="number"
                                 value={adjustValue}
                                 onChange={(e) => setAdjustValue(e.target.value)}
-                                className="w-16 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-center font-bold focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 outline-none transition-all"
+                                className="w-16 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-center font-bold focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 outline-none transition-all"
                               />
                               <button
                                 onClick={() => handleAdjust(product.id)}
-                                className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 text-xs font-bold transition-all shadow-sm shadow-indigo-100"
+                                className="bg-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 text-xs font-bold transition-all shadow-sm shadow-primary/20"
                               >
                                 Save
                               </button>

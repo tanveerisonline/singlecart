@@ -24,7 +24,7 @@ export default function DashboardCharts({ revenueData, categoryData }: Dashboard
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-indigo-500"></span>
+              <span className="h-2 w-2 rounded-full bg-primary"></span>
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Revenue</span>
             </div>
           </div>

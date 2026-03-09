@@ -202,7 +202,7 @@ export default function MediaPage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition-all flex items-center text-sm font-semibold shadow-lg shadow-indigo-100/50 hover:translate-y-[-1px] active:translate-y-[0px] disabled:opacity-50 disabled:translate-y-0"
+              className="bg-primary text-white px-5 py-2.5 rounded-xl hover:opacity-90 transition-all flex items-center text-sm font-semibold shadow-lg shadow-primary/20/50 hover:translate-y-[-1px] active:translate-y-[0px] disabled:opacity-50 disabled:translate-y-0"
             >
               {isUploading ? (
                 <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
@@ -216,13 +216,13 @@ export default function MediaPage() {
 
         <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-3 items-center justify-between mb-6">
           <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input
               type="text"
               placeholder="Search assets..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border-none rounded-xl focus:ring-2 focus:ring-indigo-500/10 focus:bg-white outline-none transition-all text-sm font-medium"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border-none rounded-xl focus:ring-2 focus:ring-primary/10 focus:bg-white outline-none transition-all text-sm font-medium"
             />
           </div>
           <div className="flex items-center gap-2 pr-1">
@@ -231,7 +231,7 @@ export default function MediaPage() {
                 onClick={() => setViewMode("grid")}
                 className={cn(
                   "p-2 rounded-lg transition-all",
-                  viewMode === "grid" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                  viewMode === "grid" ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600"
                 )}
               >
                 <Grid className="h-4 w-4" />
@@ -240,7 +240,7 @@ export default function MediaPage() {
                 onClick={() => setViewMode("list")}
                 className={cn(
                   "p-2 rounded-lg transition-all",
-                  viewMode === "list" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                  viewMode === "list" ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600"
                 )}
               >
                 <ListIcon className="h-4 w-4" />
@@ -252,7 +252,7 @@ export default function MediaPage() {
         <div 
           className={cn(
             "flex-1 overflow-y-auto pr-2 custom-scrollbar transition-all duration-300 rounded-2xl",
-            isDragging ? "bg-indigo-50/50 ring-2 ring-indigo-500 ring-dashed" : ""
+            isDragging ? "bg-primary/10 ring-2 ring-primary/20 ring-dashed" : ""
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -261,8 +261,8 @@ export default function MediaPage() {
           {loading ? (
             <div className="h-full flex flex-col items-center justify-center py-32">
               <div className="relative">
-                <div className="h-16 w-16 border-4 border-indigo-100 rounded-full animate-pulse"></div>
-                <RefreshCcw className="h-8 w-8 animate-spin text-indigo-500 absolute inset-0 m-auto" />
+                <div className="h-16 w-16 border-4 border-primary/20 rounded-full animate-pulse"></div>
+                <RefreshCcw className="h-8 w-8 animate-spin text-primary absolute inset-0 m-auto" />
               </div>
               <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em] mt-6">Indexing Library</p>
             </div>
@@ -290,7 +290,7 @@ export default function MediaPage() {
                     className={cn(
                       "group relative bg-white rounded-2xl overflow-hidden cursor-pointer border-2 transition-all duration-300",
                       selectedItem?.id === item.id 
-                        ? "border-indigo-500 ring-4 ring-indigo-50" 
+                        ? "border-primary/20 ring-4 ring-primary/20" 
                         : "border-transparent hover:border-gray-200 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1"
                     )}
                   >
@@ -311,7 +311,7 @@ export default function MediaPage() {
                               e.stopPropagation();
                               copyToClipboard(item.url, item.id);
                             }}
-                            className="p-1.5 bg-white rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors shadow-sm"
+                            className="p-1.5 bg-white rounded-lg text-primary hover:opacity-90/10 transition-colors shadow-sm"
                            >
                             {copiedId === item.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                            </button>
@@ -345,7 +345,7 @@ export default function MediaPage() {
                       onClick={() => setSelectedItem(item)}
                       className={cn(
                         "group cursor-pointer transition-colors",
-                        selectedItem?.id === item.id ? "bg-indigo-50/30" : "hover:bg-gray-50/50"
+                        selectedItem?.id === item.id ? "bg-primary/5" : "hover:bg-gray-50/50"
                       )}
                     >
                       <td className="px-6 py-3">
@@ -372,7 +372,7 @@ export default function MediaPage() {
                               e.stopPropagation();
                               copyToClipboard(item.url, item.id);
                             }}
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                            className="p-2 text-gray-400 hover:text-primary hover:opacity-90/10 rounded-lg"
                           >
                             {copiedId === item.id ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                           </button>
@@ -405,7 +405,7 @@ export default function MediaPage() {
           >
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Info className="h-5 w-5 text-indigo-500" />
+                <Info className="h-5 w-5 text-primary" />
                 Details
               </h2>
               <button 
@@ -428,7 +428,7 @@ export default function MediaPage() {
                   href={selectedItem.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="absolute bottom-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-xl text-gray-700 hover:text-indigo-600 transition-all shadow-xl border border-white/50 opacity-0 group-hover:opacity-100"
+                  className="absolute bottom-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-xl text-gray-700 hover:text-primary transition-all shadow-xl border border-white/50 opacity-0 group-hover:opacity-100"
                 >
                   <ExternalLink className="h-4 w-4" />
                 </a>
@@ -445,14 +445,14 @@ export default function MediaPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                     <div className="flex items-center gap-2 mb-2">
-                      <FileType className="h-4 w-4 text-indigo-500" />
+                      <FileType className="h-4 w-4 text-primary" />
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Format</span>
                     </div>
                     <p className="text-sm font-bold text-gray-900 uppercase">{selectedItem.type.split('/')[1]}</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                     <div className="flex items-center gap-2 mb-2">
-                      <HardDrive className="h-4 w-4 text-indigo-500" />
+                      <HardDrive className="h-4 w-4 text-primary" />
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Size</span>
                     </div>
                     <p className="text-sm font-bold text-gray-900 uppercase">{formatSize(selectedItem.size)}</p>
@@ -461,7 +461,7 @@ export default function MediaPage() {
 
                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-indigo-500" />
+                    <Calendar className="h-4 w-4 text-primary" />
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Uploaded On</span>
                   </div>
                   <p className="text-sm font-bold text-gray-900">
@@ -477,16 +477,16 @@ export default function MediaPage() {
 
                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                    <div className="flex items-center gap-2 mb-2">
-                    <ExternalLink className="h-4 w-4 text-indigo-500" />
+                    <ExternalLink className="h-4 w-4 text-primary" />
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Public URL</span>
                   </div>
                   <div className="flex gap-2">
-                    <div className="flex-1 bg-white border border-gray-200 p-2 rounded-lg text-[10px] font-mono text-indigo-600 truncate">
+                    <div className="flex-1 bg-white border border-gray-200 p-2 rounded-lg text-[10px] font-mono text-primary truncate">
                       {selectedItem.url}
                     </div>
                     <button 
                       onClick={() => copyToClipboard(selectedItem.url, selectedItem.id)}
-                      className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                      className="p-2 bg-primary text-white rounded-lg hover:opacity-90 transition-colors shadow-sm"
                     >
                        {copiedId === selectedItem.id ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     </button>
@@ -515,18 +515,18 @@ export default function MediaPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-indigo-600/90 backdrop-blur-sm flex flex-col items-center justify-center text-white"
+            className="fixed inset-0 z-50 bg-primary/90 backdrop-blur-sm flex flex-col items-center justify-center text-white"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
             <div className="p-12 border-4 border-dashed border-white/50 rounded-[40px] flex flex-col items-center gap-6">
-              <div className="bg-white text-indigo-600 p-6 rounded-full shadow-2xl animate-bounce">
+              <div className="bg-white text-primary p-6 rounded-full shadow-2xl animate-bounce">
                 <Upload className="h-12 w-12" />
               </div>
               <div className="text-center">
                 <h3 className="text-3xl font-black">Drop to Upload</h3>
-                <p className="text-indigo-100 mt-2 font-medium">Release to add files to your library</p>
+                <p className="text-primary/20 mt-2 font-medium">Release to add files to your library</p>
               </div>
             </div>
           </motion.div>

@@ -32,7 +32,7 @@ export default async function AdminProductsPage() {
         <div className="flex gap-3">
           <Link
             href="/admin/products/new"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-all text-sm font-semibold flex items-center shadow-sm shadow-indigo-100"
+            className="bg-primary text-white px-4 py-2 rounded-xl hover:opacity-90 transition-all text-sm font-semibold flex items-center shadow-sm shadow-primary/20"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Product
@@ -43,7 +43,7 @@ export default async function AdminProductsPage() {
       {/* Stats Quick View */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: "Total Products", value: totalProducts, icon: Package, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Total Products", value: totalProducts, icon: Package, color: "text-primary", bg: "bg-primary/10" },
           { label: "Active", value: activeProducts, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Low Stock", value: lowStockProducts, icon: AlertCircle, color: "text-amber-600", bg: "bg-amber-50" },
           { label: "Out of Stock", value: outOfStockProducts, icon: Trash2, color: "text-rose-600", bg: "bg-rose-50" },

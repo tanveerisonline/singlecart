@@ -108,7 +108,7 @@ export default function AttributesPage() {
           className={`px-4 py-2 rounded-xl flex items-center transition-all shadow-sm font-semibold text-sm ${
             isAdding 
               ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50" 
-              : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-sm"
+              : "bg-primary text-white hover:opacity-90 shadow-primary/20 shadow-sm"
           }`}
         >
           {isAdding ? (
@@ -126,12 +126,12 @@ export default function AttributesPage() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-indigo-100 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-primary/20 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
-            <Settings2 className="h-24 w-24 text-indigo-600" />
+            <Settings2 className="h-24 w-24 text-primary" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 mr-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary mr-3">
               <Plus className="h-5 w-5" />
             </div>
             Create New Attribute
@@ -146,7 +146,7 @@ export default function AttributesPage() {
                   placeholder="e.g. Color"
                   value={newAttribute.name}
                   onChange={(e) => setNewAttribute({ ...newAttribute, name: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                 />
               </div>
               <div className="space-y-1.5">
@@ -157,7 +157,7 @@ export default function AttributesPage() {
                   placeholder="e.g. Red, Blue, Green"
                   value={newAttribute.values}
                   onChange={(e) => setNewAttribute({ ...newAttribute, values: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                 />
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function AttributesPage() {
               <button 
                 type="submit" 
                 disabled={saving}
-                className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl hover:bg-indigo-700 font-bold text-sm shadow-sm shadow-indigo-100 disabled:bg-indigo-300 transition-all"
+                className="bg-primary text-white px-8 py-2.5 rounded-xl hover:opacity-90 font-bold text-sm shadow-sm shadow-primary/20 disabled:bg-primary/30 transition-all"
               >
                 {saving ? "Saving..." : "Save Attribute"}
               </button>
@@ -176,7 +176,7 @@ export default function AttributesPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
-          <RefreshCcw className="h-10 w-10 animate-spin text-indigo-500 mb-4 opacity-20" />
+          <RefreshCcw className="h-10 w-10 animate-spin text-primary mb-4 opacity-20" />
           <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading attributes...</p>
         </div>
       ) : (
@@ -187,7 +187,7 @@ export default function AttributesPage() {
                 <div className="p-5 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
                   <div className="flex items-center">
                     <div className="p-1.5 rounded-lg bg-white shadow-sm mr-3 group-hover:scale-110 transition-transform">
-                      <Settings2 className="h-4 w-4 text-indigo-600" />
+                      <Settings2 className="h-4 w-4 text-primary" />
                     </div>
                     <span className="font-bold text-gray-900">{attr.name}</span>
                   </div>
@@ -201,7 +201,7 @@ export default function AttributesPage() {
                 <div className="p-6">
                   <div className="flex flex-wrap gap-2">
                     {attr.values.map((val) => (
-                      <span key={val.id} className="px-3 py-1 bg-indigo-50/50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-indigo-100/50 transition-colors hover:bg-indigo-50">
+                      <span key={val.id} className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider rounded-lg border border-primary/10 transition-colors hover:opacity-90/10">
                         {val.value}
                       </span>
                     ))}
@@ -211,7 +211,7 @@ export default function AttributesPage() {
                       <LayoutGrid className="h-3 w-3 mr-1.5" />
                       {attr.values.length} Options
                     </span>
-                    <button className="text-[10px] font-bold text-indigo-600 hover:underline uppercase tracking-widest">
+                    <button className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">
                       Edit
                     </button>
                   </div>
@@ -229,7 +229,7 @@ export default function AttributesPage() {
               <p className="text-gray-400 text-xs mt-1">Start by adding global attributes like Size or Color.</p>
               <button 
                 onClick={() => setIsAdding(true)}
-                className="mt-6 text-indigo-600 text-sm font-bold hover:underline"
+                className="mt-6 text-primary text-sm font-bold hover:underline"
               >
                 Add your first attribute
               </button>

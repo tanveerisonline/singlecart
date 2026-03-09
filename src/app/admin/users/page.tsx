@@ -33,7 +33,7 @@ const ROLES = [
   { label: "User", value: "USER", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
   { label: "Admin", value: "ADMIN", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100" },
   { label: "Store Manager", value: "STORE_MANAGER", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
-  { label: "Product Manager", value: "PRODUCT_MANAGER", color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-100" },
+  { label: "Product Manager", value: "PRODUCT_MANAGER", color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" },
   { label: "Order Manager", value: "ORDER_MANAGER", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
 ];
 
@@ -145,7 +145,7 @@ export default function AdminUsersPage() {
           className={`px-4 py-2 rounded-xl flex items-center transition-all shadow-sm font-semibold text-sm ${
             isAdding 
               ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50" 
-              : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-sm"
+              : "bg-primary text-white hover:opacity-90 shadow-primary/20 shadow-sm"
           }`}
         >
           {isAdding ? (
@@ -163,12 +163,12 @@ export default function AdminUsersPage() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-indigo-100 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-primary/20 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
-            <ShieldCheck className="h-24 w-24 text-indigo-600" />
+            <ShieldCheck className="h-24 w-24 text-primary" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 mr-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary mr-3">
               <UserIcon className="h-5 w-5" />
             </div>
             Create Staff Account
@@ -182,7 +182,7 @@ export default function AdminUsersPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   placeholder="e.g. John Doe"
                 />
               </div>
@@ -195,7 +195,7 @@ export default function AdminUsersPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -209,7 +209,7 @@ export default function AdminUsersPage() {
                     required
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 pl-10 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     placeholder="••••••••"
                   />
                 </div>
@@ -219,7 +219,7 @@ export default function AdminUsersPage() {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none cursor-pointer text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none cursor-pointer text-sm font-medium"
                 >
                   {ROLES.map(role => (
                     <option key={role.value} value={role.value}>{role.label}</option>
@@ -231,7 +231,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl hover:bg-indigo-700 transition-all font-bold text-sm shadow-sm shadow-indigo-100 flex items-center disabled:bg-indigo-300"
+                className="bg-primary text-white px-8 py-2.5 rounded-xl hover:opacity-90 transition-all font-bold text-sm shadow-sm shadow-primary/20 flex items-center disabled:bg-primary/30"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 {saving ? "Saving..." : "Create Account"}
@@ -244,8 +244,8 @@ export default function AdminUsersPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
           <div className="relative">
-            <RefreshCcw className="h-12 w-12 animate-spin text-indigo-500 opacity-20" />
-            <ShieldCheck className="h-6 w-6 text-indigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <RefreshCcw className="h-12 w-12 animate-spin text-primary opacity-20" />
+            <ShieldCheck className="h-6 w-6 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
           </div>
           <p className="text-gray-400 text-sm font-bold mt-4 animate-pulse uppercase tracking-widest">Loading staff data...</p>
         </div>
@@ -253,11 +253,11 @@ export default function AdminUsersPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="relative w-full sm:w-96 group">
-              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
               <input 
                 type="text" 
                 placeholder="Search staff by name or email..." 
-                className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+                className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export default function AdminUsersPage() {
                               {initials}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{user.name || "N/A"}</div>
+                              <div className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">{user.name || "N/A"}</div>
                               <div className="text-[10px] text-gray-500 flex items-center font-medium mt-0.5 uppercase tracking-tighter">
                                 <Mail className="h-3 w-3 mr-1" />
                                 {user.email}

@@ -24,7 +24,7 @@ export default async function AdminCouponsPage() {
         <div className="flex gap-3">
           <Link
             href="/admin/coupons/new"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-all text-sm font-semibold flex items-center shadow-sm shadow-indigo-100"
+            className="bg-primary text-white px-4 py-2 rounded-xl hover:opacity-90 transition-all text-sm font-semibold flex items-center shadow-sm shadow-primary/20"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Coupon
@@ -35,7 +35,7 @@ export default async function AdminCouponsPage() {
       {/* Stats Quick View */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Coupons", value: totalValue, icon: Ticket, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Total Coupons", value: totalValue, icon: Ticket, color: "text-primary", bg: "bg-primary/10" },
           { label: "Active Now", value: activeCoupons, icon: Calendar, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Expiring Soon", value: coupons.filter(c => {
             const daysToExpiry = (new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24);

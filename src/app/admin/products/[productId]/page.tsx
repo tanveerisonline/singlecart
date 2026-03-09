@@ -394,7 +394,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           <button
             type="button"
             onClick={handleNext}
-            className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all group"
+            className="flex items-center gap-2 px-8 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 shadow-lg shadow-primary/20 transition-all group"
           >
             Save & Continue
             <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -413,7 +413,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
               type="button"
               disabled={saving}
               onClick={() => onSubmit(true)}
-              className="flex items-center gap-2 px-8 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all"
+              className="flex items-center gap-2 px-8 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 shadow-lg shadow-primary/20 transition-all"
             >
               <ShieldCheck className="h-4 w-4" />
               Update & Publish
@@ -426,7 +426,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
-      <RefreshCcw className="h-10 w-10 animate-spin text-indigo-500 mb-4 opacity-20" />
+      <RefreshCcw className="h-10 w-10 animate-spin text-primary mb-4 opacity-20" />
       <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading product details...</p>
     </div>
   );
@@ -457,7 +457,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex-1 md:flex-none px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
+            className="flex-1 md:flex-none px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all hover:text-primary hover:border-primary/50 transition-all"
           >
             Discard
           </button>
@@ -482,12 +482,12 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     onClick={() => setActiveTab(tab.id as TabType)}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl transition-all ${
                       isActive 
-                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-100 scale-[1.02]" 
-                      : isCompleted ? "text-indigo-600 hover:bg-indigo-50" : "text-gray-400 hover:bg-gray-50"
+                      ? "bg-primary text-white shadow-md shadow-primary/20 scale-[1.02]" 
+                      : isCompleted ? "text-primary hover:opacity-90/5" : "text-gray-400 hover:bg-gray-50"
                     }`}
                   >
                     <div className={`h-5 w-5 flex items-center justify-center rounded-full text-[10px] border-2 ${
-                      isActive ? "border-white" : isCompleted ? "border-indigo-600 bg-indigo-600 text-white" : "border-gray-200"
+                      isActive ? "border-white" : isCompleted ? "border-primary bg-primary text-white" : "border-gray-200"
                     }`}>
                       {isCompleted ? <Check className="h-3 w-3" /> : index + 1}
                     </div>
@@ -510,7 +510,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">General Information</h2>
                     <p className="text-sm text-gray-500 mt-1">Configure the core details of your product.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <FileText className="h-6 w-6" />
                   </div>
                 </div>
@@ -525,17 +525,17 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         onClick={() => setData({ ...data, productType: "PHYSICAL" })}
                         className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all group ${
                           data.productType === "PHYSICAL" 
-                          ? "border-indigo-600 bg-indigo-50/30 ring-4 ring-indigo-50" 
+                          ? "border-primary bg-primary/5 ring-4 ring-primary/5" 
                           : "border-gray-50 bg-gray-50/30 hover:border-gray-200"
                         }`}
                       >
                         <div className={`p-2 rounded-xl transition-colors ${
-                          data.productType === "PHYSICAL" ? "bg-indigo-600 text-white" : "bg-white text-gray-400 group-hover:text-indigo-600"
+                          data.productType === "PHYSICAL" ? "bg-primary text-white" : "bg-white text-gray-400 group-hover:text-primary"
                         }`}>
                           <Package className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                          <p className={`text-sm font-bold ${data.productType === "PHYSICAL" ? "text-indigo-900" : "text-gray-700"}`}>Physical Product</p>
+                          <p className={`text-sm font-bold ${data.productType === "PHYSICAL" ? "text-primary" : "text-gray-700"}`}>Physical Product</p>
                           <p className="text-[10px] text-gray-500 font-medium">Tangible item that requires shipping</p>
                         </div>
                       </button>
@@ -544,17 +544,17 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         onClick={() => setData({ ...data, productType: "DIGITAL" })}
                         className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all group ${
                           data.productType === "DIGITAL" 
-                          ? "border-indigo-600 bg-indigo-50/30 ring-4 ring-indigo-50" 
+                          ? "border-primary bg-primary/5 ring-4 ring-primary/5" 
                           : "border-gray-50 bg-gray-50/30 hover:border-gray-200"
                         }`}
                       >
                         <div className={`p-2 rounded-xl transition-colors ${
-                          data.productType === "DIGITAL" ? "bg-indigo-600 text-white" : "bg-white text-gray-400 group-hover:text-indigo-600"
+                          data.productType === "DIGITAL" ? "bg-primary text-white" : "bg-white text-gray-400 group-hover:text-primary"
                         }`}>
                           <Monitor className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                          <p className={`text-sm font-bold ${data.productType === "DIGITAL" ? "text-indigo-900" : "text-gray-700"}`}>Digital Product</p>
+                          <p className={`text-sm font-bold ${data.productType === "DIGITAL" ? "text-primary" : "text-gray-700"}`}>Digital Product</p>
                           <p className="text-[10px] text-gray-500 font-medium">Downloadable file or virtual service</p>
                         </div>
                       </button>
@@ -567,7 +567,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Product Name</label>
                       <input
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium"
                         placeholder="e.g. Premium Wireless Headphones"
                         value={data.name}
                         onChange={(e) => setData({ ...data, name: e.target.value, slug: e.target.value.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "") })}
@@ -589,7 +589,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Short Description</label>
                     <textarea
                       rows={3}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium resize-none"
                       placeholder="Brief overview for search results and previews..."
                       value={data.shortDescription}
                       onChange={(e) => setData({ ...data, shortDescription: e.target.value })}
@@ -598,7 +598,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Description</label>
-                    <div className="rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-white focus-within:border-indigo-500 transition-all">
+                    <div className="rounded-2xl border border-gray-100 overflow-hidden bg-gray-50 focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white focus-within:border-primary transition-all">
                       <div className="bg-gray-100/50 px-4 py-2 border-b border-gray-100 flex items-center gap-2">
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Editor Placeholder</span>
                       </div>
@@ -622,7 +622,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         <input
                           type="number"
                           step="0.01"
-                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
                           placeholder="0.00"
                           value={data.tax}
                           onChange={(e) => setData({ ...data, tax: e.target.value })}
@@ -642,7 +642,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Product Media</h2>
                     <p className="text-sm text-gray-500 mt-1">Manage thumbnails, product gallery, and assets.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <ImageIcon className="h-6 w-6" />
                   </div>
                 </div>
@@ -659,7 +659,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <div 
                         onClick={() => { setSelectionMode("thumbnail"); setIsMediaModalOpen(true); }}
                         className={`relative aspect-square max-w-[200px] rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
-                          ${data.thumbnailUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                          ${data.thumbnailUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary/50 hover:opacity-90/5"}`}
                       >
                         {data.thumbnailUrl ? (
                           <>
@@ -670,7 +670,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           </>
                         ) : (
                           <>
-                            <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all mb-2">
+                            <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all mb-2">
                               <Plus className="h-6 w-6" />
                             </div>
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Image</span>
@@ -685,7 +685,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <div 
                         onClick={() => { setSelectionMode("sizeChart"); setIsMediaModalOpen(true); }}
                         className={`relative h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex items-center gap-4 px-6
-                          ${data.sizeChartUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                          ${data.sizeChartUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary/50 hover:opacity-90/5"}`}
                       >
                         {data.sizeChartUrl ? (
                           <>
@@ -705,7 +705,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           </>
                         ) : (
                           <>
-                            <div className="p-2 rounded-lg bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all">
+                            <div className="p-2 rounded-lg bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all">
                               <Plus className="h-5 w-5" />
                             </div>
                             <div>
@@ -718,21 +718,21 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     </div>
 
                     {/* Watermark Toggle */}
-                    <div className="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100">
+                    <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-indigo-600 rounded-lg text-white">
+                          <div className="p-2 bg-primary rounded-lg text-white">
                             <Info className="h-4 w-4" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-indigo-900">Apply Watermark</p>
-                            <p className="text-[10px] text-indigo-700/70">Protect your product images</p>
+                            <p className="text-sm font-bold text-primary">Apply Watermark</p>
+                            <p className="text-[10px] text-primary/70">Protect your product images</p>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => setData({...data, hasWatermark: !data.hasWatermark})}
-                          className={`w-12 h-6 rounded-full relative transition-colors ${data.hasWatermark ? "bg-indigo-600" : "bg-gray-300"}`}
+                          className={`w-12 h-6 rounded-full relative transition-colors ${data.hasWatermark ? "bg-primary" : "bg-gray-300"}`}
                         >
                           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.hasWatermark ? "right-1 shadow-sm" : "left-1"}`} />
                         </button>
@@ -763,9 +763,9 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <button
                         type="button"
                         onClick={() => { setSelectionMode("images"); setIsMediaModalOpen(true); }}
-                        className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-indigo-300 hover:bg-indigo-50/30 transition-all gap-2 group"
+                        className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-primary/50 hover:opacity-90/5 transition-all gap-2 group"
                       >
-                        <div className="p-3 rounded-full bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all">
+                        <div className="p-3 rounded-full bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all">
                           <Plus className="h-6 w-6" />
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-widest">Add to Gallery</span>
@@ -784,7 +784,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Inventory & Pricing</h2>
                     <p className="text-sm text-gray-500 mt-1">Manage stock status, SKU, and detailed pricing.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <Package className="h-6 w-6" />
                   </div>
                 </div>
@@ -796,7 +796,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Stock Status*</label>
                       <select
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold cursor-pointer"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold cursor-pointer"
                         value={data.stockStatus}
                         onChange={(e) => setData({ ...data, stockStatus: e.target.value })}
                       >
@@ -811,7 +811,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">SKU*</label>
                       <input
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-mono font-bold"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-mono font-bold"
                         placeholder="Enter SKU"
                         value={data.sku}
                         onChange={(e) => setData({ ...data, sku: e.target.value })}
@@ -824,7 +824,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <input
                         required
                         type="number"
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
                         placeholder="Enter Quantity"
                         value={data.stock}
                         onChange={(e) => setData({ ...data, stock: e.target.value })}
@@ -841,7 +841,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         <input
                           type="number"
                           step="0.01"
-                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
                           placeholder="Enter Price"
                           value={data.price}
                           onChange={(e) => setData({ ...data, price: e.target.value })}
@@ -857,7 +857,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         <input
                           type="number"
                           step="0.1"
-                          className="w-full pl-4 pr-8 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                          className="w-full pl-4 pr-8 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
                           placeholder="Enter Discount"
                           value={data.discount}
                           onChange={(e) => setData({ ...data, discount: e.target.value })}
@@ -886,7 +886,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Wholesale Price Type</label>
                       <select
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold cursor-pointer"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold cursor-pointer"
                         value={data.wholesalePriceType}
                         onChange={(e) => setData({ ...data, wholesalePriceType: e.target.value })}
                       >
@@ -908,7 +908,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                 <div className="pt-8 border-t border-gray-50">
                   <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                     <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-indigo-600" />
+                      <Sparkles className="h-4 w-4 text-primary" />
                       Add New Variants
                     </h3>
                     <p className="text-xs text-gray-500 leading-relaxed mb-6">
@@ -928,8 +928,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                                   onClick={() => toggleAttributeValue(attr.name, val.value)}
                                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
                                     isSelected 
-                                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100" 
-                                    : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
+                                    ? "bg-primary text-white border-primary shadow-md shadow-primary/20" 
+                                    : "bg-white text-gray-500 border border-gray-200 hover:border-primary/50"
                                   }`}
                                 >
                                   {val.value}
@@ -943,7 +943,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <button 
                       type="button"
                       onClick={generateVariants}
-                      className="w-full mt-8 py-3 bg-white border border-gray-200 text-indigo-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all flex items-center justify-center shadow-sm"
+                      className="w-full mt-8 py-3 bg-white border border-gray-200 text-primary rounded-xl font-bold text-xs uppercase tracking-widest hover:opacity-90/5 transition-all flex items-center justify-center shadow-sm"
                     >
                       <Sparkles className="h-4 w-4 mr-2" />
                       Add Combinations
@@ -955,7 +955,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                   <div className="pt-8 border-t border-gray-50">
                     <div className="flex justify-between items-center mb-6">
                       <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                        <Layers className="h-5 w-5 text-indigo-600" />
+                        <Layers className="h-5 w-5 text-primary" />
                         Configured Variants ({variants.length})
                       </h3>
                       <button onClick={() => setVariants([])} className="text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:underline">Clear All</button>
@@ -981,7 +981,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                                     newVariants[i].price = e.target.value;
                                     setVariants(newVariants);
                                   }}
-                                  className="w-24 pl-5 pr-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white font-bold outline-none focus:ring-2 focus:ring-indigo-500/20" 
+                                  className="w-24 pl-5 pr-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white font-bold outline-none focus:ring-2 focus:ring-primary/20" 
                                 />
                               </div>
                             </div>
@@ -995,7 +995,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                                   newVariants[i].stock = e.target.value;
                                   setVariants(newVariants);
                                 }}
-                                className="w-20 px-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white font-bold outline-none focus:ring-2 focus:ring-indigo-500/20" 
+                                className="w-20 px-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white font-bold outline-none focus:ring-2 focus:ring-primary/20" 
                               />
                             </div>
                           </div>
@@ -1018,7 +1018,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Store Setup</h2>
                     <p className="text-sm text-gray-500 mt-1">Classification and organization details.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <Settings className="h-6 w-6" />
                   </div>
                 </div>
@@ -1033,7 +1033,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           required
                           type="number"
                           step="0.01"
-                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none font-bold text-lg text-indigo-600"
+                          className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none font-bold text-lg text-primary"
                           placeholder="0.00"
                           value={data.price}
                           onChange={(e) => setData({ ...data, price: e.target.value })}
@@ -1046,7 +1046,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       </label>
                       <select
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none cursor-pointer font-bold text-sm"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none cursor-pointer font-bold text-sm"
                         value={data.categoryId}
                         onChange={(e) => setData({ ...data, categoryId: e.target.value })}
                       >
@@ -1064,7 +1064,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         <Award className="h-3 w-3" /> Brand
                       </label>
                       <select
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none cursor-pointer font-bold text-sm"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none cursor-pointer font-bold text-sm"
                         value={data.brandId}
                         onChange={(e) => setData({ ...data, brandId: e.target.value })}
                       >
@@ -1094,8 +1094,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                                 onClick={() => toggleTag(tag.id)}
                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                                   isSelected 
-                                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-100" 
-                                  : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
+                                  ? "bg-primary text-white shadow-md shadow-primary/20" 
+                                  : "bg-white text-gray-500 border border-gray-200 hover:border-primary/50"
                                 }`}
                               >
                                 {tag.name}
@@ -1108,7 +1108,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           )}
                         </div>
                         <div className="pt-2 border-t border-gray-200/50">
-                          <Link href="/admin/tags" className="text-[10px] font-bold text-indigo-600 hover:underline uppercase tracking-widest flex items-center gap-1">
+                          <Link href="/admin/tags" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center gap-1">
                             <PlusCircle className="h-3 w-3" /> Manage Tags
                           </Link>
                         </div>
@@ -1127,7 +1127,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Search Optimization</h2>
                     <p className="text-sm text-gray-500 mt-1">Control how this product appears in search engines.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <Globe className="h-6 w-6" />
                   </div>
                 </div>
@@ -1136,7 +1136,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Meta Title</label>
                     <input
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium"
                       placeholder="SEO optimized title..."
                       value={data.metaTitle}
                       onChange={(e) => setData({ ...data, metaTitle: e.target.value })}
@@ -1150,7 +1150,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Meta Description</label>
                     <textarea
                       rows={4}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium resize-none"
                       placeholder="Brief description for search engine results..."
                       value={data.metaDescription}
                       onChange={(e) => setData({ ...data, metaDescription: e.target.value })}
@@ -1166,7 +1166,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <div 
                       onClick={() => { setSelectionMode("metaImage"); setIsMediaModalOpen(true); }}
                       className={`relative h-48 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
-                        ${data.metaImageUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                        ${data.metaImageUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary/50 hover:opacity-90/5"}`}
                     >
                       {data.metaImageUrl ? (
                         <>
@@ -1174,7 +1174,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <button 
                               onClick={(e) => { e.stopPropagation(); setSelectionMode("metaImage"); setIsMediaModalOpen(true); }}
-                              className="p-2 bg-white rounded-xl text-indigo-600 shadow-lg hover:bg-indigo-50 transition-colors"
+                              className="p-2 bg-white rounded-xl text-primary shadow-lg hover:opacity-90/5 transition-colors"
                             >
                               <RefreshCcw className="h-5 w-5" />
                             </button>
@@ -1188,7 +1188,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         </>
                       ) : (
                         <>
-                          <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all mb-2">
+                          <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all mb-2">
                             <ImageIcon className="h-6 w-6" />
                           </div>
                           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Meta Image</span>
@@ -1220,7 +1220,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Shipping Details</h2>
                     <p className="text-sm text-gray-500 mt-1">Set physical dimensions for delivery calculation.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <Truck className="h-6 w-6" />
                   </div>
                 </div>
@@ -1267,7 +1267,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           <input
                             type="number"
                             step="0.01"
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
                             placeholder="Enter Weight Gms(E.G 100)"
                             value={data.weight}
                             onChange={(e) => setData({ ...data, weight: e.target.value })}
@@ -1281,7 +1281,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                             <Monitor className="h-3 w-3" /> Estimated Delivery Text
                           </label>
                           <input
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium"
                             placeholder="Enter Estimated Delivery Text"
                             value={data.estimatedDeliveryText}
                             onChange={(e) => setData({ ...data, estimatedDeliveryText: e.target.value })}
@@ -1321,7 +1321,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           </label>
                           <textarea
                             rows={3}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium resize-none"
                             placeholder="Enter Return Policy Text"
                             value={data.returnPolicyText}
                             onChange={(e) => setData({ ...data, returnPolicyText: e.target.value })}
@@ -1334,7 +1334,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <div className="space-y-4 pt-6 border-t border-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                          <div className="p-2 bg-primary/5 rounded-lg text-primary">
                             <Box className="h-4 w-4" />
                           </div>
                           <div>
@@ -1345,7 +1345,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         <button
                           type="button"
                           onClick={() => setData({...data, showDimensions: !data.showDimensions})}
-                          className={`w-12 h-6 rounded-full relative transition-colors ${data.showDimensions ? "bg-indigo-600" : "bg-gray-300"}`}
+                          className={`w-12 h-6 rounded-full relative transition-colors ${data.showDimensions ? "bg-primary" : "bg-gray-300"}`}
                         >
                           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.showDimensions ? "right-1 shadow-sm" : "left-1"}`} />
                         </button>
@@ -1357,7 +1357,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                             <label className="text-[9px] font-bold text-gray-400 ml-1">Length</label>
                             <input
                               type="number"
-                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm font-bold"
                               placeholder="0"
                               value={data.length}
                               onChange={(e) => setData({ ...data, length: e.target.value })}
@@ -1367,7 +1367,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                             <label className="text-[9px] font-bold text-gray-400 ml-1">Width</label>
                             <input
                               type="number"
-                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm font-bold"
                               placeholder="0"
                               value={data.width}
                               onChange={(e) => setData({ ...data, width: e.target.value })}
@@ -1377,7 +1377,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                             <label className="text-[9px] font-bold text-gray-400 ml-1">Height</label>
                             <input
                               type="number"
-                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm font-bold"
                               placeholder="0"
                               value={data.height}
                               onChange={(e) => setData({ ...data, height: e.target.value })}
@@ -1399,7 +1399,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <h2 className="text-xl font-bold text-gray-900">Visibility & Status</h2>
                     <p className="text-sm text-gray-500 mt-1">Control product availability and highlights.</p>
                   </div>
-                  <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                  <div className="p-3 bg-primary/5 rounded-2xl text-primary">
                     <ShieldCheck className="h-6 w-6" />
                   </div>
                 </div>
@@ -1433,19 +1433,19 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     onClick={() => setData({ ...data, isFeatured: !data.isFeatured })}
                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
                       data.isFeatured 
-                      ? "border-indigo-500 bg-indigo-50 shadow-md shadow-indigo-50" 
+                      ? "border-primary bg-primary/5 shadow-md shadow-primary/10" 
                       : "border-gray-100 bg-gray-50"
                     }`}
                   >
-                    <div className={`p-3 rounded-xl ${data.isFeatured ? "bg-indigo-500 text-white" : "bg-white text-gray-400"}`}>
+                    <div className={`p-3 rounded-xl ${data.isFeatured ? "bg-primary text-white" : "bg-white text-gray-400"}`}>
                       <Sparkles className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className={`text-sm font-bold ${data.isFeatured ? "text-indigo-900" : "text-gray-700"}`}>Featured</p>
+                      <p className={`text-sm font-bold ${data.isFeatured ? "text-primary" : "text-gray-700"}`}>Featured</p>
                       <p className="text-[10px] text-gray-500 font-medium">*Displays a Featured tag on product.</p>
                     </div>
                     <div className="ml-auto">
-                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isFeatured ? "bg-indigo-500" : "bg-gray-300"}`}>
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isFeatured ? "bg-primary" : "bg-gray-300"}`}>
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isFeatured ? "right-1" : "left-1"}`} />
                       </div>
                     </div>

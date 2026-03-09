@@ -149,8 +149,8 @@ export default async function AdminDashboard() {
       label: "Avg. Order Value", 
       value: `$${avgOrderValue.toFixed(2)}`, 
       icon: BarChart3, 
-      color: "text-indigo-600", 
-      bg: "bg-indigo-50",
+      color: "text-primary", 
+      bg: "bg-primary/10",
       description: "Based on all orders"
     },
     { 
@@ -175,7 +175,7 @@ export default async function AdminDashboard() {
           <Link href="/admin/products/new" className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium shadow-sm">
             Add Product
           </Link>
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center text-sm font-medium shadow-sm shadow-indigo-100">
+          <button className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-colors flex items-center text-sm font-medium shadow-sm shadow-primary/20">
             <TrendingUp className="h-4 w-4 mr-2" />
             Export Data
           </button>
@@ -230,10 +230,10 @@ export default async function AdminDashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
             <h2 className="font-bold text-gray-900 flex items-center">
-              <ShoppingBag className="h-5 w-5 mr-2 text-indigo-500" />
+              <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
               Recent Orders
             </h2>
-            <Link href="/admin/orders" className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">
+            <Link href="/admin/orders" className="text-sm text-primary font-semibold hover:text-primary">
               View All
             </Link>
           </div>
@@ -256,7 +256,7 @@ export default async function AdminDashboard() {
                   recentOrders.map((order) => (
                     <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
-                        <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 hover:text-indigo-600">
+                        <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 hover:text-primary">
                           {order.orderNumber}
                         </Link>
                         <p className="text-[10px] text-gray-400 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
@@ -309,7 +309,7 @@ export default async function AdminDashboard() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{product.name}</p>
+                    <p className="text-sm font-bold text-gray-900 truncate group-hover:text-primary transition-colors">{product.name}</p>
                     <p className="text-xs text-gray-500">{product.totalSold} units sold</p>
                   </div>
                   <div className="text-right ml-2">
@@ -320,7 +320,7 @@ export default async function AdminDashboard() {
             )}
           </div>
           <div className="p-4 bg-gray-50/50 text-center">
-            <Link href="/admin/products" className="text-xs font-bold text-gray-500 hover:text-indigo-600 uppercase tracking-wider">
+            <Link href="/admin/products" className="text-xs font-bold text-gray-500 hover:text-primary uppercase tracking-wider">
               Inventory Report
             </Link>
           </div>
@@ -387,7 +387,7 @@ export default async function AdminDashboard() {
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                       <div 
-                        className="bg-indigo-500 h-full rounded-full transition-all duration-500" 
+                        className="bg-primary h-full rounded-full transition-all duration-500" 
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>

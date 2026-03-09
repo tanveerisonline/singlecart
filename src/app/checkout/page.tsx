@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                     name="payment-method"
                     type="radio"
                     defaultChecked
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
                   />
                   <label htmlFor="cod" className="ml-3 block text-sm font-medium text-gray-700">
                     Cash on Delivery (Simulated)
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500 disabled:bg-gray-400"
+                className="w-full bg-primary border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-primary disabled:bg-gray-400"
               >
                 {loading ? "Processing..." : `Confirm Order - $${total.toFixed(2)}`}
               </button>

@@ -69,7 +69,7 @@ export default function MediaModal({ isOpen, onClose, onSelect, selectedUrl }: M
               placeholder="Search media..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm transition-all"
             />
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function MediaModal({ isOpen, onClose, onSelect, selectedUrl }: M
         <div className="flex-1 overflow-y-auto p-6 bg-gray-50/30">
           {loading ? (
             <div className="flex justify-center py-20">
-              <RefreshCcw className="h-8 w-8 animate-spin text-indigo-400" />
+              <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -90,7 +90,7 @@ export default function MediaModal({ isOpen, onClose, onSelect, selectedUrl }: M
                     onClose();
                   }}
                   className={`relative aspect-square rounded-xl overflow-hidden cursor-pointer group border-2 transition-all ${
-                    selectedUrl === item.url ? "border-indigo-600 shadow-md" : "border-transparent hover:border-indigo-300"
+                    selectedUrl === item.url ? "border-primary/20 shadow-md" : "border-transparent hover:border-primary/20"
                   }`}
                 >
                   <Image
@@ -100,8 +100,8 @@ export default function MediaModal({ isOpen, onClose, onSelect, selectedUrl }: M
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   {selectedUrl === item.url && (
-                    <div className="absolute inset-0 bg-indigo-600/20 flex items-center justify-center">
-                      <CheckCircle2 className="h-8 w-8 text-indigo-600 bg-white rounded-full p-0.5 shadow-sm" />
+                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-8 w-8 text-primary bg-white rounded-full p-0.5 shadow-sm" />
                     </div>
                   )}
                   <div className="absolute inset-x-0 bottom-0 bg-black/60 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">

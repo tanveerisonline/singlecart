@@ -40,7 +40,7 @@ export default async function StaticPage({ params }: StaticPageProps) {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-8">{page.title}</h1>
         <div 
-          className="prose prose-indigo prose-lg text-gray-500"
+          className="prose prose-primary prose-lg text-gray-500"
           dangerouslySetInnerHTML={{ __html: page.content }}
         />
       </div>

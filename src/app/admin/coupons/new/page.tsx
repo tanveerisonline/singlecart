@@ -74,14 +74,14 @@ export default function NewCouponPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex-1 md:flex-none px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all"
+            className="flex-1 md:flex-none px-6 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all hover:text-primary hover:border-primary/50 transition-all"
           >
             Discard
           </button>
           <button
             onClick={onSubmit}
             disabled={loading}
-            className="flex-1 md:flex-none px-8 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 disabled:bg-indigo-300 transition-all flex items-center justify-center shadow-lg shadow-indigo-100"
+            className="flex-1 md:flex-none px-8 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 disabled:bg-primary/30 transition-all flex items-center justify-center shadow-lg shadow-primary/20"
           >
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Saving..." : "Create Coupon"}
@@ -94,10 +94,10 @@ export default function NewCouponPage() {
           {/* Basic Config */}
           <section className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Tag className="h-24 w-24 text-indigo-600" />
+              <Tag className="h-24 w-24 text-primary" />
             </div>
             <div className="flex items-center gap-3 mb-8 relative z-10">
-              <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
                 <Ticket className="h-5 w-5" />
               </div>
               <div>
@@ -111,7 +111,7 @@ export default function NewCouponPage() {
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Coupon Code</label>
                 <input
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold uppercase tracking-widest"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold uppercase tracking-widest"
                   placeholder="e.g. SUMMER25"
                   value={data.code}
                   onChange={(e) => setData({ ...data, code: e.target.value.toUpperCase() })}
@@ -121,7 +121,7 @@ export default function NewCouponPage() {
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Discount Type</label>
                 <select
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold cursor-pointer"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold cursor-pointer"
                   value={data.discountType}
                   onChange={(e) => setData({ ...data, discountType: e.target.value })}
                 >
@@ -154,7 +154,7 @@ export default function NewCouponPage() {
                   <input
                     required
                     type="number"
-                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                     placeholder="20"
                     value={data.discountValue}
                     onChange={(e) => setData({ ...data, discountValue: e.target.value })}
@@ -169,7 +169,7 @@ export default function NewCouponPage() {
                   </div>
                   <input
                     type="number"
-                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                     placeholder="0"
                     value={data.minPurchase}
                     onChange={(e) => setData({ ...data, minPurchase: e.target.value })}
@@ -184,7 +184,7 @@ export default function NewCouponPage() {
                   </div>
                   <input
                     type="number"
-                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                     placeholder="None"
                     value={data.maxDiscount}
                     onChange={(e) => setData({ ...data, maxDiscount: e.target.value })}
@@ -213,7 +213,7 @@ export default function NewCouponPage() {
                 <input
                   required
                   type="date"
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                   value={data.startDate}
                   onChange={(e) => setData({ ...data, startDate: e.target.value })}
                 />
@@ -223,7 +223,7 @@ export default function NewCouponPage() {
                 <input
                   required
                   type="date"
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                   value={data.endDate}
                   onChange={(e) => setData({ ...data, endDate: e.target.value })}
                 />
@@ -246,7 +246,7 @@ export default function NewCouponPage() {
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Usage Limit</label>
               <input
                 type="number"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                 placeholder="Total available uses"
                 value={data.usageLimit}
                 onChange={(e) => setData({ ...data, usageLimit: e.target.value })}

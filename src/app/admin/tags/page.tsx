@@ -190,14 +190,14 @@ export default function TagsPage() {
           <p className="text-gray-500 text-sm mt-1">Manage descriptive labels for better product filtering and SEO.</p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center">
+          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center hover:text-primary hover:border-primary/50 transition-all">
             <Upload className="h-4 w-4 mr-2" />
             Import
             <input type="file" accept=".json" className="hidden" onChange={handleImport} disabled={saving} />
           </label>
           <button
             onClick={handleExport}
-            className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center"
+            className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center hover:text-primary hover:border-primary/50 transition-all"
           >
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -210,7 +210,7 @@ export default function TagsPage() {
             className={`px-4 py-2 rounded-xl flex items-center transition-all shadow-sm font-semibold text-sm ${
               isAdding 
                 ? "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50" 
-                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-sm"
+                : "bg-primary text-white hover:opacity-90 shadow-primary/20 shadow-sm"
             }`}
           >
             {isAdding ? (
@@ -229,12 +229,12 @@ export default function TagsPage() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-indigo-100 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-primary/20 animate-in fade-in slide-in-from-top-4 duration-300 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
-            <TagsIcon className="h-24 w-24 text-indigo-600" />
+            <TagsIcon className="h-24 w-24 text-primary" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 mr-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary mr-3">
               {editingTag ? <Edit className="h-5 w-5" /> : <PlusCircle className="h-5 w-5" />}
             </div>
             {editingTag ? "Edit Tag" : "Create New Tag"}
@@ -249,7 +249,7 @@ export default function TagsPage() {
                   placeholder="e.g. New Arrival"
                   value={formData.name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                 />
               </div>
               <div className="space-y-1.5">
@@ -260,7 +260,7 @@ export default function TagsPage() {
                   placeholder="new-arrival"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function TagsPage() {
               <button 
                 type="submit" 
                 disabled={saving}
-                className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl hover:bg-indigo-700 font-bold text-sm shadow-sm shadow-indigo-100 disabled:bg-indigo-300 transition-all"
+                className="bg-primary text-white px-8 py-2.5 rounded-xl hover:opacity-90 font-bold text-sm shadow-sm shadow-primary/20 disabled:bg-primary/30 transition-all"
               >
                 {saving ? "Saving..." : editingTag ? "Update Tag" : "Create Tag"}
               </button>
@@ -280,11 +280,11 @@ export default function TagsPage() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-50">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search tags..." 
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
             />
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function TagsPage() {
         <div className="overflow-x-auto">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <RefreshCcw className="h-10 w-10 animate-spin text-indigo-400 mb-4" />
+              <RefreshCcw className="h-10 w-10 animate-spin text-primary mb-4" />
               <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading tags...</p>
             </div>
           ) : (
@@ -316,7 +316,7 @@ export default function TagsPage() {
                         <p className="text-gray-500 font-bold">No tags found</p>
                         <button 
                           onClick={() => setIsAdding(true)}
-                          className="mt-2 text-indigo-600 text-sm font-bold hover:underline"
+                          className="mt-2 text-primary text-sm font-bold hover:underline"
                         >
                           Create your first tag
                         </button>
@@ -328,11 +328,11 @@ export default function TagsPage() {
                     <tr key={tag.id} className="hover:bg-gray-50/50 transition-all duration-200 group">
                       <td className="px-6 py-5">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm mr-3 border border-indigo-100">
+                          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm mr-3 border border-primary/20">
                             <Tag className="h-4 w-4" />
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{tag.name}</div>
+                            <div className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">{tag.name}</div>
                           </div>
                         </div>
                       </td>
@@ -348,7 +348,7 @@ export default function TagsPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button 
                             onClick={() => handleEdit(tag)}
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                            className="p-2 text-gray-400 hover:text-primary hover:opacity-90/10 rounded-lg transition-all"
                           >
                             <Edit className="h-4 w-4" />
                           </button>

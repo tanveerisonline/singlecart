@@ -58,7 +58,7 @@ export default function SettingsPage() {
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-32 bg-white rounded-2xl border border-gray-100">
-      <RefreshCcw className="h-10 w-10 animate-spin text-indigo-500 mb-4 opacity-20" />
+      <RefreshCcw className="h-10 w-10 animate-spin text-primary mb-4 opacity-20" />
       <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading configuration...</p>
     </div>
   );
@@ -89,10 +89,10 @@ export default function SettingsPage() {
         {/* Layout Selection */}
         <section className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
-            <Layout className="h-24 w-24 text-indigo-600" />
+            <Layout className="h-24 w-24 text-primary" />
           </div>
           <div className="flex items-center gap-3 mb-8 relative z-10">
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <Palette className="h-5 w-5" />
             </div>
             <div>
@@ -107,16 +107,16 @@ export default function SettingsPage() {
                 onClick={() => setSettings({ ...settings, homeLayout: layout.id })}
                 className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all hover:shadow-md group ${
                   settings.homeLayout === layout.id 
-                  ? "border-indigo-600 bg-indigo-50/20 ring-4 ring-indigo-50" 
+                  ? "border-primary/20 bg-primary/5 ring-4 ring-primary/20" 
                   : "border-gray-50 bg-gray-50/30 hover:border-gray-200"
                 }`}
               >
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className={`text-sm font-bold ${settings.homeLayout === layout.id ? "text-indigo-700" : "text-gray-900"}`}>
+                  <h3 className={`text-sm font-bold ${settings.homeLayout === layout.id ? "text-primary" : "text-gray-900"}`}>
                     {layout.name}
                   </h3>
                   <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    settings.homeLayout === layout.id ? "border-indigo-600 bg-indigo-600 shadow-sm" : "border-gray-300 group-hover:border-gray-400"
+                    settings.homeLayout === layout.id ? "border-primary/20 bg-primary shadow-sm" : "border-gray-300 group-hover:border-gray-400"
                   }`}>
                     {settings.homeLayout === layout.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
                   </div>
@@ -131,7 +131,7 @@ export default function SettingsPage() {
           {/* General Store Info */}
           <section className="lg:col-span-2 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
             <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
                 <Store className="h-5 w-5" />
               </div>
               <div>
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                   <Globe className="h-3 w-3" /> Store Name
                 </label>
                 <input
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   value={settings.storeName}
                   onChange={(e) => setSettings({ ...settings, storeName: e.target.value })}
                   placeholder="e.g. Modern Shop"
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                   <Mail className="h-3 w-3" /> Support Email
                 </label>
                 <input
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   type="email"
                   value={settings.storeEmail}
                   onChange={(e) => setSettings({ ...settings, storeEmail: e.target.value })}
@@ -168,7 +168,7 @@ export default function SettingsPage() {
                   <Phone className="h-3 w-3" /> Support Phone
                 </label>
                 <input
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   value={settings.storePhone || ""}
                   onChange={(e) => setSettings({ ...settings, storePhone: e.target.value })}
                   placeholder="+1 (234) 567-890"
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                   <CreditCard className="h-3 w-3" /> Base Currency
                 </label>
                 <input
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   value={settings.currency}
                   onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
                   placeholder="USD"
@@ -190,7 +190,7 @@ export default function SettingsPage() {
                   <MapPin className="h-3 w-3" /> Physical Address
                 </label>
                 <textarea
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium resize-none"
                   rows={3}
                   value={settings.address || ""}
                   onChange={(e) => setSettings({ ...settings, address: e.target.value })}
@@ -204,7 +204,7 @@ export default function SettingsPage() {
           <section className="space-y-8">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-8">
-                <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   <CreditCard className="h-5 w-5" />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tax Rate (%)</label>
                   <input
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     type="number"
                     step="0.01"
                     value={settings.taxRate || 0}
@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-8">
-                <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                <div className="p-2 rounded-lg bg-primary/10 text-primary">
                   <Truck className="h-5 w-5" />
                 </div>
                 <div>
@@ -240,7 +240,7 @@ export default function SettingsPage() {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Standard Shipping Fee</label>
                   <input
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     type="number"
                     step="0.01"
                     value={settings.shippingFee || 0}
@@ -250,7 +250,7 @@ export default function SettingsPage() {
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Free Shipping Threshold</label>
                   <input
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     type="number"
                     step="0.01"
                     value={settings.freeShippingThreshold || 0}
@@ -266,7 +266,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={saving}
-            className="bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 disabled:bg-indigo-300 shadow-lg shadow-indigo-100 transition-all font-bold text-sm flex items-center"
+            className="bg-primary text-white px-8 py-3 rounded-xl hover:opacity-90 disabled:bg-primary/30 shadow-lg shadow-primary/20 transition-all font-bold text-sm flex items-center"
           >
             {saving ? (
               <>

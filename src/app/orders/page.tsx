@@ -37,7 +37,7 @@ export default async function CustomerOrdersPage() {
             {orders.length === 0 ? (
               <div className="text-center py-10 bg-gray-50 rounded-lg">
                 <p className="text-gray-500">You haven't placed any orders yet.</p>
-                <Link href="/" className="mt-4 text-indigo-600 font-medium hover:text-indigo-500">
+                <Link href="/" className="mt-4 text-primary font-medium hover:text-primary">
                   Start shopping
                 </Link>
               </div>
@@ -63,7 +63,7 @@ export default async function CustomerOrdersPage() {
                       <div>
                         <Link
                           href={`/orders/${order.id}`}
-                          className="text-indigo-600 font-medium hover:text-indigo-500 text-sm"
+                          className="text-primary font-medium hover:text-primary text-sm"
                         >
                           View Order
                         </Link>

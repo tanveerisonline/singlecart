@@ -37,7 +37,7 @@ export default async function AdminOrdersPage() {
             <Filter className="h-4 w-4 mr-2" />
             Filter
           </button>
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition-all text-sm font-semibold flex items-center shadow-sm shadow-indigo-100">
+          <button className="bg-primary text-white px-4 py-2 rounded-xl hover:opacity-90 transition-all text-sm font-semibold flex items-center shadow-sm shadow-primary/20">
             Export Orders
           </button>
         </div>
@@ -46,7 +46,7 @@ export default async function AdminOrdersPage() {
       {/* Stats Quick View */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: "Total Orders", value: totalOrders, icon: ShoppingBag, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Total Orders", value: totalOrders, icon: ShoppingBag, color: "text-primary", bg: "bg-primary/10" },
           { label: "Pending", value: pendingOrders, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
           { label: "Delivered", value: deliveredOrders, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
           { label: "Cancelled", value: cancelledOrders, icon: XCircle, color: "text-rose-600", bg: "bg-rose-50" },
@@ -67,16 +67,16 @@ export default async function AdminOrdersPage() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search by ID or customer..." 
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
             />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sort by:</span>
-            <button className="text-sm font-bold text-gray-700 flex items-center hover:text-indigo-600">
+            <button className="text-sm font-bold text-gray-700 flex items-center hover:text-primary">
               Newest <ArrowUpDown className="h-3 w-3 ml-1" />
             </button>
           </div>
@@ -110,7 +110,7 @@ export default async function AdminOrdersPage() {
                 orders.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-all duration-200 group">
                     <td className="px-6 py-5">
-                      <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                      <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 group-hover:text-primary transition-colors">
                         {order.orderNumber}
                       </Link>
                       <div className="flex items-center gap-2 mt-1">
@@ -128,7 +128,7 @@ export default async function AdminOrdersPage() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
                           {order.user.name?.[0] || order.user.email[0].toUpperCase()}
                         </div>
                         <div>
@@ -151,7 +151,7 @@ export default async function AdminOrdersPage() {
                     <td className="px-6 py-5 text-right">
                       <Link 
                         href={`/admin/orders/${order.id}`}
-                        className="inline-flex items-center justify-center h-8 px-4 rounded-lg bg-gray-50 text-gray-600 text-xs font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+                        className="inline-flex items-center justify-center h-8 px-4 rounded-lg bg-gray-50 text-gray-600 text-xs font-bold hover:opacity-90/10 hover:text-primary transition-all"
                       >
                         Details
                       </Link>

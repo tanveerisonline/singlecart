@@ -31,8 +31,8 @@ export default function ContactPage() {
           {/* Contact Info */}
           <div className="space-y-8">
             <div className="flex items-start">
-              <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-md">
-                <Mail className="h-6 w-6 text-indigo-600" />
+              <div className="flex-shrink-0 bg-primary/10 p-3 rounded-md">
+                <Mail className="h-6 w-6 text-primary" />
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-900">Email</h3>
@@ -41,8 +41,8 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="flex items-start">
-              <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-md">
-                <Phone className="h-6 w-6 text-indigo-600" />
+              <div className="flex-shrink-0 bg-primary/10 p-3 rounded-md">
+                <Phone className="h-6 w-6 text-primary" />
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-900">Phone</h3>
@@ -51,8 +51,8 @@ export default function ContactPage() {
               </div>
             </div>
             <div className="flex items-start">
-              <div className="flex-shrink-0 bg-indigo-100 p-3 rounded-md">
-                <MapPin className="h-6 w-6 text-indigo-600" />
+              <div className="flex-shrink-0 bg-primary/10 p-3 rounded-md">
+                <MapPin className="h-6 w-6 text-primary" />
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-900">Office</h3>
@@ -70,7 +70,7 @@ export default function ContactPage() {
                 <p className="mt-2 text-gray-500">We'll get back to you within 24 hours.</p>
                 <button 
                   onClick={() => setSubmitted(false)}
-                  className="mt-6 text-indigo-600 font-medium hover:text-indigo-500"
+                  className="mt-6 text-primary font-medium hover:text-primary"
                 >
                   Send another message
                 </button>
@@ -95,7 +95,7 @@ export default function ContactPage() {
                 </div>
                 <button
                   disabled={loading}
-                  className="w-full bg-indigo-600 text-white py-3 rounded-md font-medium hover:bg-indigo-700 transition-colors"
+                  className="w-full bg-primary text-white py-3 rounded-md font-medium hover:opacity-90 transition-colors"
                 >
                   {loading ? "Sending..." : "Send Message"}
                 </button>

@@ -60,13 +60,13 @@ export default function CouponClient({ coupons }: CouponClientProps) {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search coupon codes..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
             />
           </div>
         </div>
@@ -104,11 +104,11 @@ export default function CouponClient({ coupons }: CouponClientProps) {
                     <tr key={coupon.id} className="hover:bg-gray-50/50 transition-all duration-200 group">
                       <td className="px-6 py-5">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs border border-indigo-100 mr-3">
+                          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20 mr-3">
                             <Ticket className="h-5 w-5" />
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors uppercase tracking-widest">{coupon.code}</div>
+                            <div className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors uppercase tracking-widest">{coupon.code}</div>
                             <div className="text-[10px] text-gray-400 font-medium mt-0.5">Created {new Date(coupon.createdAt).toLocaleDateString()}</div>
                           </div>
                         </div>
@@ -124,7 +124,7 @@ export default function CouponClient({ coupons }: CouponClientProps) {
                           <span className="text-sm font-bold text-gray-900">{coupon.usageCount} / {coupon.usageLimit || "∞"}</span>
                           <div className="w-20 bg-gray-100 rounded-full h-1 overflow-hidden">
                             <div 
-                              className="bg-indigo-500 h-full rounded-full" 
+                              className="bg-primary h-full rounded-full" 
                               style={{ width: `${coupon.usageLimit ? Math.min((coupon.usageCount / coupon.usageLimit) * 100, 100) : 0}%` }}
                             ></div>
                           </div>

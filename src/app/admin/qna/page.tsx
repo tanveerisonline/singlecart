@@ -15,7 +15,7 @@ export default function QnAPage() {
       {/* Stats Quick View */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Questions", value: 0, icon: MessageSquare, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Total Questions", value: 0, icon: MessageSquare, color: "text-primary", bg: "bg-primary/10" },
           { label: "Pending Response", value: 0, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
           { label: "Answered", value: 0, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
         ].map((stat) => (
@@ -34,11 +34,11 @@ export default function QnAPage() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search questions or products..." 
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none"
             />
           </div>
         </div>

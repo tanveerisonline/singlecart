@@ -118,7 +118,7 @@ export default function AdminSliderPage() {
         <h1 className="text-2xl font-bold">Home Page Slider</h1>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center transition-colors"
+          className="bg-primary text-white px-4 py-2 rounded-md hover:opacity-90 flex items-center transition-colors"
         >
           {isAdding ? "Cancel" : (
             <>
@@ -130,7 +130,7 @@ export default function AdminSliderPage() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-8 border border-indigo-100">
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-8 border border-primary/20">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">Add New Slider Image</h2>
           <form onSubmit={handleAdd} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,7 +142,7 @@ export default function AdminSliderPage() {
                     onClick={() => setUploadMethod("file")}
                     className={`flex items-center px-4 py-2 rounded-md border transition-all ${
                       uploadMethod === "file" 
-                      ? "bg-indigo-50 border-indigo-600 text-indigo-700 ring-1 ring-indigo-600" 
+                      ? "bg-primary/10 border-primary/20 text-primary ring-1 ring-primary" 
                       : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
                     }`}
                   >
@@ -154,7 +154,7 @@ export default function AdminSliderPage() {
                     onClick={() => setUploadMethod("url")}
                     className={`flex items-center px-4 py-2 rounded-md border transition-all ${
                       uploadMethod === "url" 
-                      ? "bg-indigo-50 border-indigo-600 text-indigo-700 ring-1 ring-indigo-600" 
+                      ? "bg-primary/10 border-primary/20 text-primary ring-1 ring-primary" 
                       : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
                     }`}
                   >
@@ -166,7 +166,7 @@ export default function AdminSliderPage() {
                 {uploadMethod === "file" ? (
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/30 transition-all bg-gray-50/50"
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:border-primary/20 hover:opacity-90/5 transition-all bg-gray-50/50"
                   >
                     <input
                       type="file"
@@ -176,7 +176,7 @@ export default function AdminSliderPage() {
                       accept="image/*"
                     />
                     {isUploading ? (
-                      <RefreshCcw className="h-10 w-10 text-indigo-500 animate-spin mb-2" />
+                      <RefreshCcw className="h-10 w-10 text-primary animate-spin mb-2" />
                     ) : formData.imageUrl ? (
                       <div className="relative h-32 w-full max-w-md rounded overflow-hidden shadow-sm">
                         <Image src={formData.imageUrl} alt="Preview" fill className="object-cover" />
@@ -197,7 +197,7 @@ export default function AdminSliderPage() {
                     type="text"
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     placeholder="e.g. https://example.com/banner.jpg"
                     required
                   />
@@ -215,7 +215,7 @@ export default function AdminSliderPage() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   placeholder="e.g. Summer Sale 2026"
                 />
               </div>
@@ -225,7 +225,7 @@ export default function AdminSliderPage() {
                   type="text"
                   value={formData.link}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   placeholder="e.g. /category/electronics"
                 />
               </div>
@@ -236,7 +236,7 @@ export default function AdminSliderPage() {
                     type="number"
                     value={formData.order}
                     onChange={(e) => setFormData({ ...formData, order: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     min="0"
                   />
                 </div>
@@ -246,7 +246,7 @@ export default function AdminSliderPage() {
                     id="isActive"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer"
+                    className="h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer"
                   />
                   <label htmlFor="isActive" className="ml-2 block text-sm font-medium text-gray-700 cursor-pointer">
                     Active
@@ -258,7 +258,7 @@ export default function AdminSliderPage() {
               <button
                 type="submit"
                 disabled={isUploading || !formData.imageUrl}
-                className="bg-indigo-600 text-white px-8 py-2.5 rounded-md hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed transition-all font-medium shadow-sm hover:shadow-md"
+                className="bg-primary text-white px-8 py-2.5 rounded-md hover:opacity-90 disabled:bg-primary/30 disabled:cursor-not-allowed transition-all font-medium shadow-sm hover:shadow-md"
               >
                 Save Slider Image
               </button>
@@ -269,7 +269,7 @@ export default function AdminSliderPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <RefreshCcw className="h-10 w-10 animate-spin text-indigo-400" />
+          <RefreshCcw className="h-10 w-10 animate-spin text-primary" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -333,7 +333,7 @@ export default function AdminSliderPage() {
                     </span>
                   </div>
                   {image.link ? (
-                    <p className="text-xs text-indigo-600 truncate underline decoration-indigo-200 underline-offset-2 mt-auto">
+                    <p className="text-xs text-primary truncate underline decoration-primary/30 underline-offset-2 mt-auto">
                       {image.link}
                     </p>
                   ) : (

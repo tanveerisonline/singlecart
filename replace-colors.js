@@ -1,49 +1,36 @@
 const fs = require('fs');
 const path = require('path');
 
-const files = [
-  'src/app/admin/products/new/page.tsx',
-  'src/app/admin/products/[productId]/page.tsx',
-  'src/app/admin/categories/page.tsx',
-  'src/app/admin/tags/page.tsx',
-  'src/app/admin/orders/page.tsx',
-  'src/app/admin/inventory/page.tsx',
-  'src/app/admin/customers/page.tsx',
-  'src/app/admin/coupons/page.tsx',
-  'src/app/admin/coupons/new/page.tsx',
-  'src/app/admin/brands/page.tsx',
-  'src/app/admin/attributes/page.tsx',
-  'src/app/admin/slider/page.tsx',
-  'src/components/admin/ProductClient.tsx',
-  'src/components/admin/CouponClient.tsx',
-  'src/components/admin/ConfirmModal.tsx',
-  'src/components/admin/MediaModal.tsx',
-  'src/app/contact/page.tsx',
-  'src/app/checkout/page.tsx',
-  'src/app/cart/page.tsx'
-];
-
-const replacements = [
-  // Specific complex ones first
+const patterns = [
+  // Specific complex ones with slashes first!
   { pattern: /bg-indigo-600\/20/g, replacement: 'bg-primary/20' },
   { pattern: /bg-indigo-50\/30/g, replacement: 'bg-primary/5' },
   { pattern: /bg-indigo-50\/50/g, replacement: 'bg-primary/10' },
+  { pattern: /bg-indigo-50\/20/g, replacement: 'bg-primary/5' },
   { pattern: /focus:ring-indigo-500\/20/g, replacement: 'focus:ring-primary/20' },
   { pattern: /focus:ring-indigo-500\/10/g, replacement: 'focus:ring-primary/10' },
   { pattern: /border-indigo-100\/50/g, replacement: 'border-primary/10' },
   { pattern: /shadow-indigo-100/g, replacement: 'shadow-primary/20' },
   { pattern: /shadow-indigo-50/g, replacement: 'shadow-primary/10' },
 
-  // Base colors
-  { pattern: /bg-indigo-(600|700|800|900|500)/g, replacement: 'bg-primary' },
-  { pattern: /text-indigo-(600|700|800|500)/g, replacement: 'text-primary' },
-  { pattern: /border-indigo-(600|500|700)/g, replacement: 'border-primary' },
-  { pattern: /hover:bg-indigo-(700|600)/g, replacement: 'hover:bg-primary' },
+  // Hover colors
+  { pattern: /hover:bg-indigo-(700|600|500)/g, replacement: 'hover:opacity-90' }, 
   { pattern: /hover:text-indigo-(600|700|500)/g, replacement: 'hover:text-primary' },
+  { pattern: /hover:border-indigo-300/g, replacement: 'hover:border-primary/30' },
+  { pattern: /hover:bg-indigo-50/g, replacement: 'hover:bg-primary/10' },
+
+  // Outline and Ring
+  { pattern: /focus-visible:outline-indigo-600/g, replacement: 'focus-visible:outline-primary' },
+  { pattern: /ring-indigo-(500|600|50)/g, replacement: 'ring-primary/20' },
   { pattern: /focus:ring-indigo-(500|600)/g, replacement: 'focus:ring-primary' },
   { pattern: /focus:border-indigo-(500|600)/g, replacement: 'focus:border-primary' },
-  { pattern: /bg-indigo-(50|100)/g, replacement: 'bg-primary/10' },
-  { pattern: /border-indigo-(100|200|300|50)/g, replacement: 'border-primary/20' },
+
+  // Base colors - use word boundaries or negative lookahead to avoid double slashes
+  { pattern: /bg-indigo-(600|700|800|900|500)(?!\/)/g, replacement: 'bg-primary' },
+  { pattern: /text-indigo-(600|700|800|500|400|900)(?!\/)/g, replacement: 'text-primary' },
+  { pattern: /border-indigo-(600|500|700|100|200|300|50)(?!\/)/g, replacement: 'border-primary/20' }, 
+  { pattern: /bg-indigo-(50|100)(?!\/)/g, replacement: 'bg-primary/10' },
+  
   { pattern: /text-indigo-400/g, replacement: 'text-primary/70' },
   { pattern: /text-indigo-300/g, replacement: 'text-primary/60' },
   { pattern: /text-indigo-200/g, replacement: 'text-primary/40' },
@@ -55,27 +42,43 @@ const replacements = [
   { pattern: /group-focus-within:text-indigo-500/g, replacement: 'group-focus-within:text-primary' },
   { pattern: /group-hover:text-indigo-600/g, replacement: 'group-hover:text-primary' },
   { pattern: /group-hover:bg-indigo-50/g, replacement: 'group-hover:bg-primary/10' },
-  { pattern: /hover:border-indigo-300/g, replacement: 'hover:border-primary/30' },
-  { pattern: /hover:bg-indigo-50/g, replacement: 'hover:bg-primary/10' },
+  
+  // Cleanup
+  { pattern: /hover:bg-primary/g, replacement: 'hover:opacity-90' },
+  { pattern: /bg-primary\/10\/20/g, replacement: 'bg-primary/5' },
+  { pattern: /bg-primary\/10\/30/g, replacement: 'bg-primary/5' },
+  { pattern: /bg-primary\/10\/50/g, replacement: 'bg-primary/10' },
 ];
 
-files.forEach(file => {
-  const filePath = path.resolve(process.cwd(), file);
-  if (fs.existsSync(filePath)) {
-    let content = fs.readFileSync(filePath, 'utf8');
+const discardPattern = /className="([^"]*?border-gray-200[^"]*?text-gray-600[^"]*?hover:bg-gray-50[^"]*?)"/g;
+
+function walk(dir, callback) {
+  fs.readdirSync(dir).forEach(f => {
+    let dirPath = path.join(dir, f);
+    let isDirectory = fs.statSync(dirPath).isDirectory();
+    isDirectory ? walk(dirPath, callback) : callback(path.join(dir, f));
+  });
+}
+
+walk('src', (file) => {
+  if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+    let content = fs.readFileSync(file, 'utf8');
     let originalContent = content;
-    
-    replacements.forEach(({ pattern, replacement }) => {
+
+    patterns.forEach(({ pattern, replacement }) => {
       content = content.replace(pattern, replacement);
     });
 
+    content = content.replace(discardPattern, (match, p1) => {
+      if (!p1.includes('hover:text-primary')) {
+        return `className="${p1} hover:text-primary hover:border-primary/50 transition-all"`;
+      }
+      return match;
+    });
+
     if (content !== originalContent) {
-      fs.writeFileSync(filePath, content, 'utf8');
+      fs.writeFileSync(file, content, 'utf8');
       console.log(`Updated: ${file}`);
-    } else {
-      console.log(`No changes needed: ${file}`);
     }
-  } else {
-    console.warn(`File not found: ${file}`);
   }
 });

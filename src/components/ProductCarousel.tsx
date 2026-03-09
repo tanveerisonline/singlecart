@@ -76,13 +76,13 @@ export default function ProductCarousel({
         <div className="flex gap-2">
           <button
             onClick={scrollPrev}
-            className="p-2.5 rounded-xl bg-white border border-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95"
+            className="p-2.5 rounded-xl bg-white border border-gray-100 text-gray-600 hover:opacity-90 hover:text-white transition-all shadow-sm active:scale-95"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={scrollNext}
-            className="p-2.5 rounded-xl bg-white border border-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-all shadow-sm active:scale-95"
+            className="p-2.5 rounded-xl bg-white border border-gray-100 text-gray-600 hover:opacity-90 hover:text-white transition-all shadow-sm active:scale-95"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

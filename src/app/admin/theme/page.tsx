@@ -181,7 +181,7 @@ export default function ThemeSettingsPage() {
                     <div 
                       onClick={() => { setSelectionMode("logoUrl"); setIsMediaModalOpen(true); }}
                       className={`relative aspect-video rounded-3xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
-                        ${data.logoUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary hover:bg-primary/5"}`}
+                        ${data.logoUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary hover:opacity-90/5"}`}
                     >
                       {data.logoUrl ? (
                         <>
@@ -204,7 +204,7 @@ export default function ThemeSettingsPage() {
                     <div 
                       onClick={() => { setSelectionMode("faviconUrl"); setIsMediaModalOpen(true); }}
                       className={`relative h-24 w-24 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
-                        ${data.faviconUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary hover:bg-primary/5"}`}
+                        ${data.faviconUrl ? "border-primary bg-gray-50" : "border-gray-200 hover:border-primary hover:opacity-90/5"}`}
                     >
                       {data.faviconUrl ? (
                         <>

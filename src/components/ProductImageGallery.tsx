@@ -78,7 +78,7 @@ export default function ProductImageGallery({ images, productName }: ProductImag
               key={image.id}
               onClick={() => setActiveIndex(index)}
               className={`relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
-                activeIndex === index ? "border-indigo-600 ring-2 ring-indigo-200" : "border-transparent hover:border-gray-300"
+                activeIndex === index ? "border-primary/20 ring-2 ring-primary/20" : "border-transparent hover:border-gray-300"
               }`}
             >
               <Image

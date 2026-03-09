@@ -30,7 +30,7 @@ export default async function Home() {
         <HomeSlider />
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
           <div className="flex items-center gap-2 mb-8">
-            <Sparkles className="h-6 w-6 text-indigo-600" />
+            <Sparkles className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold tracking-tight text-gray-900">
               New Arrivals
             </h2>
@@ -82,9 +82,9 @@ export default async function Home() {
         <HomeSlider />
         <div className="mx-auto max-w-7xl px-4 py-24">
           <div className="text-center mb-20 space-y-4">
-            <span className="text-indigo-600 font-bold tracking-[0.2em] text-xs uppercase">Premium Selection</span>
+            <span className="text-primary font-bold tracking-[0.2em] text-xs uppercase">Premium Selection</span>
             <h2 className="text-5xl font-serif text-gray-900">Featured Curations</h2>
-            <div className="h-1 w-20 bg-indigo-600 mx-auto mt-4"></div>
+            <div className="h-1 w-20 bg-primary mx-auto mt-4"></div>
           </div>
           
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,14 +103,14 @@ export default async function Home() {
   if (layout === "compact") {
     return (
       <div className="bg-white">
-        <div className="bg-indigo-900 text-white py-2 text-center text-sm font-medium">
+        <div className="bg-primary text-white py-2 text-center text-sm font-medium">
           Free shipping on all orders over ${settings?.freeShippingThreshold || 100}
         </div>
         <div className="mx-auto max-w-[1600px] px-4 py-8">
           <div className="flex items-center justify-between mb-8 pb-4 border-b">
             <div className="flex items-center gap-4">
-              <div className="bg-indigo-100 p-2 rounded-lg">
-                <ShoppingBag className="h-5 w-5 text-indigo-600" />
+              <div className="bg-primary/10 p-2 rounded-lg">
+                <ShoppingBag className="h-5 w-5 text-primary" />
               </div>
               <h2 className="text-xl font-bold text-gray-900 uppercase tracking-widest">Shop All</h2>
             </div>

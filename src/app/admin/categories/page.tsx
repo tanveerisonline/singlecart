@@ -293,14 +293,14 @@ export default function CategoriesPage() {
           <p className="text-gray-500 text-sm mt-0.5">Organize your products into hierarchical collections.</p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center">
+          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center hover:text-primary hover:border-primary/50 transition-all">
             <Upload className="h-4 w-4 mr-2" />
             Import
             <input type="file" accept=".json" className="hidden" onChange={handleImport} disabled={saving} />
           </label>
           <button
             onClick={handleExport}
-            className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center"
+            className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm flex items-center hover:text-primary hover:border-primary/50 transition-all"
           >
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -308,7 +308,7 @@ export default function CategoriesPage() {
           {!isAdding && (
             <button
               onClick={() => setIsAdding(true)}
-              className="px-5 py-2.5 rounded-xl flex items-center bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100 shadow-lg transition-all font-bold text-sm"
+              className="px-5 py-2.5 rounded-xl flex items-center bg-primary text-white hover:opacity-90 shadow-primary/20 shadow-lg transition-all font-bold text-sm"
             >
               <PlusCircle className="h-4 w-4 mr-2" />
               Add New Category
@@ -321,7 +321,7 @@ export default function CategoriesPage() {
         <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 animate-in fade-in slide-in-from-top-4 duration-300 overflow-hidden">
           <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
             <h2 className="text-lg font-black text-gray-900 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-100">
+              <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
                 <Layers className="h-5 w-5" />
               </div>
               {editingId ? "Edit Category" : "Create New Category"}
@@ -362,7 +362,7 @@ export default function CategoriesPage() {
                     placeholder="Enter Category Name"
                     value={formData.name}
                     onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -375,7 +375,7 @@ export default function CategoriesPage() {
                     placeholder="electronics"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-xs font-mono font-bold text-indigo-600 ${editingId ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                    className={`w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-xs font-mono font-bold text-primary ${editingId ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     readOnly={!!editingId}
                   />
                 </div>
@@ -389,7 +389,7 @@ export default function CategoriesPage() {
                   <select
                     value={formData.parentId}
                     onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold cursor-pointer"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-bold cursor-pointer"
                   >
                     <option value="">None (Top Level)</option>
                     {parentCategories.filter(c => c.id !== editingId).map((cat) => (
@@ -406,7 +406,7 @@ export default function CategoriesPage() {
                     placeholder="Enter Category Description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                   />
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function CategoriesPage() {
                 <div 
                   onClick={() => { setSelectionMode("image"); setIsMediaModalOpen(true); }}
                   className={`relative h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex items-center gap-4 px-6
-                    ${formData.imageUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                    ${formData.imageUrl ? "border-primary/20 bg-gray-50" : "border-gray-200 hover:border-primary/20 hover:opacity-90/5"}`}
                 >
                   {formData.imageUrl ? (
                     <>
@@ -434,7 +434,7 @@ export default function CategoriesPage() {
                     </>
                   ) : (
                     <>
-                      <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all"><ImageIcon className="h-6 w-6" /></div>
+                      <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all"><ImageIcon className="h-6 w-6" /></div>
                       <div>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Select Image</p>
                         <p className="text-[9px] text-gray-400 mt-0.5 italic">Featured category display image</p>
@@ -449,7 +449,7 @@ export default function CategoriesPage() {
                 <div 
                   onClick={() => { setSelectionMode("icon"); setIsMediaModalOpen(true); }}
                   className={`relative h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex items-center gap-4 px-6
-                    ${formData.iconUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                    ${formData.iconUrl ? "border-primary/20 bg-gray-50" : "border-gray-200 hover:border-primary/20 hover:opacity-90/5"}`}
                 >
                   {formData.iconUrl ? (
                     <>
@@ -464,7 +464,7 @@ export default function CategoriesPage() {
                     </>
                   ) : (
                     <>
-                      <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all"><Smile className="h-6 w-6" /></div>
+                      <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all"><Smile className="h-6 w-6" /></div>
                       <div>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Select Icon</p>
                         <p className="text-[9px] text-gray-400 mt-0.5 italic">Small icon for menu navigation</p>
@@ -478,7 +478,7 @@ export default function CategoriesPage() {
             {/* SEO Section */}
             <div className="pt-10 border-t border-gray-50 space-y-8">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                <div className="p-2 bg-primary/10 text-primary rounded-xl">
                   <Globe className="h-5 w-5" />
                 </div>
                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Search Engine Optimization</h3>
@@ -493,7 +493,7 @@ export default function CategoriesPage() {
                       placeholder="Enter meta title"
                       value={formData.metaTitle}
                       onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -503,7 +503,7 @@ export default function CategoriesPage() {
                       placeholder="Enter meta description"
                       value={formData.metaDescription}
                       onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary/20 transition-all outline-none text-sm font-medium resize-none"
                     />
                   </div>
                 </div>
@@ -513,7 +513,7 @@ export default function CategoriesPage() {
                   <div 
                     onClick={() => { setSelectionMode("metaImage"); setIsMediaModalOpen(true); }}
                     className={`relative h-[164px] rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
-                      ${formData.metaImageUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                      ${formData.metaImageUrl ? "border-primary/20 bg-gray-50" : "border-gray-200 hover:border-primary/20 hover:opacity-90/5"}`}
                   >
                     {formData.metaImageUrl ? (
                       <>
@@ -524,7 +524,7 @@ export default function CategoriesPage() {
                       </>
                     ) : (
                       <>
-                        <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all mb-2"><ImageIcon className="h-6 w-6" /></div>
+                        <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-primary transition-all mb-2"><ImageIcon className="h-6 w-6" /></div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center px-4">Select SEO Image</span>
                       </>
                     )}
@@ -537,14 +537,14 @@ export default function CategoriesPage() {
               <button 
                 type="button"
                 onClick={cancelAdd}
-                className="px-8 py-3.5 rounded-[20px] border border-gray-200 text-gray-600 font-black text-sm uppercase tracking-widest hover:bg-gray-50 transition-all"
+                className="px-8 py-3.5 rounded-[20px] border border-gray-200 text-gray-600 font-black text-sm uppercase tracking-widest hover:bg-gray-50 transition-all hover:text-primary hover:border-primary/50 transition-all"
               >
                 Discard
               </button>
               <button 
                 type="submit" 
                 disabled={saving}
-                className="bg-indigo-600 text-white px-10 py-3.5 rounded-[20px] hover:bg-indigo-700 font-black text-sm uppercase tracking-widest shadow-lg shadow-indigo-100 disabled:bg-indigo-300 transition-all active:scale-[0.98]"
+                className="bg-primary text-white px-10 py-3.5 rounded-[20px] hover:opacity-90 font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 disabled:bg-primary/30 transition-all active:scale-[0.98]"
               >
                 {saving ? "Processing..." : editingId ? "Update Asset" : "Save Category"}
               </button>
@@ -557,13 +557,13 @@ export default function CategoriesPage() {
       <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
           <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               type="text" 
               placeholder="Search assets..." 
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-gray-50 border-transparent rounded-[18px] py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500/10 focus:bg-white focus:border-indigo-500 transition-all outline-none"
+              className="w-full bg-gray-50 border-transparent rounded-[18px] py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 focus:bg-white focus:border-primary/20 transition-all outline-none"
             />
           </div>
           <div className="flex items-center gap-4">
@@ -574,17 +574,17 @@ export default function CategoriesPage() {
               <button 
                 disabled={page === 1}
                 onClick={() => setPage(page - 1)}
-                className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 text-gray-400 disabled:opacity-30 transition-all shadow-sm"
+                className="p-2 rounded-lg hover:bg-white hover:text-primary text-gray-400 disabled:opacity-30 transition-all shadow-sm"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="flex items-center justify-center px-3 text-xs font-black text-indigo-600 bg-white rounded-lg shadow-sm">
+              <span className="flex items-center justify-center px-3 text-xs font-black text-primary bg-white rounded-lg shadow-sm">
                 {page}
               </span>
               <button 
                 disabled={page >= meta.totalPages}
                 onClick={() => setPage(page + 1)}
-                className="p-2 rounded-lg hover:bg-white hover:text-indigo-600 text-gray-400 disabled:opacity-30 transition-all shadow-sm"
+                className="p-2 rounded-lg hover:bg-white hover:text-primary text-gray-400 disabled:opacity-30 transition-all shadow-sm"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -596,8 +596,8 @@ export default function CategoriesPage() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24">
               <div className="relative">
-                <div className="h-16 w-16 border-4 border-indigo-50 rounded-full animate-pulse"></div>
-                <RefreshCcw className="h-8 w-8 animate-spin text-indigo-500 absolute inset-0 m-auto" />
+                <div className="h-16 w-16 border-4 border-primary/20 rounded-full animate-pulse"></div>
+                <RefreshCcw className="h-8 w-8 animate-spin text-primary absolute inset-0 m-auto" />
               </div>
               <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-6">Refreshing Library</p>
             </div>
@@ -627,7 +627,7 @@ export default function CategoriesPage() {
                         </p>
                         <button 
                           onClick={() => setIsAdding(true)}
-                          className="mt-8 bg-indigo-50 text-indigo-600 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-md shadow-indigo-100"
+                          className="mt-8 bg-primary/10 text-primary px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 hover:text-white transition-all shadow-md shadow-primary/20"
                         >
                           Launch Creator
                         </button>
@@ -644,13 +644,13 @@ export default function CategoriesPage() {
                           ) : category.iconUrl ? (
                             <Image src={category.iconUrl} alt="icon" fill className="object-contain p-2" />
                           ) : (
-                            <Layers className="h-6 w-6 text-indigo-100" />
+                            <Layers className="h-6 w-6 text-primary/20" />
                           )}
                         </div>
                       </td>
                       <td className="px-8 py-6">
                         <div>
-                          <div className="text-sm font-black text-gray-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{category.name}</div>
+                          <div className="text-sm font-black text-gray-900 group-hover:text-primary transition-colors uppercase tracking-tight">{category.name}</div>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">/{category.slug}</span>
                             {category.metaTitle && <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 uppercase">SEO</span>}
@@ -670,7 +670,7 @@ export default function CategoriesPage() {
                             {category.parent.name}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-sm shadow-indigo-50">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 shadow-sm shadow-primary/10">
                             <ShieldCheck className="h-3 w-3" />
                             ROOT
                           </span>
@@ -690,7 +690,7 @@ export default function CategoriesPage() {
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button 
                             onClick={() => onEditClick(category)}
-                            className="p-2.5 bg-white text-gray-400 hover:text-indigo-600 rounded-xl border border-gray-100 hover:border-indigo-100 shadow-sm transition-all hover:scale-110 active:scale-95"
+                            className="p-2.5 bg-white text-gray-400 hover:text-primary rounded-xl border border-gray-100 hover:border-primary/20 shadow-sm transition-all hover:scale-110 active:scale-95"
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
@@ -712,7 +712,7 @@ export default function CategoriesPage() {
       </div>
       
       {categories.length > 0 && (
-        <div className="bg-indigo-900 rounded-[32px] p-8 text-white shadow-xl shadow-indigo-100 flex items-start gap-6 relative overflow-hidden">
+        <div className="bg-primary rounded-[32px] p-8 text-white shadow-xl shadow-primary/20 flex items-start gap-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10">
             <Info className="h-32 w-32" />
           </div>
@@ -721,7 +721,7 @@ export default function CategoriesPage() {
           </div>
           <div className="relative z-10">
             <p className="text-white font-black text-sm uppercase tracking-widest">Library Governance</p>
-            <p className="text-indigo-200 text-xs mt-2 leading-relaxed max-w-2xl font-bold">
+            <p className="text-primary/40 text-xs mt-2 leading-relaxed max-w-2xl font-bold">
               Deleting an asset is permanent. Associated products will remain intact but will be categorized as "Uncategorized". 
               Hierarchy integrity is enforced: you must remove sub-categories before deleting a parent asset.
             </p>

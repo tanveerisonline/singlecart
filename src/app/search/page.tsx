@@ -47,7 +47,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             <h2 className="text-sm font-semibold text-gray-900">Categories</h2>
             <ul className="mt-4 space-y-2 border-b border-gray-200 pb-6 text-sm font-medium text-gray-700">
               <li>
-                <a href="/search" className={!categorySlug ? "text-indigo-600 font-bold" : ""}>
+                <a href="/search" className={!categorySlug ? "text-primary font-bold" : ""}>
                   All
                 </a>
               </li>
@@ -55,7 +55,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <li key={category.id}>
                   <a
                     href={`/search?category=${category.slug}${query ? `&q=${query}` : ""}`}
-                    className={categorySlug === category.slug ? "text-indigo-600 font-bold" : ""}
+                    className={categorySlug === category.slug ? "text-primary font-bold" : ""}
                   >
                     {category.name}
                   </a>

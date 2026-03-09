@@ -241,7 +241,7 @@ export default function ProductClient({ products }: ProductClientProps) {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Link 
                           href={`/admin/products/${product.id}`}
-                          className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                          className="p-2 text-gray-400 hover:text-primary hover:opacity-90/5 rounded-lg transition-all"
                         >
                           <Edit className="h-4 w-4" />
                         </Link>
@@ -271,7 +271,7 @@ export default function ProductClient({ products }: ProductClientProps) {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:text-primary hover:border-primary/50 transition-all"
               >
                 Previous
               </button>
@@ -293,7 +293,7 @@ export default function ProductClient({ products }: ProductClientProps) {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:text-primary hover:border-primary/50 transition-all"
               >
                 Next
               </button>
