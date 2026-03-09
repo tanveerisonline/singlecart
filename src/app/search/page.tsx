@@ -2,15 +2,16 @@ import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 
 interface SearchPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     category?: string;
-  };
+  }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const query = searchParams.q || "";
-  const categorySlug = searchParams.category || "";
+  const params = await searchParams;
+  const query = params.q || "";
+  const categorySlug = params.category || "";
 
   const products = await db.product.findMany({
     where: {
@@ -18,7 +19,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       OR: [
         { name: { contains: query } },
         { description: { contains: query } },
-        { tags: { contains: query } },
+        { tags: { some: { name: { contains: query } } } },
       ],
       ...(categorySlug ? { category: { slug: categorySlug } } : {}),
     },

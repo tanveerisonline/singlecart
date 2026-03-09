@@ -37,7 +37,8 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
                                                      pathname.startsWith("/admin/categories") ||
                                                      pathname.startsWith("/admin/tags") ||
                                                      pathname.startsWith("/admin/brands") ||
-                                                     pathname.startsWith("/admin/qna"));
+                                                     pathname.startsWith("/admin/qna") ||
+                                                     pathname.startsWith("/admin/inventory"));
 
   const toggleProducts = () => setIsProductsOpen(!isProductsOpen);
 
@@ -47,6 +48,7 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
   const productSubItems = [
     { label: "Add Product", icon: PlusCircle, href: "/admin/products/new" },
     { label: "All Products", icon: List, href: "/admin/products" },
+    { label: "Inventory", icon: History, href: "/admin/inventory" },
     { label: "Attributes", icon: Settings2, href: "/admin/attributes" },
     { label: "Categories", icon: Layers, href: "/admin/categories" },
     { label: "Tags", icon: TagsIcon, href: "/admin/tags" },
@@ -56,7 +58,6 @@ export default function AdminSidebar({ session }: AdminSidebarProps) {
 
   const mainSidebarItems = [
     { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-    { label: "Inventory", icon: History, href: "/admin/inventory" },
     { label: "Media", icon: ImageIcon, href: "/admin/media" },
     { label: "Orders", icon: ShoppingBag, href: "/admin/orders" },
     { label: "Customers", icon: Users, href: "/admin/customers" },

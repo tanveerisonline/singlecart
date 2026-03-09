@@ -1,48 +1,59 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Product } from "@prisma/client";
+import { Product, ProductVariant } from "@prisma/client";
 import { toast } from "sonner";
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Product) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (product: Product, variant?: ProductVariant) => void;
+  removeItem: (id: string, variantId?: string) => void;
+  updateQuantity: (id: string, quantity: number, variantId?: string) => void;
   clearCart: () => void;
 }
 
 interface CartItem extends Product {
   quantity: number;
+  selectedVariant?: ProductVariant;
 }
 
 export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product: Product) => {
+      addItem: (product: Product, variant?: ProductVariant) => {
         const currentItems = get().items;
-        const existingItem = currentItems.find((item) => item.id === product.id);
+        const existingItem = currentItems.find((item) => 
+          item.id === product.id && item.selectedVariant?.id === variant?.id
+        );
 
         if (existingItem) {
           set({
             items: currentItems.map((item) =>
-              item.id === product.id
+              item.id === product.id && item.selectedVariant?.id === variant?.id
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             ),
           });
         } else {
-          set({ items: [...get().items, { ...product, quantity: 1 }] });
+          set({ items: [...get().items, { ...product, quantity: 1, selectedVariant: variant }] });
         }
-        toast.success(`${product.name} added to cart!`);
+        
+        const label = variant ? `${product.name} (${variant.name})` : product.name;
+        toast.success(`${label} added to cart!`);
       },
-      removeItem: (id: string) => {
-        set({ items: get().items.filter((item) => item.id !== id) });
+      removeItem: (id: string, variantId?: string) => {
+        set({ 
+          items: get().items.filter((item) => 
+            !(item.id === id && item.selectedVariant?.id === variantId)
+          ) 
+        });
       },
-      updateQuantity: (id: string, quantity: number) => {
+      updateQuantity: (id: string, quantity: number, variantId?: string) => {
         set({
           items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.id === id && item.selectedVariant?.id === variantId 
+              ? { ...item, quantity } 
+              : item
           ),
         });
       },

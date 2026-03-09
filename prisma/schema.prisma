@@ -72,6 +72,12 @@ model Product {
   brandId            String?
   specifications     String?
   isFeatured         Boolean          @default(false)
+  isSafeCheckout     Boolean          @default(false)
+  isSecureCheckout   Boolean          @default(false)
+  isSocialShare      Boolean          @default(true)
+  isEncourageOrder   Boolean          @default(false)
+  isEncourageView    Boolean          @default(false)
+  isTrending         Boolean          @default(false)
   isActive           Boolean          @default(true)
   thumbnailUrl       String?
   sizeChartUrl       String?
@@ -87,7 +93,13 @@ model Product {
   crossSellIds       String?          // Comma-separated IDs or JSON string
   metaTitle          String?
   metaDescription    String?
-  weight             Float?
+  metaImageUrl       String?
+  weight             Float?           // Now treated as Gms in UI
+  isFreeShipping     Boolean          @default(false)
+  estimatedDeliveryText String?
+  isReturnable       Boolean          @default(true)
+  returnPolicyText   String?
+  showDimensions     Boolean          @default(false)
   length             Float?
   width              Float?
   height             Float?

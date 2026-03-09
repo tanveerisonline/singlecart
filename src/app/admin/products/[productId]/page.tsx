@@ -62,7 +62,7 @@ interface Tag {
 }
 
 type TabType = "general" | "images" | "inventory" | "setup" | "seo" | "shipping" | "status";
-type SelectionMode = "thumbnail" | "images" | "sizeChart";
+type SelectionMode = "thumbnail" | "images" | "sizeChart" | "metaImage";
 
 const TAB_ORDER: TabType[] = ["general", "images", "inventory", "setup", "seo", "shipping", "status"];
 
@@ -97,14 +97,26 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     images: [] as string[],
     thumbnailUrl: "",
     sizeChartUrl: "",
+    metaImageUrl: "",
     hasWatermark: false,
     productType: "PHYSICAL",
     tax: "0",
     isFeatured: false,
+    isSafeCheckout: false,
+    isSecureCheckout: false,
+    isSocialShare: true,
+    isEncourageOrder: false,
+    isEncourageView: false,
+    isTrending: false,
     isActive: true,
     metaTitle: "",
     metaDescription: "",
     weight: "",
+    isFreeShipping: false,
+    estimatedDeliveryText: "",
+    isReturnable: true,
+    returnPolicyText: "",
+    showDimensions: false,
     length: "",
     width: "",
     height: "",
@@ -150,6 +162,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           images: p.images?.map((img: any) => img.url) || [],
           thumbnailUrl: p.thumbnailUrl || "",
           sizeChartUrl: p.sizeChartUrl || "",
+          metaImageUrl: p.metaImageUrl || "",
           hasWatermark: p.hasWatermark || false,
           productType: p.productType || "PHYSICAL",
           tax: p.tax?.toString() || "0",
@@ -203,6 +216,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
       setData({ ...data, thumbnailUrl: url });
     } else if (selectionMode === "sizeChart") {
       setData({ ...data, sizeChartUrl: url });
+    } else if (selectionMode === "metaImage") {
+      setData({ ...data, metaImageUrl: url });
     } else if (selectionMode === "images") {
       if (!data.images.includes(url)) {
         setData({ ...data, images: [...data.images, url] });
@@ -1131,6 +1146,43 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     </div>
                   </div>
 
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Product Meta Image</label>
+                    <div 
+                      onClick={() => { setSelectionMode("metaImage"); setIsMediaModalOpen(true); }}
+                      className={`relative h-48 rounded-2xl border-2 border-dashed transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden
+                        ${data.metaImageUrl ? "border-indigo-500 bg-gray-50" : "border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/30"}`}
+                    >
+                      {data.metaImageUrl ? (
+                        <>
+                          <img src={data.metaImageUrl} alt="Meta Image" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setSelectionMode("metaImage"); setIsMediaModalOpen(true); }}
+                              className="p-2 bg-white rounded-xl text-indigo-600 shadow-lg hover:bg-indigo-50 transition-colors"
+                            >
+                              <RefreshCcw className="h-5 w-5" />
+                            </button>
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setData({...data, metaImageUrl: ""}); }}
+                              className="p-2 bg-white rounded-xl text-rose-600 shadow-lg hover:bg-rose-50 transition-colors"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="p-3 rounded-full bg-gray-100 text-gray-400 group-hover:bg-white group-hover:text-indigo-600 transition-all mb-2">
+                            <ImageIcon className="h-6 w-6" />
+                          </div>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Meta Image</span>
+                          <p className="text-[9px] text-gray-400 mt-1 italic">Used for social media sharing (Open Graph)</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Google Preview</p>
                     <div className="space-y-1">
@@ -1167,55 +1219,157 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     <p className="text-gray-400 text-xs mt-1">Digital products are delivered instantly via download.</p>
                   </div>
                 ) : (
-                  <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Weight (kg)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
-                          placeholder="0.00"
-                          value={data.weight}
-                          onChange={(e) => setData({ ...data, weight: e.target.value })}
-                        />
+                  <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-6">
+                        {/* Free Shipping Toggle */}
+                        <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-emerald-600 rounded-lg text-white">
+                                <Truck className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-emerald-900">Free Shipping</p>
+                                <p className="text-[10px] text-emerald-700/70">No delivery charges for customers</p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setData({...data, isFreeShipping: !data.isFreeShipping})}
+                              className={`w-12 h-6 rounded-full relative transition-colors ${data.isFreeShipping ? "bg-emerald-600" : "bg-gray-300"}`}
+                            >
+                              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.isFreeShipping ? "right-1 shadow-sm" : "left-1"}`} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Weight */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <WeightIcon className="h-3 w-3" /> Weight
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                            placeholder="Enter Weight Gms(E.G 100)"
+                            value={data.weight}
+                            onChange={(e) => setData({ ...data, weight: e.target.value })}
+                          />
+                          <p className="text-[9px] text-gray-400 ml-1 italic">*Specify the weight of this product in Gms.</p>
+                        </div>
+
+                        {/* Estimated Delivery */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <Monitor className="h-3 w-3" /> Estimated Delivery Text
+                          </label>
+                          <input
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium"
+                            placeholder="Enter Estimated Delivery Text"
+                            value={data.estimatedDeliveryText}
+                            onChange={(e) => setData({ ...data, estimatedDeliveryText: e.target.value })}
+                          />
+                          <p className="text-[9px] text-gray-400 ml-1 italic">*Specify delivery text e.g Your order is likely to reach you within 5 to 10 days.</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        {/* Return Toggle */}
+                        <div className="bg-amber-50/50 rounded-2xl p-6 border border-amber-100">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-amber-600 rounded-lg text-white">
+                                <RefreshCw className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-amber-900">Return</p>
+                                <p className="text-[10px] text-amber-700/70">Eligibility for product returns</p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setData({...data, isReturnable: !data.isReturnable})}
+                              className={`w-12 h-6 rounded-full relative transition-colors ${data.isReturnable ? "bg-amber-600" : "bg-gray-300"}`}
+                            >
+                              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.isReturnable ? "right-1 shadow-sm" : "left-1"}`} />
+                            </button>
+                          </div>
+                          <p className="text-[9px] text-amber-700 mt-2 italic">*Enable to make the product eligible for returns.</p>
+                        </div>
+
+                        {/* Return Policy Text */}
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <FileText className="h-3 w-3" /> Return Policy Text
+                          </label>
+                          <textarea
+                            rows={3}
+                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-medium resize-none"
+                            placeholder="Enter Return Policy Text"
+                            value={data.returnPolicyText}
+                            onChange={(e) => setData({ ...data, returnPolicyText: e.target.value })}
+                          />
+                          <p className="text-[9px] text-gray-400 ml-1 italic">*Specify return text e.g Hassle free 7, 15 and 30 days return might be available.</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Package Dimensions (cm)</p>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-gray-400 ml-1">Length</label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
-                            placeholder="0"
-                            value={data.length}
-                            onChange={(e) => setData({ ...data, height: e.target.value })}
-                          />
+                    <div className="space-y-4 pt-6 border-t border-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                            <Box className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">Package Dimensions (cm)</p>
+                            <p className="text-[10px] text-gray-500">Configure size for shipping boxes</p>
+                          </div>
                         </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-gray-400 ml-1">Width</label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
-                            placeholder="0"
-                            value={data.width}
-                            onChange={(e) => setData({ ...data, width: e.target.value })}
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-gray-400 ml-1">Height</label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-500 transition-all outline-none text-sm font-bold"
-                            placeholder="0"
-                            value={data.height}
-                            onChange={(e) => setData({ ...data, height: e.target.value })}
-                          />
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setData({...data, showDimensions: !data.showDimensions})}
+                          className={`w-12 h-6 rounded-full relative transition-colors ${data.showDimensions ? "bg-indigo-600" : "bg-gray-300"}`}
+                        >
+                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${data.showDimensions ? "right-1 shadow-sm" : "left-1"}`} />
+                        </button>
                       </div>
+
+                      {data.showDimensions && (
+                        <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+                          <div className="space-y-1.5">
+                            <label className="text-[9px] font-bold text-gray-400 ml-1">Length</label>
+                            <input
+                              type="number"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              placeholder="0"
+                              value={data.length}
+                              onChange={(e) => setData({ ...data, length: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[9px] font-bold text-gray-400 ml-1">Width</label>
+                            <input
+                              type="number"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              placeholder="0"
+                              value={data.width}
+                              onChange={(e) => setData({ ...data, width: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <label className="text-[9px] font-bold text-gray-400 ml-1">Height</label>
+                            <input
+                              type="number"
+                              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none text-sm font-bold"
+                              placeholder="0"
+                              value={data.height}
+                              onChange={(e) => setData({ ...data, height: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1236,6 +1390,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Status */}
                   <div 
                     onClick={() => setData({ ...data, isActive: !data.isActive })}
                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
@@ -1248,8 +1403,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <Eye className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className={`text-sm font-bold ${data.isActive ? "text-emerald-900" : "text-gray-700"}`}>Active Status</p>
-                      <p className="text-[10px] text-gray-500 font-medium">Toggle product visibility in store</p>
+                      <p className={`text-sm font-bold ${data.isActive ? "text-emerald-900" : "text-gray-700"}`}>Status</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Toggle between Enabled and Disabled.</p>
                     </div>
                     <div className="ml-auto">
                       <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isActive ? "bg-emerald-500" : "bg-gray-300"}`}>
@@ -1258,6 +1413,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                     </div>
                   </div>
 
+                  {/* Featured */}
                   <div 
                     onClick={() => setData({ ...data, isFeatured: !data.isFeatured })}
                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
@@ -1270,12 +1426,150 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                       <Sparkles className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className={`text-sm font-bold ${data.isFeatured ? "text-indigo-900" : "text-gray-700"}`}>Featured Product</p>
-                      <p className="text-[10px] text-gray-500 font-medium">Highlight this item on home page</p>
+                      <p className={`text-sm font-bold ${data.isFeatured ? "text-indigo-900" : "text-gray-700"}`}>Featured</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Displays a Featured tag on product.</p>
                     </div>
                     <div className="ml-auto">
                       <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isFeatured ? "bg-indigo-500" : "bg-gray-300"}`}>
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isFeatured ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trending */}
+                  <div 
+                    onClick={() => setData({ ...data, isTrending: !data.isTrending })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isTrending 
+                      ? "border-rose-500 bg-rose-50 shadow-md shadow-rose-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isTrending ? "bg-rose-500 text-white" : "bg-white text-gray-400"}`}>
+                      <Zap className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isTrending ? "text-rose-900" : "text-gray-700"}`}>Trending</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Showcase in sidebar as trending.</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isTrending ? "bg-rose-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isTrending ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Social Share */}
+                  <div 
+                    onClick={() => setData({ ...data, isSocialShare: !data.isSocialShare })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isSocialShare 
+                      ? "border-blue-500 bg-blue-50 shadow-md shadow-blue-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isSocialShare ? "bg-blue-500 text-white" : "bg-white text-gray-400"}`}>
+                      <Globe className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isSocialShare ? "text-blue-900" : "text-gray-700"}`}>Social Share</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Allow sharing on social platforms.</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isSocialShare ? "bg-blue-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isSocialShare ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Safe Checkout */}
+                  <div 
+                    onClick={() => setData({ ...data, isSafeCheckout: !data.isSafeCheckout })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isSafeCheckout 
+                      ? "border-cyan-500 bg-cyan-50 shadow-md shadow-cyan-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isSafeCheckout ? "bg-cyan-500 text-white" : "bg-white text-gray-400"}`}>
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isSafeCheckout ? "text-cyan-900" : "text-gray-700"}`}>Safe Checkout</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Show safe checkout image.</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isSafeCheckout ? "bg-cyan-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isSafeCheckout ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Secure Checkout */}
+                  <div 
+                    onClick={() => setData({ ...data, isSecureCheckout: !data.isSecureCheckout })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isSecureCheckout 
+                      ? "border-violet-500 bg-violet-50 shadow-md shadow-violet-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isSecureCheckout ? "bg-violet-500 text-white" : "bg-white text-gray-400"}`}>
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isSecureCheckout ? "text-violet-900" : "text-gray-700"}`}>Secure Checkout</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Show secure checkout image.</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isSecureCheckout ? "bg-violet-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isSecureCheckout ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Encourage Order */}
+                  <div 
+                    onClick={() => setData({ ...data, isEncourageOrder: !data.isEncourageOrder })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isEncourageOrder 
+                      ? "border-orange-500 bg-orange-50 shadow-md shadow-orange-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isEncourageOrder ? "bg-orange-500 text-white" : "bg-white text-gray-400"}`}>
+                      <ShoppingCart className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isEncourageOrder ? "text-orange-900" : "text-gray-700"}`}>Encourage Order</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Display random order count (1-100).</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isEncourageOrder ? "bg-orange-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isEncourageOrder ? "right-1" : "left-1"}`} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Encourage View */}
+                  <div 
+                    onClick={() => setData({ ...data, isEncourageView: !data.isEncourageView })}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                      data.isEncourageView 
+                      ? "border-teal-500 bg-teal-50 shadow-md shadow-teal-50" 
+                      : "border-gray-100 bg-gray-50"
+                    }`}
+                  >
+                    <div className={`p-3 rounded-xl ${data.isEncourageView ? "bg-teal-500 text-white" : "bg-white text-gray-400"}`}>
+                      <Eye className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-bold ${data.isEncourageView ? "text-teal-900" : "text-gray-700"}`}>Encourage View</p>
+                      <p className="text-[10px] text-gray-500 font-medium">*Present engaging viewing prompts.</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className={`w-10 h-5 rounded-full relative transition-colors ${data.isEncourageView ? "bg-teal-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${data.isEncourageView ? "right-1" : "left-1"}`} />
                       </div>
                     </div>
                   </div>
@@ -1284,10 +1578,11 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                 <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
                   <div className="flex items-center gap-3 text-amber-700 mb-2">
                     <Info className="h-5 w-5" />
-                    <p className="text-sm font-bold uppercase tracking-wider">Update Note</p>
+                    <p className="text-sm font-bold uppercase tracking-wider">Publication Note</p>
                   </div>
                   <p className="text-xs text-amber-800 leading-relaxed">
-                    Changes to product status are immediate. Ensure all information is verified before making a product active.
+                    Changes to product status and engagement features are effective immediately. 
+                    Monitor analytics to see how these features impact your store performance.
                   </p>
                 </div>
               </div>
