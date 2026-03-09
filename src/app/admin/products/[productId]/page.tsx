@@ -31,9 +31,19 @@ import {
   BarChart,
   Globe,
   RefreshCcw,
+  RefreshCw,
   Award,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Weight as WeightIcon,
+  Monitor,
+  Truck,
+  Box,
+  FileText,
+  Eye,
+  Sparkles,
+  Zap,
+  ShoppingCart
 } from "lucide-react";
 import Image from "next/image";
 import MediaModal from "@/components/admin/MediaModal";
