@@ -62,8 +62,6 @@ export default function Navbar({ logoUrl }: NavbarProps) {
     }
   };
 
-  if (!isMounted) return null;
-
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
       isScrolled ? "bg-white/80 backdrop-blur-lg shadow-lg py-2" : "bg-white py-4 border-b border-gray-50"
@@ -100,42 +98,44 @@ export default function Navbar({ logoUrl }: NavbarProps) {
                <button className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-colors py-2">
                   Collections <ChevronDown className="h-3 w-3 transition-transform group-hover:rotate-180" />
                </button>
-               <div className="absolute top-full left-0 w-[600px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 grid grid-cols-2 gap-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-4 group-hover:translate-y-0 duration-300">
-                  <div className="space-y-6">
-                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-50 pb-2">Top Categories</h3>
-                     <div className="grid grid-cols-1 gap-4">
-                        {categories.map((cat) => (
-                           <Link 
-                             key={cat.id} 
-                             href={`/collections/${cat.slug}`} 
-                             className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/5 transition-all group/item"
-                           >
-                              <div className="h-10 w-10 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100">
-                                 <Image src={cat.imageUrl || "/placeholder-category.jpg"} alt={cat.name} fill className="object-cover" />
-                              </div>
-                              <span className="text-sm font-bold text-gray-700 group-hover/item:text-primary transition-colors">{cat.name}</span>
-                           </Link>
-                        ))}
-                     </div>
-                  </div>
-                  <div className="space-y-6 bg-gray-50 rounded-2xl p-6">
-                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Featured Collections</h3>
-                     <div className="space-y-3">
-                        <Link href="/collections/new-arrivals" className="block p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
-                           <p className="text-sm font-black text-gray-900">New Arrivals</p>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Fresh from the warehouse</p>
-                        </Link>
-                        <Link href="/collections/best-sellers" className="block p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
-                           <p className="text-sm font-black text-gray-900">Best Sellers</p>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Loved by everyone</p>
-                        </Link>
-                        <Link href="/collections/on-sale" className="block p-4 bg-primary text-white rounded-xl shadow-md hover:opacity-90 transition-all">
-                           <p className="text-sm font-black">Flash Sale</p>
-                           <p className="text-[10px] opacity-80 font-bold uppercase mt-1">Up to 70% Off</p>
-                        </Link>
-                     </div>
-                  </div>
-               </div>
+               {isMounted && (
+                 <div className="absolute top-full left-0 w-[600px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 grid grid-cols-2 gap-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-4 group-hover:translate-y-0 duration-300">
+                    <div className="space-y-6">
+                       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-50 pb-2">Top Categories</h3>
+                       <div className="grid grid-cols-1 gap-4">
+                          {categories.map((cat) => (
+                             <Link 
+                               key={cat.id} 
+                               href={`/collections/${cat.slug}`} 
+                               className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/5 transition-all group/item"
+                             >
+                                <div className="h-10 w-10 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100">
+                                   <Image src={cat.imageUrl || "/placeholder-category.jpg"} alt={cat.name} fill className="object-cover" />
+                                </div>
+                                <span className="text-sm font-bold text-gray-700 group-hover/item:text-primary transition-colors">{cat.name}</span>
+                             </Link>
+                          ))}
+                       </div>
+                    </div>
+                    <div className="space-y-6 bg-gray-50 rounded-2xl p-6">
+                       <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Featured Collections</h3>
+                       <div className="space-y-3">
+                          <Link href="/collections/new-arrivals" className="block p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
+                             <p className="text-sm font-black text-gray-900">New Arrivals</p>
+                             <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Fresh from the warehouse</p>
+                          </Link>
+                          <Link href="/collections/best-sellers" className="block p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
+                             <p className="text-sm font-black text-gray-900">Best Sellers</p>
+                             <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Loved by everyone</p>
+                          </Link>
+                          <Link href="/collections/on-sale" className="block p-4 bg-primary text-white rounded-xl shadow-md hover:opacity-90 transition-all">
+                             <p className="text-sm font-black">Flash Sale</p>
+                             <p className="text-[10px] opacity-80 font-bold uppercase mt-1">Up to 70% Off</p>
+                          </Link>
+                       </div>
+                    </div>
+                 </div>
+               )}
             </div>
             
             <Link href="/search" className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-colors">Shop</Link>
@@ -165,7 +165,7 @@ export default function Navbar({ logoUrl }: NavbarProps) {
             
             <Link href="/cart" className="relative h-10 w-10 rounded-xl hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-primary transition-all group">
               <ShoppingCart className="h-6 w-6" />
-              {cart.items.length > 0 && (
+              {isMounted && cart.items.length > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-black text-white shadow-lg shadow-primary/20 animate-in zoom-in duration-300">
                   {cart.items.length}
                 </span>

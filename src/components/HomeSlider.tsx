@@ -17,10 +17,10 @@ export default function HomeSlider() {
   const [images, setImages] = useState<SliderImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
     const fetchImages = async () => {
       try {
         const response = await fetch("/api/admin/slider");
@@ -55,11 +55,25 @@ export default function HomeSlider() {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Hydration fix: Always render the placeholder on the server and initial client pass
-  if (!mounted || loading) {
+  // HYDRATION FIX: 
+  // We return a simple, identical skeleton on both server and initial client pass.
+  // After mounting (useEffect), isMounted becomes true and we can render the dynamic data.
+  if (!isMounted) {
     return (
-      <div className="h-[400px] md:h-[500px] lg:h-[600px] w-full bg-gray-100 animate-pulse flex items-center justify-center">
-        <div className="text-gray-400 font-bold uppercase tracking-widest text-xs">Loading Slider...</div>
+      <div 
+        suppressHydrationWarning
+        className="h-[400px] md:h-[500px] lg:h-[600px] w-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs"
+      >
+        Loading Slider...
+      </div>
+    );
+  }
+
+  // Once mounted on client, we show pulse while loading data
+  if (loading) {
+    return (
+      <div className="h-[400px] md:h-[500px] lg:h-[600px] w-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+        Loading Slider...
       </div>
     );
   }

@@ -365,3 +365,37 @@ model SliderImage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model DynamicSection {
+  id          String   @id @default(cuid())
+  name        String   // Internal name for identification
+  page        String   @default("HOME") // e.g., HOME, CATEGORY, PRODUCT
+  location    String   @default("MIDDLE") // e.g., TOP, MIDDLE, BOTTOM
+  layout      String   @default("FULL_WIDTH") // FULL_WIDTH, TWO_COLUMNS, THREE_COLUMNS, ROW
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  containerClassName String? // Optional Tailwind classes for the section container
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  banners     Banner[]
+}
+
+model Banner {
+  id               String         @id @default(cuid())
+  sectionId        String
+  title            String?
+  subtitle         String?
+  description      String?
+  buttonText       String?
+  buttonLink       String?
+  discountText     String?        // e.g., "Up to 50% Off"
+  bgColor          String?        @default("#ffffff")
+  textColor        String?        @default("#000000")
+  imageUrl         String?
+  order            Int            @default(0)
+  isActive         Boolean        @default(true)
+  className        String?        // Optional Tailwind classes for individual banner
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  section          DynamicSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}

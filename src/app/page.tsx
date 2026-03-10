@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 import HomeSlider from "@/components/HomeSlider";
+import DynamicSection from "@/components/DynamicSection";
 import { 
   Sparkles, 
   Zap, 
@@ -35,12 +36,38 @@ export default async function Home() {
     take: 6,
   });
 
+  const dynamicSections = await db.dynamicSection.findMany({
+    where: {
+      page: "HOME",
+      isActive: true,
+    },
+    include: {
+      banners: {
+        where: { isActive: true },
+        orderBy: { order: "asc" },
+      },
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
   const featuredProducts = products.filter(p => p.isFeatured).slice(0, 4);
   const trendingProducts = products.filter(p => p.isTrending).slice(0, 8);
   const newArrivals = products.slice(0, 8);
 
+  const topSections = dynamicSections.filter(s => s.location === "TOP");
+  const middleSections = dynamicSections.filter(s => s.location === "MIDDLE");
+  const beforeProductsSections = dynamicSections.filter(s => s.location === "BEFORE_PRODUCTS");
+  const bottomSections = dynamicSections.filter(s => s.location === "BOTTOM");
+
   return (
     <div className="bg-white space-y-20 pb-20">
+      {/* Dynamic Top Sections */}
+      {topSections.map(section => (
+        <DynamicSection key={section.id} section={section} />
+      ))}
+
       {/* Hero Section */}
       <HomeSlider />
 
@@ -86,6 +113,11 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* Dynamic Middle Sections (Priority) */}
+      {middleSections.map(section => (
+        <DynamicSection key={section.id} section={section} />
+      ))}
+
       {/* Category Explorer */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10">
@@ -122,6 +154,11 @@ export default async function Home() {
           ))}
         </div>
       </div>
+
+      {/* Dynamic Before Products Sections */}
+      {beforeProductsSections.map(section => (
+        <DynamicSection key={section.id} section={section} />
+      ))}
 
       {/* Featured Selection */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -192,31 +229,38 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Promotional Banner */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-           <div className="group relative h-[300px] rounded-[2rem] overflow-hidden bg-gray-100">
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent z-10"></div>
-              <div className="relative z-20 h-full p-10 flex flex-col justify-center space-y-4">
-                 <span className="text-white/80 font-bold text-[10px] uppercase tracking-widest">New Arrivals</span>
-                 <h3 className="text-3xl font-black text-white">Modern Lifestyle <br /> Essential Kits</h3>
-                 <Link href="/search" className="text-white font-bold text-sm underline underline-offset-8 decoration-primary decoration-2 hover:text-primary transition-colors">
-                    Explore Now
-                 </Link>
-              </div>
-           </div>
-           <div className="group relative h-[300px] rounded-[2rem] overflow-hidden bg-gray-900">
-              <div className="absolute inset-0 bg-primary/10 z-10"></div>
-              <div className="relative z-20 h-full p-10 flex flex-col justify-center space-y-4">
-                 <span className="text-primary font-bold text-[10px] uppercase tracking-widest">Best Deals</span>
-                 <h3 className="text-3xl font-black text-white">Seasonal Sale <br /> Up to 50% Off</h3>
-                 <Link href="/search" className="inline-flex items-center justify-center h-12 px-8 bg-white text-gray-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
-                    Shop The Sale
-                 </Link>
-              </div>
-           </div>
+      {/* Dynamic Bottom Sections */}
+      {bottomSections.map(section => (
+        <DynamicSection key={section.id} section={section} />
+      ))}
+
+      {/* Promotional Banner (Keeping as fallback or legacy) */}
+      {dynamicSections.length === 0 && (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="group relative h-[300px] rounded-[2rem] overflow-hidden bg-gray-100">
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent z-10"></div>
+                <div className="relative z-20 h-full p-10 flex flex-col justify-center space-y-4">
+                  <span className="text-white/80 font-bold text-[10px] uppercase tracking-widest">New Arrivals</span>
+                  <h3 className="text-3xl font-black text-white">Modern Lifestyle <br /> Essential Kits</h3>
+                  <Link href="/search" className="text-white font-bold text-sm underline underline-offset-8 decoration-primary decoration-2 hover:text-primary transition-colors">
+                      Explore Now
+                  </Link>
+                </div>
+            </div>
+            <div className="group relative h-[300px] rounded-[2rem] overflow-hidden bg-gray-900">
+                <div className="absolute inset-0 bg-primary/10 z-10"></div>
+                <div className="relative z-20 h-full p-10 flex flex-col justify-center space-y-4">
+                  <span className="text-primary font-bold text-[10px] uppercase tracking-widest">Best Deals</span>
+                  <h3 className="text-3xl font-black text-white">Seasonal Sale <br /> Up to 50% Off</h3>
+                  <Link href="/search" className="inline-flex items-center justify-center h-12 px-8 bg-white text-gray-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
+                      Shop The Sale
+                  </Link>
+                </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Newsletter Section */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

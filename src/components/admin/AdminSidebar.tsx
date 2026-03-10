@@ -25,7 +25,8 @@ import {
   MessageSquare,
   ChevronRight,
   Palette,
-  FileText
+  FileText,
+  Layout
 } from "lucide-react";
 import Image from "next/image";
 
@@ -67,6 +68,7 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Customers", icon: Users, href: "/admin/customers" },
     { label: "Staff", icon: Shield, href: "/admin/users" },
     { label: "Coupons", icon: Ticket, href: "/admin/coupons" },
+    { label: "Banners & Sections", icon: Layout, href: "/admin/sections" },
     { label: "Pages", icon: FileText, href: "/admin/pages" },
     { label: "Slider", icon: Globe, href: "/admin/slider" },
     { label: "Theme Setting", icon: Palette, href: "/admin/theme" },
