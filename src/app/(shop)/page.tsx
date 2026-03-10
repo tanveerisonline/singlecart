@@ -130,26 +130,34 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           {categories.map((category) => (
             <Link 
               key={category.id} 
               href={`/search?category=${category.slug}`}
-              className="group text-center space-y-4"
+              className="group space-y-4"
             >
-              <div className="relative aspect-square rounded-full overflow-hidden bg-gray-50 border-2 border-transparent group-hover:border-primary transition-all p-2">
-                <div className="relative h-full w-full rounded-full overflow-hidden">
-                  <Image
-                    src={category.imageUrl || "/placeholder-category.jpg"}
-                    alt={category.name}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+              <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-gray-100 border border-gray-50 group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500">
+                <Image
+                  src={category.imageUrl || "/placeholder-category.jpg"}
+                  alt={category.name}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                   <span className="text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                      Explore <ArrowRight className="h-3 w-3" />
+                   </span>
                 </div>
               </div>
-              <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest group-hover:text-primary transition-colors">
-                {category.name}
-              </h3>
+              <div className="px-2">
+                <h3 className="text-sm font-black text-gray-900 uppercase tracking-tighter group-hover:text-primary transition-colors">
+                  {category.name}
+                </h3>
+                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                  Discover Collection
+                </p>
+              </div>
             </Link>
           ))}
         </div>
