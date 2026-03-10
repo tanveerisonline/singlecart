@@ -44,6 +44,8 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     const { 
       logoUrl, 
+      logoWidth,
+      logoHeight,
       faviconUrl, 
       primaryColor, 
       safeCheckoutImage, 
@@ -61,6 +63,8 @@ export async function PATCH(req: Request) {
       where: { id: "default" },
       update: {
         logoUrl,
+        logoWidth: logoWidth ? parseInt(logoWidth.toString()) : undefined,
+        logoHeight: logoHeight ? parseInt(logoHeight.toString()) : undefined,
         faviconUrl,
         primaryColor,
         safeCheckoutImage,
@@ -75,6 +79,8 @@ export async function PATCH(req: Request) {
       create: {
         id: "default",
         logoUrl,
+        logoWidth: logoWidth ? parseInt(logoWidth.toString()) : 128,
+        logoHeight: logoHeight ? parseInt(logoHeight.toString()) : 40,
         faviconUrl,
         primaryColor,
         safeCheckoutImage,

@@ -8,11 +8,15 @@ export default async function AdminCustomersPage() {
     },
     include: {
       orders: {
-        where: {
-          status: { notIn: ["CANCELLED", "REFUNDED"] }
+        orderBy: {
+          createdAt: "desc"
         },
         select: {
-          totalAmount: true
+          id: true,
+          orderNumber: true,
+          status: true,
+          totalAmount: true,
+          createdAt: true,
         }
       },
     },

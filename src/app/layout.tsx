@@ -39,6 +39,8 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href={favicon} sizes="any" />
+        {theme?.faviconUrl && <link rel="shortcut icon" href={theme.faviconUrl} />}
+        {theme?.faviconUrl && <link rel="apple-touch-icon" href={theme.faviconUrl} />}
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
             --primary: ${primaryColor} !important;

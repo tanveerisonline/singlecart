@@ -20,7 +20,8 @@ import {
   MapPin,
   ChevronRight,
   Globe,
-  Settings
+  Settings,
+  Maximize
 } from "lucide-react";
 import { toast } from "sonner";
 import MediaModal from "@/components/admin/MediaModal";
@@ -37,6 +38,8 @@ export default function ThemeSettingsPage() {
 
   const [data, setData] = useState({
     logoUrl: "",
+    logoWidth: 128,
+    logoHeight: 40,
     faviconUrl: "",
     primaryColor: "#4f46e5",
     safeCheckoutImage: "",
@@ -57,6 +60,8 @@ export default function ThemeSettingsPage() {
         if (response.data) {
           setData({
             logoUrl: response.data.logoUrl || "",
+            logoWidth: response.data.logoWidth || 128,
+            logoHeight: response.data.logoHeight || 40,
             faviconUrl: response.data.faviconUrl || "",
             primaryColor: response.data.primaryColor || "#4f46e5",
             safeCheckoutImage: response.data.safeCheckoutImage || "",
@@ -71,7 +76,6 @@ export default function ThemeSettingsPage() {
         }
       } catch (error) {
         console.error("Fetch error:", error);
-        // Silently fail if not found
       } finally {
         setLoading(false);
       }
@@ -89,8 +93,10 @@ export default function ThemeSettingsPage() {
       setSaving(true);
       await axios.patch("/api/admin/theme", data);
       toast.success("Theme settings updated successfully!");
-      // Force reload to apply new primary color from RootLayout
-      window.location.reload();
+      // Force reload to apply new primary color and favicon from RootLayout
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to save settings");
@@ -176,7 +182,7 @@ export default function ThemeSettingsPage() {
             {activeTab === "general" && (
               <div className="p-10 space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Store Logo</label>
                     <div 
                       onClick={() => { setSelectionMode("logoUrl"); setIsMediaModalOpen(true); }}
@@ -196,6 +202,32 @@ export default function ThemeSettingsPage() {
                           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Logo</span>
                         </>
                       )}
+                    </div>
+
+                    {/* Logo Dimensions */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                          <Maximize className="h-3 w-3" /> Width (px)
+                        </label>
+                        <input
+                          type="number"
+                          value={data.logoWidth}
+                          onChange={(e) => setData({ ...data, logoWidth: parseInt(e.target.value) || 0 })}
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                          <Maximize className="h-3 w-3 rotate-90" /> Height (px)
+                        </label>
+                        <input
+                          type="number"
+                          value={data.logoHeight}
+                          onChange={(e) => setData({ ...data, logoHeight: parseInt(e.target.value) || 0 })}
+                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -220,6 +252,7 @@ export default function ThemeSettingsPage() {
                         </>
                       )}
                     </div>
+                    <p className="text-[9px] text-gray-400 font-bold uppercase leading-relaxed max-w-[150px]">Upload a square .ico or .png image for the browser tab.</p>
                   </div>
                 </div>
 

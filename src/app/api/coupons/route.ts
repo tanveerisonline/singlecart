@@ -27,18 +27,18 @@ export async function POST(req: Request) {
       data: {
         code: code.toUpperCase(),
         discountType,
-        discountValue,
-        minPurchase,
-        maxDiscount,
-        startDate,
-        endDate,
-        usageLimit,
+        discountValue: parseFloat(discountValue),
+        minPurchase: minPurchase ? parseFloat(minPurchase) : 0,
+        maxDiscount: maxDiscount ? parseFloat(maxDiscount) : null,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        usageLimit: usageLimit ? parseInt(usageLimit) : null,
       },
     });
 
     return NextResponse.json(coupon);
-  } catch (error) {
-    console.log("[COUPONS_POST]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+  } catch (error: any) {
+    console.log("[COUPONS_POST] Detailed Error:", error);
+    return new NextResponse(error.message || "Internal Error", { status: 500 });
   }
 }

@@ -3,7 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Package, ChevronRight, Clock, CheckCircle2, Truck, XCircle, ShoppingBag, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { Package, ChevronRight, Clock, CheckCircle2, Truck, XCircle, ShoppingBag, ArrowRight, Calendar, DollarSign } from "lucide-react";
 
 export default async function CustomerOrdersPage() {
   const session = await getServerSession(authOptions);
@@ -15,6 +16,18 @@ export default async function CustomerOrdersPage() {
   const orders = await db.order.findMany({
     where: {
       userId: session.user.id,
+    },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              name: true,
+              thumbnailUrl: true,
+            }
+          }
+        }
+      }
     },
     orderBy: {
       createdAt: "desc",
@@ -61,38 +74,81 @@ export default async function CustomerOrdersPage() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-8">
               {orders.map((order) => {
                 const config = getStatusConfig(order.status);
-                return (
-                  <div key={order.id} className="group bg-white border border-gray-100 rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300">
-                    <div className="p-8 sm:p-10 flex flex-col md:flex-row justify-between gap-8">
-                      <div className="flex flex-wrap items-center gap-8">
-                        <div className="space-y-1">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order ID</p>
-                          <p className="text-sm font-black text-gray-900 uppercase">#{order.orderNumber || order.id.substring(0, 8)}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date Placed</p>
-                          <p className="text-sm font-black text-gray-900 uppercase">{new Date(order.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Amount</p>
-                          <p className="text-lg font-black text-primary">${order.totalAmount.toLocaleString()}</p>
-                        </div>
-                      </div>
+                const firstItems = order.items.slice(0, 3);
+                const remainingCount = order.items.length - 3;
 
-                      <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-6 md:pt-0 border-gray-50">
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${config.bg} ${config.color} transition-all`}>
-                           <config.icon className="h-4 w-4" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">{config.label}</span>
+                return (
+                  <div key={order.id} className="group bg-white border border-gray-100 rounded-[40px] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-gray-200/50 transition-all duration-500">
+                    <div className="p-8 sm:p-12">
+                      <div className="flex flex-col lg:flex-row justify-between gap-10">
+                        {/* Order Info & Images */}
+                        <div className="flex-1 space-y-8">
+                          <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Reference</p>
+                              <p className="text-sm font-black text-gray-900 uppercase">#{order.orderNumber || order.id.substring(0, 8)}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                                <Calendar className="h-3 w-3" /> Date Placed
+                              </p>
+                              <p className="text-sm font-black text-gray-900 uppercase">{new Date(order.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                                <DollarSign className="h-3 w-3" /> Investment
+                              </p>
+                              <p className="text-xl font-black text-primary">${order.totalAmount.toLocaleString()}</p>
+                            </div>
+                          </div>
+
+                          {/* Product Thumbnails */}
+                          <div className="flex items-center gap-4">
+                            <div className="flex -space-x-4">
+                              {firstItems.map((item, idx) => (
+                                <div key={idx} className="relative h-20 w-20 rounded-[1.5rem] bg-gray-50 border-4 border-white overflow-hidden shadow-sm group-hover:scale-105 transition-transform duration-500" style={{ zIndex: 10 - idx }}>
+                                  <Image
+                                    src={item.product.thumbnailUrl || "/placeholder-product.jpg"}
+                                    alt="product"
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              ))}
+                              {remainingCount > 0 && (
+                                <div className="relative h-20 w-20 rounded-[1.5rem] bg-gray-900 border-4 border-white flex items-center justify-center shadow-sm z-0">
+                                  <span className="text-white text-xs font-black">+{remainingCount}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="hidden sm:block">
+                               <p className="text-sm font-black text-gray-900 uppercase tracking-tight">
+                                  {order.items.length} {order.items.length === 1 ? 'Item' : 'Items'}
+                               </p>
+                               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                                  {order.items[0].product.name} {order.items.length > 1 ? '& more' : ''}
+                               </p>
+                            </div>
+                          </div>
                         </div>
-                        <Link
-                          href={`/orders/${order.id}`}
-                          className="h-12 w-12 rounded-2xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-primary hover:text-white transition-all group/btn"
-                        >
-                          <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-0.5 transition-transform" />
-                        </Link>
+
+                        {/* Status & Action */}
+                        <div className="flex flex-row lg:flex-col justify-between lg:justify-center items-center gap-6 lg:border-l border-gray-50 lg:pl-10 shrink-0">
+                          <div className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl ${config.bg} ${config.color} border ${config.color.replace('text-', 'border-').replace('600', '100')} transition-all`}>
+                             <config.icon className="h-4 w-4" />
+                             <span className="text-[10px] font-black uppercase tracking-widest">{config.label}</span>
+                          </div>
+                          <Link
+                            href={`/orders/${order.id}`}
+                            className="inline-flex items-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-all group/btn shadow-xl shadow-gray-200"
+                          >
+                            View Details
+                            <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>

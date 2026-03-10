@@ -176,10 +176,10 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
                   <div className="space-y-4">
                      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                         <div className="h-8 w-12 bg-white rounded-lg border border-gray-100 flex items-center justify-center opacity-40 grayscale"><Image src="/vercel.svg" alt="pay" width={20} height={20} /></div>
-                        <p className="text-xs font-black text-gray-900 uppercase tracking-tight">Cash on Delivery</p>
+                        <p className="text-xs font-black text-gray-900 uppercase tracking-tight">{order.paymentMethod || "Cash on Delivery"}</p>
                      </div>
-                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                        {order.status === 'DELIVERED' ? 'Payment Completed' : 'Payment Pending'}
+                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${order.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                        {order.paymentStatus === 'PAID' ? 'Payment Completed' : 'Payment Pending'}
                      </div>
                   </div>
                </div>

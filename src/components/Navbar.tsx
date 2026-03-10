@@ -23,9 +23,11 @@ import axios from "axios";
 
 interface NavbarProps {
   logoUrl?: string | null;
+  logoWidth?: number;
+  logoHeight?: number;
 }
 
-export default function Navbar({ logoUrl }: NavbarProps) {
+export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: NavbarProps) {
   const cart = useCart();
   const router = useRouter();
   const pathname = usePathname();
@@ -71,12 +73,15 @@ export default function Navbar({ logoUrl }: NavbarProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0 group">
             {logoUrl ? (
-              <div className="relative h-10 w-32">
+              <div 
+                className="relative transition-transform group-hover:scale-105"
+                style={{ width: `${logoWidth}px`, height: `${logoHeight}px` }}
+              >
                 <Image
                   src={logoUrl}
                   alt="Store Logo"
                   fill
-                  className="object-contain object-left transition-transform group-hover:scale-105"
+                  className="object-contain object-left"
                   priority
                 />
               </div>

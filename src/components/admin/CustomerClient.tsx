@@ -14,9 +14,18 @@ import {
   Download,
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Copy,
+  Trash2,
+  X,
+  Clock,
+  MapPin,
+  CreditCard
 } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import ConfirmModal from "./ConfirmModal";
 
 interface Customer {
   id: string;
@@ -24,7 +33,11 @@ interface Customer {
   email: string;
   createdAt: Date;
   orders: {
+    id: string;
+    orderNumber: string;
+    status: string;
     totalAmount: number;
+    createdAt: Date;
   }[];
 }
 
@@ -33,8 +46,16 @@ interface CustomerClientProps {
 }
 
 export default function CustomerClient({ initialCustomers }: CustomerClientProps) {
+  const router = useRouter();
   const [searchTerm, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isActivityOpen, setIsActivityOpen] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [targetDeleteId, setTargetDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleteing] = useState(false);
+
   const itemsPerPage = 10;
 
   const filteredCustomers = initialCustomers.filter((customer) => {
@@ -63,9 +84,7 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
       toast.error("No customers to email");
       return;
     }
-
     const emails = filteredCustomers.map(c => c.email).join(",");
-    // Use BCC to protect privacy
     const mailtoLink = `mailto:?bcc=${emails}&subject=Update from ${window.location.hostname}`;
     window.location.href = mailtoLink;
     toast.success(`Opening mail client for ${filteredCustomers.length} customers`);
@@ -76,7 +95,6 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
       toast.error("No customers to export");
       return;
     }
-
     const headers = ["Name", "Email", "Join Date", "Orders Count", "Total Spent"];
     const csvContent = [
       headers.join(","),
@@ -104,8 +122,160 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
     toast.success("Customer list exported successfully");
   };
 
+  const copyEmail = (email: string) => {
+    navigator.clipboard.writeText(email);
+    toast.success("Email copied to clipboard");
+    setOpenMenuId(null);
+  };
+
+  const openDeleteModal = (id: string) => {
+    setTargetDeleteId(id);
+    setIsDeleteModalOpen(true);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = async () => {
+    if (!targetDeleteId) return;
+    try {
+      setIsDeleteing(true);
+      await axios.delete(`/api/admin/users/${targetDeleteId}`);
+      toast.success("Customer deleted successfully");
+      router.refresh();
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to delete customer");
+    } finally {
+      setIsDeleteing(false);
+      setTargetDeleteId(null);
+    }
+  };
+
+  const viewActivity = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsActivityOpen(true);
+    setOpenMenuId(null);
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        loading={isDeleting}
+        title="Delete Customer"
+        description="Are you sure you want to delete this customer? This action cannot be undone."
+      />
+
+      {/* Activity Sidebar / Slide-over */}
+      {isActivityOpen && selectedCustomer && (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsActivityOpen(false)} />
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+            <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+              <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                Customer Activity
+              </h2>
+              <button onClick={() => setIsActivityOpen(false)} className="p-2 hover:bg-white rounded-xl transition-all">
+                <X className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+              {/* Profile Overview */}
+              <div className="flex flex-col items-center text-center p-6 bg-primary/5 rounded-3xl border border-primary/10">
+                <div className="h-20 w-20 rounded-[2rem] bg-white text-primary flex items-center justify-center font-black text-2xl border border-primary/20 shadow-sm mb-4">
+                  {(selectedCustomer.name?.[0] || selectedCustomer.email[0]).toUpperCase()}
+                </div>
+                <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">{selectedCustomer.name || "Anonymous User"}</h3>
+                <p className="text-sm font-bold text-gray-400 mt-1">{selectedCustomer.email}</p>
+                <div className="mt-6 grid grid-cols-2 gap-4 w-full">
+                  <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Orders</p>
+                    <p className="text-lg font-black text-gray-900">{selectedCustomer.orders.length}</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Spent</p>
+                    <p className="text-lg font-black text-emerald-600">${selectedCustomer.orders.reduce((s, o) => s + o.totalAmount, 0).toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order History Timeline */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Order History</h4>
+                {selectedCustomer.orders.length === 0 ? (
+                  <div className="text-center py-10 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">No orders yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {selectedCustomer.orders.map((order) => (
+                      <div key={order.id} className="relative pl-6 pb-6 border-l border-gray-100 last:pb-0">
+                        <div className="absolute left-[-5px] top-0 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-primary/10" />
+                        <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-primary/20 transition-all group">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-xs font-black text-gray-900 group-hover:text-primary transition-colors">#{order.orderNumber}</span>
+                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md border ${
+                              order.status === 'DELIVERED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                              order.status === 'PENDING' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                              'bg-blue-50 text-blue-600 border-blue-100'
+                            }`}>
+                              {order.status}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-end">
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(order.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <p className="text-sm font-black text-gray-900">${order.totalAmount.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Account Details */}
+              <div className="space-y-4 pt-4 border-t border-gray-50">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Account Details</h4>
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                    <UserPlus className="h-4 w-4 text-gray-400" />
+                    <div>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase">Registered On</p>
+                      <p className="text-xs font-black text-gray-700">{new Date(selectedCustomer.createdAt).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                    <CreditCard className="h-4 w-4 text-gray-400" />
+                    <div>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase">Customer ID</p>
+                      <p className="text-[10px] font-mono font-bold text-primary truncate w-40">{selectedCustomer.id}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-50 bg-gray-50/30">
+              <button 
+                onClick={() => handleEmailAll()} 
+                className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                Contact Customer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -261,14 +431,40 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                           {totalSpent.toFixed(2)}
                         </div>
                       </td>
-                      <td className="px-8 py-6 text-right">
+                      <td className="px-8 py-6 text-right relative">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-white border border-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest hover:border-primary/20 hover:text-primary transition-all shadow-sm">
+                          <button 
+                            onClick={() => viewActivity(customer)}
+                            className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-white border border-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest hover:border-primary/20 hover:text-primary transition-all shadow-sm"
+                          >
                             Activity
                           </button>
-                          <button className="p-2.5 bg-white text-gray-400 hover:text-gray-600 rounded-xl border border-gray-100 shadow-sm transition-all">
-                            <MoreVertical className="h-4 w-4" />
-                          </button>
+                          <div className="relative">
+                            <button 
+                              onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                              className={`p-2.5 rounded-xl border border-gray-100 shadow-sm transition-all ${openMenuId === customer.id ? 'bg-primary text-white' : 'bg-white text-gray-400 hover:text-gray-600'}`}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </button>
+                            
+                            {openMenuId === customer.id && (
+                              <>
+                                <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-20 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                  <button onClick={() => viewActivity(customer)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                    <Clock className="h-4 w-4" /> View Activity
+                                  </button>
+                                  <button onClick={() => copyEmail(customer.email)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                    <Copy className="h-4 w-4" /> Copy Email
+                                  </button>
+                                  <div className="h-px bg-gray-50 my-1 mx-2" />
+                                  <button onClick={() => openDeleteModal(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-all">
+                                    <Trash2 className="h-4 w-4" /> Delete Account
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>

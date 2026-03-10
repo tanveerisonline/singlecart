@@ -342,6 +342,8 @@ model StoreSetting {
 model ThemeSetting {
   id                 String   @id @default("default")
   logoUrl            String?
+  logoWidth          Int      @default(128)
+  logoHeight         Int      @default(40)
   faviconUrl         String?
   primaryColor       String   @default("#4f46e5")
   safeCheckoutImage  String?
