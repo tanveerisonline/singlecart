@@ -8,7 +8,9 @@ interface SearchPageProps {
   searchParams: Promise<{
     q?: string;
     category?: string;
+    categoryId?: string;
     brand?: string;
+    brandId?: string;
     minPrice?: string;
     maxPrice?: string;
     inStock?: string;
