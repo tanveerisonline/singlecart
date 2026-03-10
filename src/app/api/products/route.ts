@@ -187,26 +187,84 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const categoryId = searchParams.get("categoryId");
+    const brandId = searchParams.get("brandId");
+    const minPrice = parseSafeFloat(searchParams.get("minPrice"));
+    const maxPrice = parseSafeFloat(searchParams.get("maxPrice"));
+    const isFeatured = searchParams.get("isFeatured") === "true";
+    const inStock = searchParams.get("inStock") === "true";
+    const onSale = searchParams.get("onSale") === "true";
+    const rating = parseSafeInt(searchParams.get("rating"));
+    const sort = searchParams.get("sort") || "newest";
+    const query = searchParams.get("query");
+
+    const where: any = {
+      isActive: true,
+    };
+
+    if (categoryId) where.categoryId = categoryId;
+    if (brandId) where.brandId = brandId;
+    
+    if (minPrice !== null || maxPrice !== null) {
+      where.price = {};
+      if (minPrice !== null) where.price.gte = minPrice;
+      if (maxPrice !== null) where.price.lte = maxPrice;
+    }
+
+    if (isFeatured) where.isFeatured = true;
+    if (inStock) where.stock = { gt: 0 };
+    if (onSale) where.discount = { gt: 0 };
+    
+    if (query) {
+      where.OR = [
+        { name: { contains: query } },
+        { description: { contains: query } },
+        { sku: { contains: query } },
+      ];
+    }
+
+    if (rating) {
+      where.reviews = {
+        some: {},
+        // This is a simplified rating filter as SQLite doesn't support avg in where easily
+        // In a real app with postgres you might use raw queries or a better schema
+      };
+    }
+
+    let orderBy: any = { createdAt: "desc" };
+    if (sort === "price_asc") orderBy = { price: "asc" };
+    if (sort === "price_desc") orderBy = { price: "desc" };
+    if (sort === "oldest") orderBy = { createdAt: "asc" };
+
     const products = await db.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        price: true,
-        stock: true,
-        isActive: true,
-        images: {
-          take: 1
+      where,
+      include: {
+        images: { take: 1 },
+        category: true,
+        brand: true,
+        reviews: {
+          select: {
+            rating: true
+          }
         }
       },
-      orderBy: {
-        createdAt: "desc"
-      }
+      orderBy,
     });
 
-    return NextResponse.json(products);
+    // Client side filter for average rating if requested
+    let filteredProducts = products;
+    if (rating) {
+      filteredProducts = products.filter(p => {
+        if (p.reviews.length === 0) return false;
+        const avg = p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length;
+        return avg >= rating;
+      });
+    }
+
+    return NextResponse.json(filteredProducts);
   } catch (error) {
     console.error("[PRODUCTS_GET_ERROR]", error);
     return new NextResponse("Internal Error", { status: 500 });

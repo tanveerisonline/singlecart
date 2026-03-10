@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 import HomeSlider from "@/components/HomeSlider";
 import DynamicSection from "@/components/DynamicSection";
+import ProductFilter from "@/components/ProductFilter";
 import { 
   Sparkles, 
   Zap, 
@@ -12,24 +13,61 @@ import {
   RotateCcw, 
   Headphones,
   ArrowRight,
-  Mail
+  Mail,
+  Search,
+  PackageX
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams;
+  const categoryId = params.categoryId as string | undefined;
+  const brandId = params.brandId as string | undefined;
+  const minPrice = params.minPrice ? parseFloat(params.minPrice as string) : undefined;
+  const maxPrice = params.maxPrice ? parseFloat(params.maxPrice as string) : undefined;
+  const inStock = params.inStock === "true";
+  const onSale = params.onSale === "true";
+  const rating = params.rating ? parseInt(params.rating as string) : undefined;
+
+  const where: any = { isActive: true };
+  if (categoryId) where.categoryId = categoryId;
+  if (brandId) where.brandId = brandId;
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    where.price = {};
+    if (minPrice !== undefined) where.price.gte = minPrice;
+    if (maxPrice !== undefined) where.price.lte = maxPrice;
+  }
+  if (inStock) where.stock = { gt: 0 };
+  if (onSale) where.discount = { gt: 0 };
+
   const products = await db.product.findMany({
     include: {
       images: true,
       category: true,
+      reviews: { select: { rating: true } }
     },
-    where: {
-      isActive: true,
-    },
+    where,
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  // Client-side rating filter
+  let filteredProducts = products;
+  if (rating) {
+    filteredProducts = products.filter(p => {
+      if (p.reviews.length === 0) return false;
+      const avg = p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length;
+      return avg >= rating;
+    });
+  }
+
+  const isFiltered = categoryId || brandId || minPrice || maxPrice || inStock || onSale || rating;
 
   const categories = await db.category.findMany({
     where: { isActive: true },
@@ -169,35 +207,56 @@ export default async function Home() {
       ))}
 
 
-      {/* Trending Section */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between mb-12">
+      {/* Trending Section / Product Listing */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="products">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-1 w-8 bg-primary"></div>
-              <span className="text-primary font-bold text-[10px] uppercase tracking-[0.2em]">Hot Right Now</span>
+              <span className="text-primary font-bold text-[10px] uppercase tracking-[0.2em]">
+                {isFiltered ? "Filtered Results" : "Hot Right Now"}
+              </span>
             </div>
-            <h2 className="text-3xl font-black text-gray-900">Trending Now</h2>
+            <h2 className="text-3xl font-black text-gray-900">
+              {isFiltered ? `${filteredProducts.length} Products Found` : "Trending Now"}
+            </h2>
           </div>
-          <div className="flex gap-2">
-             <button className="h-10 w-10 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-all">
-                <ArrowRight className="h-5 w-5 rotate-180" />
-             </button>
-             <button className="h-10 w-10 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-all">
-                <ArrowRight className="h-5 w-5" />
-             </button>
+          <div className="flex items-center gap-3">
+             <ProductFilter />
+             {!isFiltered && (
+               <div className="flex gap-2">
+                  <button className="h-10 w-10 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-all">
+                     <ArrowRight className="h-5 w-5 rotate-180" />
+                  </button>
+                  <button className="h-10 w-10 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-all">
+                     <ArrowRight className="h-5 w-5" />
+                  </button>
+               </div>
+             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {trendingProducts.length > 0 ? (
-            trendingProducts.map((product) => (
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product as any} />
             ))
           ) : (
-             newArrivals.map((product) => (
-              <ProductCard key={product.id} product={product as any} />
-            ))
+            <div className="col-span-full py-20 text-center space-y-4">
+              <div className="bg-gray-50 h-20 w-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                <PackageX className="h-10 w-10 text-gray-300" />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">No products found</h3>
+              <p className="text-gray-500 text-sm max-w-xs mx-auto font-medium">
+                Try adjusting your filters or search criteria to find what you're looking for.
+              </p>
+              <Link 
+                href="/" 
+                className="inline-flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest mt-4 hover:gap-3 transition-all"
+              >
+                Clear all filters <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
           )}
         </div>
       </div>

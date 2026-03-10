@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
               <button
                 disabled={loading}
                 type="submit"
-                className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest text-white bg-primary hover:opacity-90 focus:outline-none transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

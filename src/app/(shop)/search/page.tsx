@@ -1,12 +1,19 @@
 import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
+import ProductFilter from "@/components/ProductFilter";
 import Link from "next/link";
-import { Filter, SlidersHorizontal, ShoppingBag, LayoutGrid, List as ListIcon, Search as SearchIcon } from "lucide-react";
+import { Filter, SlidersHorizontal, ShoppingBag, LayoutGrid, List as ListIcon, Search as SearchIcon, PackageX, ArrowRight } from "lucide-react";
 
 interface SearchPageProps {
   searchParams: Promise<{
     q?: string;
     category?: string;
+    brand?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    inStock?: string;
+    onSale?: string;
+    rating?: string;
     tag?: string;
   }>;
 }
@@ -15,31 +22,63 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const query = params.q || "";
   const categorySlug = params.category || "";
+  const brandSlug = params.brand || "";
   const tagSlug = params.tag || "";
+  const minPrice = params.minPrice ? parseFloat(params.minPrice) : undefined;
+  const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : undefined;
+  const inStock = params.inStock === "true";
+  const onSale = params.onSale === "true";
+  const rating = params.rating ? parseInt(params.rating) : undefined;
+
+  const where: any = {
+    isActive: true,
+    AND: [
+      {
+        OR: [
+          { name: { contains: query } },
+          { description: { contains: query } },
+          { tags: { some: { name: { contains: query } } } },
+        ],
+      },
+    ]
+  };
+
+  if (categorySlug) where.AND.push({ category: { slug: categorySlug } });
+  if (brandSlug) where.AND.push({ brand: { slug: brandSlug } });
+  if (tagSlug) where.AND.push({ tags: { some: { slug: tagSlug } } });
+  
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    const priceRange: any = {};
+    if (minPrice !== undefined) priceRange.gte = minPrice;
+    if (maxPrice !== undefined) priceRange.lte = maxPrice;
+    where.AND.push({ price: priceRange });
+  }
+
+  if (inStock) where.AND.push({ stock: { gt: 0 } });
+  if (onSale) where.AND.push({ discount: { gt: 0 } });
 
   const products = await db.product.findMany({
-    where: {
-      isActive: true,
-      AND: [
-        {
-          OR: [
-            { name: { contains: query } },
-            { description: { contains: query } },
-            { tags: { some: { name: { contains: query } } } },
-          ],
-        },
-        categorySlug ? { category: { slug: categorySlug } } : {},
-        tagSlug ? { tags: { some: { slug: tagSlug } } } : {},
-      ]
-    },
+    where,
     include: {
-      images: true,
+      images: { take: 1 },
       category: true,
+      brand: true,
+      reviews: { select: { rating: true } }
     },
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  // Client-side rating filter
+  let filteredProducts = products;
+  if (rating) {
+    filteredProducts = products.filter(p => {
+      if (p.reviews.length === 0) return false;
+      const avg = p.reviews.reduce((acc, r) => acc + r.rating, 0) / p.reviews.length;
+      return avg >= rating;
+    });
+  }
 
   const categories = await db.category.findMany({
     where: { isActive: true }
@@ -57,7 +96,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </h1>
               <div className="flex items-center gap-3 text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em]">
                  <ShoppingBag className="h-3 w-3 text-primary" />
-                 <span>{products.length} Items Found</span>
+                 <span>{filteredProducts.length} Items Found</span>
               </div>
            </div>
            
@@ -71,9 +110,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                  />
                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
               </div>
-              <button className="h-11 w-11 rounded-2xl border border-gray-100 flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/5 transition-all">
-                 <SlidersHorizontal className="h-5 w-5" />
-              </button>
+              <ProductFilter />
            </div>
         </div>
 
@@ -126,10 +163,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
           {/* Product Grid */}
           <div className="lg:col-span-9 mt-10 lg:mt-0">
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <div className="text-center py-32 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-100 space-y-6">
                 <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
-                   <SearchIcon className="h-8 w-8 text-gray-200" />
+                   <PackageX className="h-8 w-8 text-gray-200" />
                 </div>
                 <div className="space-y-2">
                    <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">No products found</h2>
@@ -139,7 +176,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product as any} />
                 ))}
               </div>

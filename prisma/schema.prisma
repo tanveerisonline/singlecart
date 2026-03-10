@@ -412,3 +412,14 @@ model Banner {
   updatedAt        DateTime       @updatedAt
   section          DynamicSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 }
+
+model FilterSetting {
+  id               String   @id @default("default")
+  showCategory     Boolean  @default(true)
+  showBrand        Boolean  @default(true)
+  showPrice        Boolean  @default(true)
+  showRating       Boolean  @default(true)
+  showAvailability Boolean  @default(true)
+  showDiscount     Boolean  @default(true)
+  updatedAt        DateTime @updatedAt
+}
