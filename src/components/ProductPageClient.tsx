@@ -58,12 +58,10 @@ export default function ProductPageClient({
     const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
     const updatedRecentlyViewed = [
       {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        thumbnailUrl: product.thumbnailUrl,
-        slug: product.slug,
-        category: product.category
+        ...product, // Store the full product object
+        category: product.category, // Ensure related fields are included
+        images: product.images,
+        brand: product.brand,
       },
       ...recentlyViewed.filter((p: any) => p.id !== product.id)
     ].slice(0, 10);

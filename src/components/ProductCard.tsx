@@ -9,9 +9,17 @@ import { useWishlist } from "@/hooks/use-wishlist";
 import { MouseEventHandler, useEffect, useState } from "react";
 
 interface ProductCardProps {
-  product: Product & {
-    images: ProductImage[];
+  product: Partial<Product> & {
+    id: string;
+    name: string;
+    price: number;
+    slug: string;
+    images?: ProductImage[];
     category?: Category | null;
+    thumbnailUrl?: string | null;
+    compareAtPrice?: number | null;
+    isFeatured?: boolean | null;
+    isTrending?: boolean | null;
   };
 }
 
@@ -54,12 +62,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     window.location.href = `/product/${product.slug}`;
   };
 
+  const imageSrc = product.images?.[0]?.url || product.thumbnailUrl || "/placeholder-product.svg";
+
   return (
     <div className="group relative bg-white rounded-2xl border border-gray-100 transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 overflow-hidden">
       {/* Image Container */}
       <Link href={`/product/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
         <Image
-          src={product.images[0]?.url || "/placeholder-product.svg"}
+          src={imageSrc}
           alt={product.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
