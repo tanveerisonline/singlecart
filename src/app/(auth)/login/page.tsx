@@ -4,9 +4,20 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
+import { 
+  Mail, 
+  Lock, 
+  ArrowRight, 
+  Loader2, 
+  Github, 
+  Chrome 
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -14,6 +25,7 @@ export default function LoginPage() {
 
   const loginUser = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const callback = await signIn("credentials", {
         ...data,
@@ -21,82 +33,140 @@ export default function LoginPage() {
       });
 
       if (callback?.error) {
-        console.log(callback.error);
+        toast.error("Invalid email or password");
       }
 
       if (callback?.ok && !callback?.error) {
+        toast.success("Welcome back!");
         router.push("/");
+        router.refresh();
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
+  const socialAction = (action: string) => {
+    setSocialLoading(action);
+    signIn(action, { redirect: false })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error("Social login failed");
+        }
+        if (callback?.ok && !callback?.error) {
+          toast.success("Logged in successfully");
+          router.push("/");
+        }
+      })
+      .finally(() => setSocialLoading(null));
+  };
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={loginUser}>
-          <div>
-            <label className="block text-sm font-medium leading-6 text-gray-900">
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 px-2"
-                onChange={(e) => setData({ ...data, email: e.target.value })}
-              />
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-xl shadow-gray-200/50 sm:rounded-[32px] sm:px-10 border border-gray-100">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Welcome Back</h2>
+            <p className="mt-2 text-sm text-gray-500 font-medium">Please enter your details to sign in.</p>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Password
+          <form className="space-y-5" onSubmit={loginUser}>
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                Email Address
               </label>
-              <div className="text-sm">
-                <Link href="#" className="font-semibold text-primary hover:text-primary">
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  placeholder="name@example.com"
+                  className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 text-gray-900 text-sm font-bold rounded-2xl focus:ring-2 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all outline-none"
+                  onChange={(e) => setData({ ...data, email: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2 ml-1">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  Password
+                </label>
+                <Link href="/forgot-password" disable-nprogress="true" className="text-[10px] font-black text-primary uppercase tracking-widest hover:opacity-70 transition-opacity">
                   Forgot password?
                 </Link>
               </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  placeholder="••••••••"
+                  className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 text-gray-900 text-sm font-bold rounded-2xl focus:ring-2 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all outline-none"
+                  onChange={(e) => setData({ ...data, password: e.target.value })}
+                />
+              </div>
             </div>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 px-2"
-                onChange={(e) => setData({ ...data, password: e.target.value })}
-              />
-            </div>
-          </div>
 
-          <div>
             <button
+              disabled={loading}
               type="submit"
-              className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary/20 text-xs font-black uppercase tracking-widest text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all disabled:opacity-50"
             >
-              Sign in
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>Sign In <ArrowRight className="h-4 w-4" /></>
+              )}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
-          <Link href="/register" className="font-semibold leading-6 text-primary hover:text-primary">
-            Register here
-          </Link>
-        </p>
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-100"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-black">
+                <span className="px-4 bg-white text-gray-400">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-4">
+              <button
+                type="button"
+                onClick={() => socialAction('google')}
+                disabled={socialLoading !== null}
+                className="w-full flex justify-center items-center gap-3 py-3.5 px-4 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+              >
+                {socialLoading === 'google' ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Chrome className="h-4 w-4 text-rose-500" />
+                )}
+                Google
+              </button>
+            </div>
+          </div>
+
+          <p className="mt-8 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            New here?{" "}
+            <Link href="/register" className="text-primary hover:opacity-70 transition-opacity">
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
