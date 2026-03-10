@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
@@ -50,10 +51,10 @@ export default function CheckoutPage() {
   }, [status, router]);
 
   useEffect(() => {
-    if (isMounted && cart.items.length === 0) {
+    if (isMounted && cart.items.length === 0 && !loading && !redirecting) {
       router.push("/cart");
     }
-  }, [isMounted, cart.items.length, router]);
+  }, [isMounted, cart.items.length, router, loading, redirecting]);
 
   if (!isMounted || status === "loading") {
     return (
@@ -129,6 +130,7 @@ export default function CheckoutPage() {
       const response = await axios.post("/api/orders", orderData);
       
       if (response.status === 200 || response.status === 201) {
+        setRedirecting(true);
         toast.success("Order placed successfully!");
         cart.clearCart();
         router.push(`/checkout/success?orderId=${response.data.id}`);
