@@ -5,7 +5,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  // adapter: PrismaAdapter(db),
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
