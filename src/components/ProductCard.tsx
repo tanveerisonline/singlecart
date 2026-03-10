@@ -1,19 +1,53 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Product, ProductImage, Category } from "@prisma/client";
 import { ShoppingCart, Eye, Star, Heart } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { MouseEventHandler } from "react";
 
 interface ProductCardProps {
   product: Product & {
     images: ProductImage[];
-    category?: Category;
+    category?: Category | null;
   };
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const cart = useCart();
+  const wishlist = useWishlist();
+  
+  const isFavorite = wishlist.isInWishlist(product.id);
+
   const discountPercentage = product.compareAtPrice 
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100) 
     : 0;
+
+  const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    cart.addItem(product);
+  };
+
+  const onAddToWishlist: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (isFavorite) {
+      wishlist.removeItem(product.id);
+    } else {
+      wishlist.addItem(product);
+    }
+  };
+
+  const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Could open a modal here, but for now we'll let the main link handle it
+    window.location.href = `/product/${product.slug}`;
+  };
 
   return (
     <div className="group relative bg-white rounded-2xl border border-gray-100 transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1 overflow-hidden">
@@ -47,10 +81,18 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Quick Actions Overlay */}
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-            <button className="h-10 w-10 rounded-full bg-white text-gray-900 flex items-center justify-center shadow-lg hover:bg-primary hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300">
-                <Heart className="h-5 w-5" />
+            <button 
+              onClick={onAddToWishlist}
+              className={`h-10 w-10 rounded-full flex items-center justify-center shadow-lg transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 ${
+                isFavorite ? "bg-primary text-white" : "bg-white text-gray-900 hover:bg-primary hover:text-white"
+              }`}
+            >
+                <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
             </button>
-            <button className="h-10 w-10 rounded-full bg-white text-gray-900 flex items-center justify-center shadow-lg hover:bg-primary hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 delay-75">
+            <button 
+              onClick={onPreview}
+              className="h-10 w-10 rounded-full bg-white text-gray-900 flex items-center justify-center shadow-lg hover:bg-primary hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 delay-75"
+            >
                 <Eye className="h-5 w-5" />
             </button>
         </div>
@@ -90,7 +132,10 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
           
-          <button className="h-9 w-9 rounded-xl bg-gray-50 text-gray-900 flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+          <button 
+            onClick={onAddToCart}
+            className="h-9 w-9 rounded-xl bg-gray-50 text-gray-900 flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm active:scale-90"
+          >
             <ShoppingCart className="h-4 w-4" />
           </button>
         </div>

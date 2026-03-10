@@ -21,6 +21,8 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
 
+import { useWishlist } from "@/hooks/use-wishlist";
+
 interface NavbarProps {
   logoUrl?: string | null;
   logoWidth?: number;
@@ -29,6 +31,7 @@ interface NavbarProps {
 
 export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: NavbarProps) {
   const cart = useCart();
+  const wishlist = useWishlist();
   const router = useRouter();
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
@@ -164,9 +167,14 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
 
           {/* Action Icons */}
           <div className="flex items-center gap-2 sm:gap-6">
-            <button className="hidden sm:flex h-10 w-10 rounded-xl hover:bg-gray-50 items-center justify-center text-gray-500 hover:text-primary transition-all">
+            <Link href="/wishlist" className="relative hidden sm:flex h-10 w-10 rounded-xl hover:bg-gray-50 items-center justify-center text-gray-500 hover:text-primary transition-all">
                <Heart className="h-6 w-6" />
-            </button>
+               {isMounted && wishlist.items.length > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-lg bg-rose-500 text-[10px] font-black text-white shadow-lg shadow-rose-500/20 animate-in zoom-in duration-300">
+                  {wishlist.items.length}
+                </span>
+              )}
+            </Link>
             
             <Link href="/cart" className="relative h-10 w-10 rounded-xl hover:bg-gray-50 flex items-center justify-center text-gray-700 hover:text-primary transition-all group">
               <ShoppingCart className="h-6 w-6" />
