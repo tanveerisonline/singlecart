@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, CreditCard, ShieldCheck, Truck } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, CreditCard, ShieldCheck, Truck, ShoppingBag } from "lucide-react";
 import { ThemeSetting } from "@prisma/client";
 
 interface FooterProps {
@@ -15,8 +16,29 @@ export default function Footer({ theme }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Company Info */}
           <div className="space-y-6">
-            <Link href="/" className="text-2xl font-black tracking-tighter text-primary">
-              SHOP<span className="text-gray-900">.</span>
+            <Link href="/" className="flex items-center group">
+              {theme?.logoUrl ? (
+                <div 
+                  className="relative transition-transform group-hover:scale-105"
+                  style={{ width: `${(theme.logoWidth || 128) * 0.8}px`, height: `${(theme.logoHeight || 40) * 0.8}px` }}
+                >
+                  <Image
+                    src={theme.logoUrl}
+                    alt="Store Logo"
+                    fill
+                    className="object-contain object-left"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                   <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                      <ShoppingBag className="h-5 w-5" />
+                   </div>
+                   <span className="text-xl font-black text-gray-900 tracking-tighter uppercase">
+                      SHOP<span className="text-primary">.</span>
+                   </span>
+                </div>
+              )}
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
               Experience the best in curated fashion and lifestyle products. Quality and style delivered to your doorstep.

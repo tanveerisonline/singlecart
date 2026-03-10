@@ -91,15 +91,16 @@ export default function ThemeSettingsPage() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await axios.patch("/api/admin/theme", data);
+      const res = await axios.patch("/api/admin/theme", data);
       toast.success("Theme settings updated successfully!");
       // Force reload to apply new primary color and favicon from RootLayout
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error:", error);
-      toast.error("Failed to save settings");
+      const errorMsg = error.response?.data || error.message || "Failed to save settings";
+      toast.error(`Error: ${errorMsg}`);
     } finally {
       setSaving(false);
     }

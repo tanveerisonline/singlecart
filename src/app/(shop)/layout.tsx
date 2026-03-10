@@ -15,8 +15,8 @@ export default async function ShopLayout({
     <>
       <Navbar 
         logoUrl={theme?.logoUrl} 
-        logoWidth={theme?.logoWidth} 
-        logoHeight={theme?.logoHeight} 
+        logoWidth={theme?.logoWidth || 128} 
+        logoHeight={theme?.logoHeight || 40} 
       />
       <main>
         {children}

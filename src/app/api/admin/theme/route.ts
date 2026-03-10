@@ -42,6 +42,8 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
+    console.log("[THEME_PATCH] Request Body:", body);
+
     const { 
       logoUrl, 
       logoWidth,
@@ -58,43 +60,48 @@ export async function PATCH(req: Request) {
       twitterUrl
     } = body;
 
-    // @ts-ignore
-    const themeSetting = await db.themeSetting.upsert({
-      where: { id: "default" },
-      update: {
-        logoUrl,
-        logoWidth: logoWidth ? parseInt(logoWidth.toString()) : undefined,
-        logoHeight: logoHeight ? parseInt(logoHeight.toString()) : undefined,
-        faviconUrl,
-        primaryColor,
-        safeCheckoutImage,
-        secureCheckoutImage,
-        contactEmail,
-        contactPhone,
-        address,
-        facebookUrl,
-        instagramUrl,
-        twitterUrl
-      },
-      create: {
-        id: "default",
-        logoUrl,
-        logoWidth: logoWidth ? parseInt(logoWidth.toString()) : 128,
-        logoHeight: logoHeight ? parseInt(logoHeight.toString()) : 40,
-        faviconUrl,
-        primaryColor,
-        safeCheckoutImage,
-        secureCheckoutImage,
-        contactEmail,
-        contactPhone,
-        address,
-        facebookUrl,
-        instagramUrl,
-        twitterUrl
-      }
-    });
+    try {
+      // @ts-ignore
+      const themeSetting = await db.themeSetting.upsert({
+        where: { id: "default" },
+        update: {
+          logoUrl,
+          logoWidth: logoWidth ? parseInt(logoWidth.toString()) : undefined,
+          logoHeight: logoHeight ? parseInt(logoHeight.toString()) : undefined,
+          faviconUrl,
+          primaryColor,
+          safeCheckoutImage,
+          secureCheckoutImage,
+          contactEmail,
+          contactPhone,
+          address,
+          facebookUrl,
+          instagramUrl,
+          twitterUrl
+        },
+        create: {
+          id: "default",
+          logoUrl,
+          logoWidth: logoWidth ? parseInt(logoWidth.toString()) : 128,
+          logoHeight: logoHeight ? parseInt(logoHeight.toString()) : 40,
+          faviconUrl,
+          primaryColor,
+          safeCheckoutImage,
+          secureCheckoutImage,
+          contactEmail,
+          contactPhone,
+          address,
+          facebookUrl,
+          instagramUrl,
+          twitterUrl
+        }
+      });
 
-    return NextResponse.json(themeSetting);
+      return NextResponse.json(themeSetting);
+    } catch (dbError: any) {
+      console.error("[THEME_PATCH_DB_ERROR]", dbError);
+      return new NextResponse(`Database Error: ${dbError.message}`, { status: 500 });
+    }
   } catch (error: any) {
     console.error("[THEME_PATCH_ERROR]", error.message || error);
     return new NextResponse(`Internal Error: ${error.message}`, { status: 500 });
