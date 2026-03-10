@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import ConfirmModal from "./ConfirmModal";
 
 interface Customer {
@@ -226,12 +227,10 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                             </span>
                           </div>
                           <div className="flex justify-between items-end">
-                            <div className="space-y-1">
-                              <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {new Date(order.createdAt).toLocaleDateString()}
-                              </p>
-                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {format(new Date(order.createdAt), "MMM d, yyyy")}
+                            </p>
                             <p className="text-sm font-black text-gray-900">${order.totalAmount.toFixed(2)}</p>
                           </div>
                         </div>
@@ -249,7 +248,7 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                     <UserPlus className="h-4 w-4 text-gray-400" />
                     <div>
                       <p className="text-[10px] font-bold text-gray-400 uppercase">Registered On</p>
-                      <p className="text-xs font-black text-gray-700">{new Date(selectedCustomer.createdAt).toLocaleString()}</p>
+                      <p className="text-xs font-black text-gray-700">{format(new Date(selectedCustomer.createdAt), "MMM d, yyyy HH:mm")}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
@@ -411,11 +410,7 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                         <div className="flex items-center gap-2.5 text-gray-500 font-bold text-xs">
                           <Calendar className="h-3.5 w-3.5 text-gray-300" />
                           <span>
-                            {new Date(customer.createdAt).toLocaleDateString(undefined, {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
+                            {format(new Date(customer.createdAt), "MMM d, yyyy")}
                           </span>
                         </div>
                       </td>

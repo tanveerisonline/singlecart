@@ -17,6 +17,7 @@ import {
   FileText
 } from "lucide-react";
 import Link from "next/link";
+import InvoiceDownloadButton from "@/components/InvoiceDownloadButton";
 
 interface OrderPageProps {
   params: Promise<{
@@ -91,9 +92,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
               </div>
            </div>
            
-           <button className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-gray-200">
-              <FileText className="h-4 w-4" /> Download Invoice
-           </button>
+           <InvoiceDownloadButton order={order} userName={session.user.name || "Customer"} />
         </div>
 
         {/* Order Tracking Progress */}
