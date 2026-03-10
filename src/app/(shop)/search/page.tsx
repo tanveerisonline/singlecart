@@ -22,7 +22,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const query = params.q || "";
   const categorySlug = params.category || "";
+  const categoryId = params.categoryId || "";
   const brandSlug = params.brand || "";
+  const brandId = params.brandId || "";
   const tagSlug = params.tag || "";
   const minPrice = params.minPrice ? parseFloat(params.minPrice) : undefined;
   const maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : undefined;
@@ -44,7 +46,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   };
 
   if (categorySlug) where.AND.push({ category: { slug: categorySlug } });
+  if (categoryId) where.AND.push({ categoryId: categoryId });
   if (brandSlug) where.AND.push({ brand: { slug: brandSlug } });
+  if (brandId) where.AND.push({ brandId: brandId });
   if (tagSlug) where.AND.push({ tags: { some: { slug: tagSlug } } });
   
   if (minPrice !== undefined || maxPrice !== undefined) {
@@ -55,7 +59,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   if (inStock) where.AND.push({ stock: { gt: 0 } });
-  if (onSale) where.AND.push({ discount: { gt: 0 } });
+  
+  if (onSale) {
+    where.AND.push({
+      OR: [
+        { discount: { gt: 0 } },
+        { compareAtPrice: { gt: 0 } }
+      ]
+    });
+  }
 
   const products = await db.product.findMany({
     where,

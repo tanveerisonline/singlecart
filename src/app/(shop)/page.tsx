@@ -37,13 +37,26 @@ export default async function Home({ searchParams }: HomeProps) {
   const where: any = { isActive: true };
   if (categoryId) where.categoryId = categoryId;
   if (brandId) where.brandId = brandId;
+  
   if (minPrice !== undefined || maxPrice !== undefined) {
     where.price = {};
     if (minPrice !== undefined) where.price.gte = minPrice;
     if (maxPrice !== undefined) where.price.lte = maxPrice;
   }
+  
   if (inStock) where.stock = { gt: 0 };
-  if (onSale) where.discount = { gt: 0 };
+  
+  if (onSale) {
+    where.AND = [
+      ...(where.AND || []),
+      {
+        OR: [
+          { discount: { gt: 0 } },
+          { compareAtPrice: { gt: 0 } }
+        ]
+      }
+    ];
+  }
 
   const products = await db.product.findMany({
     include: {

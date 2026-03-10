@@ -216,7 +216,13 @@ export async function GET(req: Request) {
 
     if (isFeatured) where.isFeatured = true;
     if (inStock) where.stock = { gt: 0 };
-    if (onSale) where.discount = { gt: 0 };
+    
+    if (onSale) {
+      where.OR = [
+        { discount: { gt: 0 } },
+        { compareAtPrice: { gt: 0 } }, // Simplification for Prisma/SQLite
+      ];
+    }
     
     if (query) {
       where.OR = [
