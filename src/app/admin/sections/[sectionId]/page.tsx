@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 export default async function SectionPage({
   params
 }: {
-  params: { sectionId: string }
+  params: Promise<{ sectionId: string }>
 }) {
   const { sectionId } = await params;
   const section = await db.dynamicSection.findUnique({

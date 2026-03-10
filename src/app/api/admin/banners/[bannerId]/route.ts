@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { bannerId: string } }
+  { params }: { params: Promise<{ bannerId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -45,7 +45,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { bannerId: string } }
+  { params }: { params: Promise<{ bannerId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
