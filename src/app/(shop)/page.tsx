@@ -160,41 +160,6 @@ export default async function Home() {
         <DynamicSection key={section.id} section={section} />
       ))}
 
-      {/* Featured Selection */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="bg-gray-900 rounded-[2.5rem] overflow-hidden relative">
-          <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 items-center">
-            <div className="p-12 lg:p-20 space-y-8">
-              <div className="space-y-4">
-                <span className="bg-primary/20 text-primary-foreground text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest inline-block border border-primary/20 backdrop-blur-sm">
-                  Limited Edition
-                </span>
-                <h2 className="text-4xl md:text-6xl font-black text-white leading-tight">
-                  Premium Selection <br />
-                  <span className="text-primary italic">Featured Picks</span>
-                </h2>
-                <p className="text-gray-400 text-lg max-w-md leading-relaxed">
-                  Discover our hand-picked selection of high-quality products designed for your lifestyle.
-                </p>
-              </div>
-              <Link 
-                href="/search" 
-                className="inline-flex items-center gap-3 bg-primary text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white hover:text-primary transition-all shadow-xl shadow-primary/20"
-              >
-                Shop The Collection <ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-4 p-8 lg:p-12 bg-white/5 backdrop-blur-md">
-              {featuredProducts.map((product) => (
-                <div key={product.id} className="scale-90 hover:scale-100 transition-transform duration-500">
-                   <ProductCard product={product as any} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Trending Section */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

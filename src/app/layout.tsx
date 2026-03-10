@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthContext from "@/context/AuthContext";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import { db } from "@/lib/db";
 
@@ -29,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch theme settings
+  // Fetch theme settings for global CSS variables
   const theme = await db.themeSetting.findFirst({
     where: { id: "default" }
   }).catch(() => null);
@@ -50,11 +48,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <AuthContext>
           <Toaster position="top-center" richColors />
-          <Navbar logoUrl={theme?.logoUrl} />
-          <main>
-            {children}
-          </main>
-          <Footer theme={theme} />
+          {children}
         </AuthContext>
       </body>
     </html>
