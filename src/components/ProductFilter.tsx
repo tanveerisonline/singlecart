@@ -38,10 +38,7 @@ export default function ProductFilter() {
         const [catsRes, brandsRes, settingsRes] = await Promise.all([
           axios.get("/api/categories"),
           axios.get("/api/brands"),
-          axios.get("/api/admin/settings/filters").catch(() => ({ data: {
-            showCategory: true, showBrand: true, showPrice: true, 
-            showRating: true, showAvailability: true, showDiscount: true 
-          }}))
+          axios.get("/api/settings/filters")
         ]);
         setCategories(catsRes.data);
         setBrands(brandsRes.data);
