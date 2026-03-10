@@ -251,6 +251,14 @@ model Review {
   updatedAt  DateTime @updatedAt
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id])
+  images     ReviewImage[]
+}
+
+model ReviewImage {
+  id        String @id @default(cuid())
+  reviewId  String
+  url       String
+  review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model WishlistItem {

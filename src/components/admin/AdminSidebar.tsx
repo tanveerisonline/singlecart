@@ -26,7 +26,8 @@ import {
   ChevronRight,
   Palette,
   FileText,
-  Layout
+  Layout,
+  Star
 } from "lucide-react";
 import Image from "next/image";
 
@@ -58,6 +59,7 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Categories", icon: Layers, href: "/admin/categories" },
     { label: "Tags", icon: TagsIcon, href: "/admin/tags" },
     { label: "Brands", icon: Award, href: "/admin/brands" },
+    { label: "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Q&A", icon: MessageSquare, href: "/admin/qna" },
   ];
 

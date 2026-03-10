@@ -70,6 +70,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 name: true,
               },
             },
+            images: true,
           },
           orderBy: {
             createdAt: "desc",

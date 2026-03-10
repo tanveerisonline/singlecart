@@ -21,7 +21,7 @@ interface ProductWithRelations extends Product {
   tags: Tag[];
   variants: ProductVariant[];
   brand: Brand | null;
-  reviews: (Review & { user: { name: string | null } })[];
+  reviews: (Review & { user: { name: string | null }, images: { url: string }[] })[];
 }
 
 interface ProductPageClientProps {
@@ -421,6 +421,22 @@ export default function ProductPageClient({
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 leading-relaxed mb-4">{review.comment}</p>
+                            
+                            {review.images && review.images.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {review.images.map((img, idx) => (
+                                  <div key={idx} className="relative h-20 w-20 rounded-xl overflow-hidden border border-gray-100 shadow-sm group">
+                                    <Image 
+                                      src={img.url} 
+                                      alt={`Review image ${idx + 1}`} 
+                                      fill 
+                                      className="object-cover transition-transform group-hover:scale-110" 
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
                             <div className="flex items-center gap-2">
                               <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-black text-primary border border-primary/20 uppercase">
                                 {review.user.name?.[0] || "U"}
