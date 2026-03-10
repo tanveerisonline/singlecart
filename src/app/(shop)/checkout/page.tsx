@@ -131,7 +131,7 @@ export default function CheckoutPage() {
       if (response.status === 200 || response.status === 201) {
         toast.success("Order placed successfully!");
         cart.clearCart();
-        router.push(`/orders/${response.data.id}`);
+        router.push(`/checkout/success?orderId=${response.data.id}`);
       }
     } catch (error: any) {
       console.error("Order creation failed", error);
@@ -318,7 +318,7 @@ export default function CheckoutPage() {
                     <li key={`${item.id}-${item.selectedVariant?.id}`} className="py-5 flex gap-5 group">
                       <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
                         <Image 
-                          src={item.thumbnailUrl || "/placeholder-product.jpg"} 
+                          src={item.thumbnailUrl || "/placeholder-product.svg"} 
                           alt={item.name} 
                           fill 
                           className="object-cover group-hover:scale-110 transition-transform duration-500" 

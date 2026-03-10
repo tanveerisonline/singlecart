@@ -6,7 +6,7 @@ import { Product, ProductImage, Category } from "@prisma/client";
 import { ShoppingCart, Eye, Star, Heart } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 
 interface ProductCardProps {
   product: Product & {
@@ -16,10 +16,15 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const cart = useCart();
   const wishlist = useWishlist();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
-  const isFavorite = wishlist.isInWishlist(product.id);
+  const isFavorite = isMounted ? wishlist.isInWishlist(product.id) : false;
 
   const discountPercentage = product.compareAtPrice 
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100) 
@@ -54,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Image Container */}
       <Link href={`/product/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden bg-gray-50">
         <Image
-          src={product.images[0]?.url || "/placeholder-product.jpg"}
+          src={product.images[0]?.url || "/placeholder-product.svg"}
           alt={product.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"

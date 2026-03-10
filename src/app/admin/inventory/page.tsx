@@ -164,7 +164,7 @@ export default function InventoryPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
               <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                 <div className="h-12 w-12 rounded-xl overflow-hidden relative border border-white shadow-sm">
-                  <Image src={selectedProduct.images[0]?.url || "/placeholder-product.jpg"} alt="" fill className="object-cover" />
+                  <Image src={selectedProduct.images[0]?.url || "/placeholder-product.svg"} alt="" fill className="object-cover" />
                 </div>
                 <div>
                   <p className="text-sm font-black text-gray-900 truncate w-48 uppercase tracking-tight">{selectedProduct.name}</p>
@@ -317,7 +317,7 @@ export default function InventoryPage() {
                         <div className="flex items-center">
                           <div className="h-14 w-14 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0 bg-white shadow-sm relative group-hover:scale-105 transition-transform duration-300">
                             <Image
-                              src={product.images[0]?.url || "/placeholder-product.jpg"}
+                              src={product.images[0]?.url || "/placeholder-product.svg"}
                               alt={product.name}
                               fill
                               className="object-cover"

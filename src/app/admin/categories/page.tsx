@@ -94,12 +94,13 @@ export default function CategoriesPage() {
     try {
       setLoading(true);
       const response = await axios.get(`/api/categories?page=${page}&limit=${limit}&search=${search}`);
-      setCategories(response.data.categories);
-      setMeta(response.data.meta);
+      setCategories(response.data.categories || []);
+      setMeta(response.data.meta || { total: 0, totalPages: 0 });
       
       // Also fetch top-level categories for the parent dropdown if not already loaded
       const allRes = await axios.get("/api/categories?limit=100");
-      setParentCategories(allRes.data.categories.filter((c: Category) => !c.parentId));
+      const allCats = allRes.data.categories || (Array.isArray(allRes.data) ? allRes.data : []);
+      setParentCategories(allCats.filter((c: Category) => !c.parentId));
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast.error("Failed to load categories");

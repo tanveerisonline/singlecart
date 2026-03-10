@@ -53,7 +53,22 @@ export default function ProductPageClient({
     if (product.isEncourageView) {
       setRandomViewCount(Math.floor(Math.random() * 45) + 5);
     }
-  }, [product.isEncourageOrder, product.isEncourageView]);
+
+    // Handle Recently Viewed
+    const recentlyViewed = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+    const updatedRecentlyViewed = [
+      {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        thumbnailUrl: product.thumbnailUrl,
+        slug: product.slug,
+        category: product.category
+      },
+      ...recentlyViewed.filter((p: any) => p.id !== product.id)
+    ].slice(0, 10);
+    localStorage.setItem("recentlyViewed", JSON.stringify(updatedRecentlyViewed));
+  }, [product]);
 
   const averageRating = useMemo(() => 
     product.reviews.length > 0 
@@ -255,7 +270,7 @@ export default function ProductPageClient({
                   {product.isSafeCheckout && (
                     <div className="relative h-16 w-full">
                       <Image 
-                        src={theme?.safeCheckoutImage || "/safe-checkout.png"} 
+                        src={theme?.safeCheckoutImage || "/safe-checkout.svg"} 
                         alt="Safe Checkout" 
                         fill 
                         className="object-contain object-left"
@@ -265,7 +280,7 @@ export default function ProductPageClient({
                   {product.isSecureCheckout && (
                     <div className="relative h-16 w-full">
                       <Image 
-                        src={theme?.secureCheckoutImage || "/secure-payment.png"} 
+                        src={theme?.secureCheckoutImage || "/secure-payment.svg"} 
                         alt="Secure Payment" 
                         fill 
                         className="object-contain object-left"

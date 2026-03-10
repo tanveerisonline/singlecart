@@ -111,7 +111,7 @@ export default async function CustomerOrdersPage() {
                               {firstItems.map((item, idx) => (
                                 <div key={idx} className="relative h-20 w-20 rounded-[1.5rem] bg-gray-50 border-4 border-white overflow-hidden shadow-sm group-hover:scale-105 transition-transform duration-500" style={{ zIndex: 10 - idx }}>
                                   <Image
-                                    src={item.product.thumbnailUrl || "/placeholder-product.jpg"}
+                                    src={item.product.thumbnailUrl || "/placeholder-product.svg"}
                                     alt="product"
                                     fill
                                     className="object-cover"

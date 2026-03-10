@@ -39,6 +39,38 @@ export async function DELETE(
   }
 }
 
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ categoryId: string }> }
+) {
+  try {
+    const { categoryId } = await params;
+    
+    if (!categoryId) {
+      return new NextResponse("Category ID is required", { status: 400 });
+    }
+
+    const category = await db.category.findUnique({
+      where: { id: categoryId },
+      include: {
+        parent: true,
+        _count: {
+          select: { products: true }
+        }
+      }
+    });
+
+    if (!category) {
+      return new NextResponse("Not Found", { status: 404 });
+    }
+
+    return NextResponse.json(category);
+  } catch (error) {
+    console.error("[CATEGORY_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ categoryId: string }> }

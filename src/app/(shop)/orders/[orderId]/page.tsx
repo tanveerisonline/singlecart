@@ -131,7 +131,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
                   <li key={item.id} className="p-8 flex gap-8 group">
                     <div className="relative h-24 w-24 sm:h-32 sm:w-32 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
                       <Image
-                        src={item.product.thumbnailUrl || "/placeholder-product.jpg"}
+                        src={item.product.thumbnailUrl || "/placeholder-product.svg"}
                         alt={item.product.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"

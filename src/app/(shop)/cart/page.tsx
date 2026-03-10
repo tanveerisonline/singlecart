@@ -68,7 +68,7 @@ export default function CartPage() {
                   <li key={`${item.id}-${item.selectedVariant?.id}`} className="flex p-6 sm:p-10 hover:bg-gray-50/30 transition-colors group">
                     <div className="flex-shrink-0 relative h-24 w-24 sm:h-32 sm:w-32 rounded-3xl overflow-hidden bg-gray-50 border border-gray-100">
                       <Image
-                        src={item.thumbnailUrl || "/placeholder-product.jpg"} 
+                        src={item.thumbnailUrl || "/placeholder-product.svg"} 
                         alt={item.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"

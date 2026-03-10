@@ -190,7 +190,7 @@ export default async function Home({ searchParams }: HomeProps) {
             >
               <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-gray-100 border border-gray-50 group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500">
                 <Image
-                  src={category.imageUrl || "/placeholder-category.jpg"}
+                  src={category.imageUrl || "/placeholder-category.svg"}
                   alt={category.name}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"

@@ -45,7 +45,9 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/categories");
-        setCategories(response.data.filter((c: any) => c.isActive).slice(0, 8));
+        // Handle both old array response and new object response
+        const cats = Array.isArray(response.data) ? response.data : response.data.categories;
+        setCategories(cats.filter((c: any) => c.isActive).slice(0, 8));
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
@@ -118,7 +120,7 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
                                className="flex items-center gap-3 p-2 rounded-2xl hover:bg-primary/5 transition-all group/item"
                              >
                                 <div className="h-10 w-10 rounded-xl bg-gray-50 overflow-hidden relative border border-gray-100">
-                                   <Image src={cat.imageUrl || "/placeholder-category.jpg"} alt={cat.name} fill className="object-cover" />
+                                   <Image src={cat.imageUrl || "/placeholder-category.svg"} alt={cat.name} fill className="object-cover" />
                                 </div>
                                 <span className="text-sm font-bold text-gray-700 group-hover/item:text-primary transition-colors">{cat.name}</span>
                              </Link>
@@ -241,7 +243,7 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
                           className="flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 group active:scale-95 transition-all"
                         >
                            <div className="h-12 w-12 rounded-xl bg-white overflow-hidden relative border border-gray-100 shadow-sm">
-                              <Image src={cat.imageUrl || "/placeholder-category.jpg"} alt={cat.name} fill className="object-cover" />
+                              <Image src={cat.imageUrl || "/placeholder-category.svg"} alt={cat.name} fill className="object-cover" />
                            </div>
                            <span className="text-[10px] font-black uppercase tracking-tighter text-gray-900">{cat.name}</span>
                         </Link>

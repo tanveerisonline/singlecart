@@ -1,0 +1,7 @@
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="50" rx="4" fill="#F9FAFB"/>
+  <rect x="0.5" y="0.5" width="199" height="49" rx="3.5" stroke="#E5E7EB"/>
+  <path d="M20 25C20 22.2386 22.2386 20 25 20H35C37.7614 20 40 22.2386 40 25V30H20V25Z" fill="#10B981"/>
+  <rect x="22" y="30" width="16" height="5" fill="#10B981"/>
+  <text x="50" y="30" font-family="sans-serif" font-size="12" font-weight="bold" fill="#374151">SAFE CHECKOUT</text>
+</svg>
