@@ -10,6 +10,8 @@ const inter = Inter({ subsets: ["latin"] });
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#0f172a",
 };
 
 export const metadata: Metadata = {
@@ -20,6 +22,15 @@ export const metadata: Metadata = {
   description: "Discover the best products at unbeatable prices. Fast shipping and 24/7 support.",
   keywords: ["ecommerce", "shopping", "nextjs", "react", "mysql", "online store"],
   authors: [{ name: "Shop Team" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Shop",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default async function RootLayout({

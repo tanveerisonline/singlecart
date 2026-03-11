@@ -469,6 +469,46 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-gray-50 flex items-center justify-between">
+            <p className="text-xs font-medium text-gray-500">
+              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredCustomers.length)} of {filteredCustomers.length} customers
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:text-primary hover:border-primary/50"
+              >
+                Previous
+              </button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-9 h-9 rounded-xl text-[10px] font-black transition-all ${
+                      currentPage === page
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-gray-500 hover:bg-gray-50 border border-transparent hover:border-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:text-primary hover:border-primary/50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,8 +3,13 @@ import { ShoppingBag, Search, Filter, ArrowUpDown, Clock, CheckCircle2, XCircle,
 import Link from "next/link";
 import OrderStatusSwitcher from "@/components/admin/OrderStatusSwitcher";
 
-export default async function AdminOrdersPage() {
-  const [orders, stats] = await Promise.all([
+export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const params = await searchParams;
+  const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const [orders, stats, totalCount] = await Promise.all([
     db.order.findMany({
       include: {
         user: true,
@@ -12,14 +17,18 @@ export default async function AdminOrdersPage() {
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take: limit,
     }),
     db.order.groupBy({
       by: ['status'],
       _count: true
-    })
+    }),
+    db.order.count()
   ]);
 
-  const totalOrders = orders.length;
+  const totalPages = Math.ceil(totalCount / limit);
+  const totalOrders = totalCount;
   const pendingOrders = stats.find(s => s.status === 'PENDING')?._count || 0;
   const deliveredOrders = stats.find(s => s.status === 'DELIVERED')?._count || 0;
   const cancelledOrders = stats.find(s => s.status === 'CANCELLED')?._count || 0;
@@ -163,14 +172,31 @@ export default async function AdminOrdersPage() {
           </table>
         </div>
         
-        {/* Pagination placeholder */}
-        <div className="p-6 border-t border-gray-50 flex items-center justify-between">
-          <p className="text-xs font-medium text-gray-500">Showing {orders.length} orders</p>
-          <div className="flex gap-2">
-            <button disabled className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-400 disabled:opacity-50">Previous</button>
-            <button disabled className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-400 disabled:opacity-50">Next</button>
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="p-6 border-t border-gray-50 flex items-center justify-between">
+            <p className="text-xs font-medium text-gray-500">
+              Showing {skip + 1} to {Math.min(skip + limit, totalCount)} of {totalCount} orders
+            </p>
+            <div className="flex gap-2">
+              {page > 1 ? (
+                <Link href={`/admin/orders?page=${page - 1}`} className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all">
+                  Previous
+                </Link>
+              ) : (
+                <button disabled className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-400 disabled:opacity-50">Previous</button>
+              )}
+              
+              {page < totalPages ? (
+                <Link href={`/admin/orders?page=${page + 1}`} className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-50 transition-all">
+                  Next
+                </Link>
+              ) : (
+                <button disabled className="px-3 py-1 rounded-lg border border-gray-100 text-xs font-bold text-gray-400 disabled:opacity-50">Next</button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

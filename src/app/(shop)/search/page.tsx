@@ -17,6 +17,7 @@ interface SearchPageProps {
     onSale?: string;
     rating?: string;
     tag?: string;
+    page?: string;
   }>;
 }
 
@@ -33,6 +34,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const inStock = params.inStock === "true";
   const onSale = params.onSale === "true";
   const rating = params.rating ? parseInt(params.rating) : undefined;
+  const page = params.page ? parseInt(params.page) : 1;
+  const limit = 12;
 
   const where: any = {
     isActive: true,
@@ -94,9 +97,32 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     });
   }
 
+  const totalProducts = filteredProducts.length;
+  const totalPages = Math.ceil(totalProducts / limit);
+  const skip = (page - 1) * limit;
+  const paginatedProducts = filteredProducts.slice(skip, skip + limit);
+
   const categories = await db.category.findMany({
     where: { isActive: true }
   });
+
+  // Base URL for pagination links
+  const createPageUrl = (pageNumber: number) => {
+    const searchParams = new URLSearchParams();
+    if (query) searchParams.set("q", query);
+    if (categorySlug) searchParams.set("category", categorySlug);
+    if (categoryId) searchParams.set("categoryId", categoryId);
+    if (brandSlug) searchParams.set("brand", brandSlug);
+    if (brandId) searchParams.set("brandId", brandId);
+    if (tagSlug) searchParams.set("tag", tagSlug);
+    if (minPrice) searchParams.set("minPrice", minPrice.toString());
+    if (maxPrice) searchParams.set("maxPrice", maxPrice.toString());
+    if (inStock) searchParams.set("inStock", "true");
+    if (onSale) searchParams.set("onSale", "true");
+    if (rating) searchParams.set("rating", rating.toString());
+    searchParams.set("page", pageNumber.toString());
+    return `/search?${searchParams.toString()}`;
+  };
 
   return (
     <div className="bg-white min-h-screen">
@@ -110,7 +136,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </h1>
               <div className="flex items-center gap-3 text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em]">
                  <ShoppingBag className="h-3 w-3 text-primary" />
-                 <span>{filteredProducts.length} Items Found</span>
+                 <span>{totalProducts} Items Found</span>
               </div>
            </div>
            
@@ -177,7 +203,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
           {/* Product Grid */}
           <div className="lg:col-span-9 mt-10 lg:mt-0">
-            {filteredProducts.length === 0 ? (
+            {paginatedProducts.length === 0 ? (
               <div className="text-center py-32 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-100 space-y-6">
                 <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
                    <PackageX className="h-8 w-8 text-gray-200" />
@@ -189,11 +215,55 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <Link href="/search" className="inline-block bg-primary text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition-all">Clear All Filters</Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product as any} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 xl:grid-cols-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {paginatedProducts.map((product) => (
+                    <ProductCard key={product.id} product={product as any} />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-16 flex items-center justify-between border-t border-gray-50 pt-8">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      Showing {skip + 1} to {Math.min(skip + limit, totalProducts)} of {totalProducts}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      {page > 1 ? (
+                        <Link href={createPageUrl(page - 1)} className="px-5 py-3 rounded-2xl border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                          Previous
+                        </Link>
+                      ) : (
+                        <button disabled className="px-5 py-3 rounded-2xl border border-gray-50 text-[10px] font-black uppercase tracking-widest text-gray-300 cursor-not-allowed">Previous</button>
+                      )}
+
+                      <div className="hidden sm:flex items-center gap-1 mx-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                          <Link
+                            key={p}
+                            href={createPageUrl(p)}
+                            className={`w-10 h-10 flex items-center justify-center rounded-2xl text-[10px] font-black transition-all ${
+                              page === p
+                                ? "bg-gray-900 text-white shadow-xl shadow-gray-900/20"
+                                : "text-gray-500 hover:bg-gray-50 border border-transparent hover:border-gray-100"
+                            }`}
+                          >
+                            {p}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {page < totalPages ? (
+                        <Link href={createPageUrl(page + 1)} className="px-5 py-3 rounded-2xl border border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                          Next
+                        </Link>
+                      ) : (
+                        <button disabled className="px-5 py-3 rounded-2xl border border-gray-50 text-[10px] font-black uppercase tracking-widest text-gray-300 cursor-not-allowed">Next</button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
