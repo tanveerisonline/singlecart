@@ -119,41 +119,41 @@ async function main() {
       }
     }
   });
+// 7. SEED BANNERS & DYNAMIC SECTIONS
+console.log("⚡ Seeding layout components...");
+const promoSection = await prisma.dynamicSection.create({
+  data: {
+    name: "Promotional Banner Section",
+    page: "HOME",
+    location: "TOP",
+    layout: "FULL_WIDTH",
+    order: 0,
+    isActive: true
+  }
+});
 
-  // 7. SEED BANNERS & DYNAMIC SECTIONS
-  console.log("⚡ Seeding layout components...");
-  const promoSection = await prisma.dynamicSection.create({
-    data: {
-      name: "Promotional Banner Section",
-      type: "BANNER",
-      layout: "FULL_WIDTH",
-      order: 0,
-      isActive: true
-    }
-  });
+await prisma.banner.create({
+  data: {
+    title: "Limited Flash Sale",
+    subtitle: "Get up to 50% off on all luxe furniture.",
+    imageUrl: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=1200",
+    buttonLink: "/collections/luxe-living",
+    buttonText: "Shop Sale",
+    isActive: true,
+    sectionId: promoSection.id
+  }
+});
 
-  const promoBanner = await prisma.banner.create({
-    data: {
-      title: "Limited Flash Sale",
-      subtitle: "Get up to 50% off on all luxe furniture.",
-      imageUrl: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=1200",
-      link: "/collections/luxe-living",
-      buttonText: "Shop Sale",
-      isActive: true,
-      sectionId: promoSection.id
-    }
-  });
-
-  await prisma.dynamicSection.create({
-    data: {
-      name: "Featured Deals Section",
-      type: "PRODUCT_CAROUSEL",
-      layout: "FULL_WIDTH",
-      order: 1,
-      isActive: true
-    }
-  });
-
+await prisma.dynamicSection.create({
+  data: {
+    name: "Featured Deals Section",
+    page: "HOME",
+    location: "MIDDLE",
+    layout: "FULL_WIDTH",
+    order: 1,
+    isActive: true
+  }
+});
   // 8. SEED PAGES (About, Privacy)
   console.log("📄 Seeding pages...");
   await prisma.page.createMany({
