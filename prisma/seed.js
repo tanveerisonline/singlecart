@@ -4,9 +4,11 @@ const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Starting data flush...");
+  console.log("🚀 Starting Comprehensive Data Reset & Seeding...");
 
-  // 1. Delete all data except Admin Users
+  // 1. DELETE ALL DATA (except Admin Users)
+  // Order matters for relational databases (leaf nodes first)
+  console.log("🧹 Flushing existing data...");
   await prisma.activityLog.deleteMany({});
   await prisma.reviewImage.deleteMany({});
   await prisma.review.deleteMany({});
@@ -20,226 +22,180 @@ async function main() {
   await prisma.giftCard.deleteMany({});
   await prisma.newsletterSubscriber.deleteMany({});
   await prisma.stockLog.deleteMany({});
-  
-  // Products and relations
+  await prisma.fAQ.deleteMany({});
+  await prisma.bundle.deleteMany({});
   await prisma.productVariant.deleteMany({});
   await prisma.productImage.deleteMany({});
   await prisma.product.deleteMany({});
-  await prisma.bundle.deleteMany({});
   await prisma.tag.deleteMany({});
   await prisma.brand.deleteMany({});
   await prisma.category.deleteMany({});
-  
-  // Others
-  await prisma.attributeValue.deleteMany({});
-  await prisma.attribute.deleteMany({});
   await prisma.coupon.deleteMany({});
   await prisma.page.deleteMany({});
   await prisma.sliderImage.deleteMany({});
   await prisma.banner.deleteMany({});
   await prisma.dynamicSection.deleteMany({});
-  await prisma.fAQ.deleteMany({});
-  
-  // Users (keep ADMIN and SUPER_ADMIN)
+  await prisma.attributeValue.deleteMany({});
+  await prisma.attribute.deleteMany({});
+
+  // Preserve Admin users, delete all regular users
   await prisma.user.deleteMany({
     where: {
       NOT: {
-        role: {
-          in: ["ADMIN", "SUPER_ADMIN"]
-        }
+        role: { in: ["ADMIN", "SUPER_ADMIN"] }
       }
     }
   });
 
-  console.log("Data flushed. Keeping only Admin users.");
+  console.log("✅ Flush complete. Only Admin credentials preserved.");
 
-  // 2. Seed Settings
-  console.log("Seeding settings...");
+  // 2. SEED CORE SETTINGS
+  console.log("⚙️  Seeding store settings...");
   await prisma.storeSetting.upsert({
     where: { id: "default" },
-    update: {},
+    update: {
+      storeName: "SingleCart Premium",
+      storeEmail: "contact@singlecart.com",
+      shippingFee: 15.00,
+      freeShippingThreshold: 150.00,
+    },
     create: {
       id: "default",
       storeName: "SingleCart Premium",
-      storeEmail: "support@singlecart.com",
+      storeEmail: "contact@singlecart.com",
       currency: "USD",
       shippingFee: 15.00,
-      freeShippingThreshold: 200.00,
+      freeShippingThreshold: 150.00,
     },
   });
 
-  await prisma.themeSetting.upsert({
-    where: { id: "default" },
-    update: {},
-    create: {
-      id: "default",
-      primaryColor: "#0f172a", // Dark mode aesthetic
-    },
-  });
-
-  // 3. Seed Categories
-  console.log("Seeding categories...");
-  const categories = [
-    { name: "Minimalist Furniture", slug: "furniture", description: "Modern and clean designs", imageUrl: "https://images.unsplash.com/photo-1505693314120-0d443867891c?q=80&w=1000&auto=format&fit=crop" },
-    { name: "Tech Accessories", slug: "tech", description: "Premium gadgets", imageUrl: "https://images.unsplash.com/photo-1512054502232-10a0a035d672?q=80&w=1000&auto=format&fit=crop" },
-    { name: "Apparel", slug: "apparel", description: "Everyday essentials", imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop" },
-    { name: "Watches", slug: "watches", description: "Timeless pieces", imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop" },
+  // 3. SEED CATEGORIES
+  console.log("📂 Seeding categories...");
+  const catData = [
+    { name: "Luxe Living", slug: "luxe-living", description: "Premium home and furniture", imageUrl: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Smart Tech", slug: "smart-tech", description: "The future of gadgets", imageUrl: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Urban Apparel", slug: "urban-apparel", description: "Streetwear & high fashion", imageUrl: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop" },
+    { name: "Timepieces", slug: "timepieces", description: "Elegance on your wrist", imageUrl: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1000&auto=format&fit=crop" },
   ];
 
-  const catMap = {};
-  for (const cat of categories) {
-    catMap[cat.slug] = await prisma.category.create({ data: cat });
+  const categories = {};
+  for (const item of catData) {
+    categories[item.slug] = await prisma.category.create({ data: item });
   }
 
-  // 4. Seed Brands & Tags
-  console.log("Seeding brands and tags...");
+  // 4. SEED BRANDS & TAGS
+  console.log("🏷️  Seeding brands and tags...");
   const brands = await Promise.all([
-    prisma.brand.create({ data: { name: "Aura", slug: "aura" } }),
-    prisma.brand.create({ data: { name: "Zenith", slug: "zenith" } }),
+    prisma.brand.create({ data: { name: "Omni", slug: "omni", logoUrl: "https://logo.clearbit.com/stripe.com" } }),
+    prisma.brand.create({ data: { name: "Vanguard", slug: "vanguard", logoUrl: "https://logo.clearbit.com/apple.com" } }),
   ]);
 
   const tags = await Promise.all([
-    prisma.tag.create({ data: { name: "New Arrival", slug: "new-arrival" } }),
-    prisma.tag.create({ data: { name: "Best Seller", slug: "best-seller" } }),
+    prisma.tag.create({ data: { name: "New", slug: "new" } }),
+    prisma.tag.create({ data: { name: "Limited Edition", slug: "limited" } }),
+    prisma.tag.create({ data: { name: "Trending", slug: "trending" } }),
   ]);
 
-  // 5. Seed Products
-  console.log("Seeding products...");
-  const products = [
+  // 5. SEED COMPREHENSIVE PRODUCTS
+  console.log("📦 Seeding catalog...");
+  const productsData = [
     {
-      name: "Aura Lounge Chair",
-      slug: "aura-lounge-chair",
-      sku: "FURN-001",
-      description: "A comfortable and stylish minimalist lounge chair perfect for any modern living room.",
-      shortDescription: "Premium velvet lounge chair.",
-      price: 299.99,
-      compareAtPrice: 399.99,
-      discount: 25,
-      stock: 45,
-      categoryId: catMap["furniture"].id,
+      name: "Vanguard Obsidian Watch",
+      slug: "vanguard-obsidian",
+      sku: "WAT-VANG-01",
+      price: 499.00,
+      compareAtPrice: 650.00,
+      stock: 25,
+      categoryId: categories["timepieces"].id,
+      brandId: brands[1].id,
+      isFeatured: true,
+      isTrending: true,
+      description: "A sleek, all-black timepiece crafted from surgical-grade stainless steel. Water-resistant up to 100m.",
+      images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000"]
+    },
+    {
+      name: "Omni Ergonomic Desk",
+      slug: "omni-desk-pro",
+      sku: "FURN-OMNI-02",
+      price: 899.00,
+      stock: 15,
+      categoryId: categories["luxe-living"].id,
       brandId: brands[0].id,
       isFeatured: true,
-      isTrending: true,
       isFreeShipping: true,
-      images: [
-        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?q=80&w=1000&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?q=80&w=1000&auto=format&fit=crop"
-      ]
+      description: "Height-adjustable standing desk with memory presets and built-in wireless charging.",
+      images: ["https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?q=80&w=1000"]
     },
     {
-      name: "Zenith Wireless Earbuds",
-      slug: "zenith-earbuds",
-      sku: "TECH-001",
-      description: "Noise-cancelling wireless earbuds with 40 hours of battery life and crystal-clear audio.",
-      shortDescription: "High-fidelity wireless audio.",
-      price: 149.99,
-      stock: 120,
-      categoryId: catMap["tech"].id,
-      brandId: brands[1].id,
+      name: "Cyber-Link Headphones",
+      slug: "cyber-link-h1",
+      sku: "TECH-CYBER-03",
+      price: 249.00,
+      compareAtPrice: 299.00,
+      stock: 100,
+      categoryId: categories["smart-tech"].id,
       isTrending: true,
-      images: [
-        "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=1000&auto=format&fit=crop"
-      ]
+      description: "Over-ear noise cancelling headphones with spatial audio and 50-hour battery life.",
+      images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1000"]
     },
     {
-      name: "Classic Chronograph Watch",
-      slug: "classic-watch",
-      sku: "WATCH-001",
-      description: "A timeless chronograph watch featuring a genuine leather strap and water-resistant casing.",
-      shortDescription: "Elegant everyday timepiece.",
-      price: 199.99,
-      compareAtPrice: 249.99,
-      discount: 20,
-      stock: 30,
-      categoryId: catMap["watches"].id,
-      isFeatured: true,
-      images: [
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop"
-      ]
-    },
-    {
-      name: "Minimalist Desk Lamp",
-      slug: "desk-lamp",
-      sku: "FURN-002",
-      description: "Sleek and modern desk lamp with adjustable brightness and color temperature.",
-      shortDescription: "Smart lighting for your workspace.",
-      price: 89.99,
-      stock: 65,
-      categoryId: catMap["furniture"].id,
-      images: [
-        "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?q=80&w=1000&auto=format&fit=crop"
-      ]
-    },
-    {
-      name: "Organic Cotton T-Shirt",
-      slug: "cotton-tshirt",
-      sku: "APP-001",
-      description: "100% organic cotton t-shirt. Breathable, durable, and ethically sourced.",
-      shortDescription: "Everyday comfort.",
-      price: 29.99,
-      stock: 200,
-      categoryId: catMap["apparel"].id,
-      images: [
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1000&auto=format&fit=crop"
-      ]
+      name: "Nomad Wool Overcoat",
+      slug: "nomad-overcoat",
+      sku: "CLO-NOMAD-04",
+      price: 180.00,
+      stock: 40,
+      categoryId: categories["urban-apparel"].id,
+      description: "100% Merino wool overcoat designed for the modern metropolitan traveler.",
+      images: ["https://images.unsplash.com/photo-1539533018447-63fcce2678e3?q=80&w=1000"]
     }
   ];
 
-  const createdProducts = [];
-  for (const p of products) {
-    const prod = await prisma.product.create({
+  const products = [];
+  for (const p of productsData) {
+    const created = await prisma.product.create({
       data: {
-        name: p.name,
-        slug: p.slug,
-        sku: p.sku,
-        description: p.description,
-        shortDescription: p.shortDescription,
-        price: p.price,
-        compareAtPrice: p.compareAtPrice,
-        discount: p.discount || 0,
-        stock: p.stock,
-        categoryId: p.categoryId,
-        brandId: p.brandId,
-        isFeatured: p.isFeatured || false,
-        isTrending: p.isTrending || false,
-        isFreeShipping: p.isFreeShipping || false,
+        ...p,
         isActive: true,
         thumbnailUrl: p.images[0],
         images: {
           create: p.images.map((url, i) => ({ url, order: i }))
         },
-        tags: {
-          connect: tags.map(t => ({ id: t.id }))
-        }
+        tags: { connect: [{ id: tags[0].id }, { id: tags[2].id }] }
       }
     });
-    createdProducts.push(prod);
+    products.push(created);
   }
 
-  // 6. Seed Bundles (using first two products)
-  console.log("Seeding bundles...");
+  // 6. SEED BUNDLES
+  console.log("🎁 Seeding product bundles...");
   await prisma.bundle.create({
     data: {
-      name: "Work From Home Starter Kit",
-      description: "Everything you need for a perfect home office.",
-      price: 349.99,
+      name: "Executive Tech Suite",
+      description: "The complete setup for the modern professional.",
+      price: 1499.00,
       isActive: true,
-      image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=1000&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1491933382434-500287f9b54b?q=80&w=1000",
       products: {
-        connect: [
-          { id: createdProducts[3].id }, // Desk lamp
-          { id: createdProducts[1].id }  // Earbuds
-        ]
+        connect: [{ id: products[0].id }, { id: products[1].id }, { id: products[2].id }]
       }
     }
   });
 
-  // 7. Seed Reviews
-  console.log("Seeding reviews...");
-  const dummyUser = await prisma.user.create({
+  // 7. SEED FAQS
+  console.log("❓ Seeding FAQs...");
+  await prisma.fAQ.createMany({
+    data: [
+      { question: "How long is shipping?", answer: "Domestic shipping takes 3-5 business days.", category: "Shipping" },
+      { question: "Do you offer warranty?", answer: "Yes, all products come with a 1-year limited warranty.", category: "Support" },
+    ]
+  });
+
+  // 8. SEED TEST REVIEWS
+  console.log("⭐ Seeding reviews...");
+  const reviewer = await prisma.user.create({
     data: {
-      email: "jane@example.com",
-      name: "Jane Doe",
+      email: "reviewer@example.com",
+      name: "Mark Johnson",
       password: await bcrypt.hash("password123", 10)
     }
   });
@@ -247,60 +203,30 @@ async function main() {
   await prisma.review.create({
     data: {
       rating: 5,
-      title: "Absolutely love it!",
-      comment: "The quality is amazing and it looks perfect in my living room.",
+      title: "Best purchase ever!",
+      comment: "Incredible quality and super fast delivery. Highly recommended.",
       isApproved: true,
-      userId: dummyUser.id,
-      productId: createdProducts[0].id // Lounge Chair
+      userId: reviewer.id,
+      productId: products[0].id
     }
   });
 
-  // 8. Seed Slider Images
-  console.log("Seeding slider...");
-  await prisma.sliderImage.createMany({
-    data: [
-      {
-        title: "Spring Collection 2026",
-        imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1600&auto=format&fit=crop",
-        link: "/search",
-        order: 1,
-        isActive: true,
-      },
-      {
-        title: "Tech That Inspires",
-        imageUrl: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1600&auto=format&fit=crop",
-        link: `/collections/${categories[1].slug}`,
-        order: 2,
-        isActive: true,
-      }
-    ]
-  });
-
-  // 9. Seed FAQs
-  console.log("Seeding FAQs...");
-  await prisma.fAQ.createMany({
-    data: [
-      { question: "What is your return policy?", answer: "We offer a 30-day hassle-free return policy for all unused items.", category: "Returns", order: 1 },
-      { question: "Do you ship internationally?", answer: "Yes, we ship to over 50 countries worldwide.", category: "Shipping", order: 2 },
-      { question: "How can I track my order?", answer: "Once your order ships, you'll receive a tracking link via email.", category: "Shipping", order: 3 },
-    ]
-  });
-
-  // 10. Seed Coupons
-  console.log("Seeding coupons...");
+  // 9. SEED COUPONS
+  console.log("🎫 Seeding coupons...");
   await prisma.coupon.create({
     data: {
-      code: "WELCOME20",
+      code: "LAUNCH2026",
       discountType: "PERCENTAGE",
-      discountValue: 20,
-      minPurchase: 100,
+      discountValue: 15,
+      minPurchase: 50,
       startDate: new Date(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       isActive: true,
     }
   });
 
-  console.log("Seeding completed successfully!");
+  console.log("\n✨ SEEDING COMPLETE! ✨");
+  console.log("Database is now populated with premium, comprehensive data.");
 }
 
 main()
