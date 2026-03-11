@@ -318,21 +318,27 @@ export default function ProductPageClient({
             </div>
 
             {/* Features Info */}
-            <div className="bg-primary/90 rounded-[32px] p-8 text-white shadow-xl space-y-6">
-              <h3 className="text-lg font-black tracking-tight">Purchase Protection</h3>
-              <div className="grid grid-cols-1 gap-4">
+            <div className="bg-gray-900 rounded-[32px] p-8 text-white shadow-2xl shadow-gray-900/20 space-y-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110">
+                 <ShieldCheck className="h-40 w-40" />
+              </div>
+              <h3 className="text-xl font-black uppercase tracking-tight relative z-10 flex items-center gap-3">
+                Purchase Protection
+                <div className="h-1 flex-1 bg-white/10 rounded-full"></div>
+              </h3>
+              <div className="grid grid-cols-1 gap-4 relative z-10">
                 {[
                   { icon: RefreshCw, title: product.isReturnable ? "Hassle Free Returns" : "Final Sale", desc: product.isReturnable ? (product.returnPolicyText || "30-day money back guarantee") : "This item is not returnable" },
                   { icon: ShieldCheck, title: "Secure Transactions", desc: "Your data is encrypted and safe" },
                   { icon: Truck, title: product.isFreeShipping ? "Free Delivery" : "Fast Shipping", desc: product.estimatedDeliveryText || "Reliable shipping to your doorstep" }
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 bg-white/10 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
-                    <div className="p-2.5 bg-white rounded-xl text-primary mt-0.5">
+                  <div key={i} className="flex items-start gap-4 bg-white/5 p-5 rounded-[1.5rem] backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                    <div className="p-3 bg-white/10 rounded-xl text-white mt-0.5">
                       <item.icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-black">{item.title}</p>
-                      <p className="text-[10px] text-white/60 font-bold leading-tight mt-1">{item.desc}</p>
+                      <p className="text-sm font-black tracking-wide">{item.title}</p>
+                      <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest leading-relaxed mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -342,9 +348,9 @@ export default function ProductPageClient({
         </div>
 
         {/* Bottom: Tabs Section */}
-        <div className="mt-16 lg:col-span-12">
-          <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 overflow-hidden">
-            <div className="flex border-b border-gray-50 bg-gray-50/50 p-2">
+        <div className="mt-20 lg:col-span-12">
+          <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div className="flex flex-wrap border-b border-gray-50 bg-gray-50/30 p-3 gap-2">
               {[
                 { id: "description", label: "Description", icon: Layers },
                 { id: "specifications", label: "Specifications", icon: Settings },
