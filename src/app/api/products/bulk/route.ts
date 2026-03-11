@@ -2,135 +2,57 @@ import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { hasPermission } from "@/lib/rbac";
 
-const parseSafeFloat = (value: any) => {
-  if (value === undefined || value === null || value === "") return 0;
-  const parsed = parseFloat(value);
-  return isNaN(parsed) ? 0 : parsed;
-};
-
-export async function POST(req: Request) {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || !["ADMIN", "PRODUCT_MANAGER"].includes(session.user.role)) {
+    if (!session || !hasPermission(session.user.role, "MANAGE_PRODUCTS")) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const body = await req.json();
-    const { products } = body;
+    const { ids, action, value } = body;
 
-    if (!Array.isArray(products)) {
-      return new NextResponse("Invalid data format", { status: 400 });
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return new NextResponse("No product IDs provided", { status: 400 });
     }
 
-    // Process products one by one to handle relations properly
-    // We use a transaction for reliability
-    await db.$transaction(async (tx) => {
-      for (const p of products) {
-        // 1. Ensure category exists (by slug or ID)
-        // If we don't have it, we might need to skip or error
-        // For simplicity, we assume categoryId is valid if present
-        
-        // 2. Upsert the product
-        await tx.product.upsert({
-          where: { slug: p.slug },
-          update: {
-            name: p.name,
-            shortDescription: p.shortDescription,
-            description: p.description,
-            price: parseSafeFloat(p.price),
-            sku: p.sku,
-            stock: parseInt(p.stock || "0"),
-            categoryId: p.categoryId,
-            brandId: p.brandId,
-            thumbnailUrl: p.thumbnailUrl,
-            sizeChartUrl: p.sizeChartUrl,
-            metaImageUrl: p.metaImageUrl,
-            hasWatermark: p.hasWatermark,
-            productType: p.productType,
-            tax: parseSafeFloat(p.tax),
-            isFeatured: p.isFeatured,
-            isActive: p.isActive,
-            metaTitle: p.metaTitle,
-            metaDescription: p.metaDescription,
-            weight: parseSafeFloat(p.weight),
-            length: parseSafeFloat(p.length),
-            width: parseSafeFloat(p.width),
-            height: parseSafeFloat(p.height),
-            showDimensions: p.showDimensions,
-            isFreeShipping: p.isFreeShipping,
-            isReturnable: p.isReturnable,
-            isTrending: p.isTrending,
-            isEncourageOrder: p.isEncourageOrder,
-            isEncourageView: p.isEncourageView,
-            estimatedDeliveryText: p.estimatedDeliveryText,
-            returnPolicyText: p.returnPolicyText,
-            stockStatus: p.stockStatus,
-            discount: parseSafeFloat(p.discount),
-            salePrice: parseSafeFloat(p.salePrice),
-            unit: p.unit,
-            // Images and Variants are more complex to "update" in bulk import
-            // We'll skip complex merging for now and just update basic fields
-          },
-          create: {
-            name: p.name,
-            slug: p.slug,
-            shortDescription: p.shortDescription,
-            description: p.description,
-            price: parseSafeFloat(p.price),
-            sku: p.sku,
-            stock: parseInt(p.stock || "0"),
-            categoryId: p.categoryId,
-            brandId: p.brandId,
-            thumbnailUrl: p.thumbnailUrl,
-            sizeChartUrl: p.sizeChartUrl,
-            metaImageUrl: p.metaImageUrl,
-            hasWatermark: p.hasWatermark,
-            productType: p.productType,
-            tax: parseSafeFloat(p.tax),
-            isFeatured: p.isFeatured,
-            isActive: p.isActive,
-            metaTitle: p.metaTitle,
-            metaDescription: p.metaDescription,
-            weight: parseSafeFloat(p.weight),
-            length: parseSafeFloat(p.length),
-            width: parseSafeFloat(p.width),
-            height: parseSafeFloat(p.height),
-            showDimensions: p.showDimensions,
-            isFreeShipping: p.isFreeShipping,
-            isReturnable: p.isReturnable,
-            isTrending: p.isTrending,
-            isEncourageOrder: p.isEncourageOrder,
-            isEncourageView: p.isEncourageView,
-            estimatedDeliveryText: p.estimatedDeliveryText,
-            returnPolicyText: p.returnPolicyText,
-            stockStatus: p.stockStatus,
-            discount: parseSafeFloat(p.discount),
-            salePrice: parseSafeFloat(p.salePrice),
-            unit: p.unit,
-            images: {
-              create: (p.images || []).map((img: any) => ({
-                url: typeof img === 'string' ? img : img.url,
-                order: img.order || 0
-              }))
-            },
-            variants: {
-              create: (p.variants || []).map((v: any) => ({
-                name: v.name,
-                sku: v.sku,
-                price: parseSafeFloat(v.price),
-                stock: parseInt(v.stock || "0")
-              }))
-            }
-          }
+    let updateData: any = {};
+
+    switch (action) {
+      case "DELETE":
+        await db.product.deleteMany({
+          where: { id: { in: ids } }
         });
-      }
+        return NextResponse.json({ message: "Products deleted successfully" });
+      
+      case "UPDATE_STATUS":
+        updateData = { isActive: value === "active" };
+        break;
+      
+      case "UPDATE_STOCK_STATUS":
+        updateData = { stockStatus: value };
+        break;
+      
+      case "UPDATE_PRICE":
+        // This is a bit more complex, usually relative or fixed
+        // For simplicity, let's assume it's a fixed value for now
+        updateData = { price: parseFloat(value) };
+        break;
+      
+      default:
+        return new NextResponse("Invalid bulk action", { status: 400 });
+    }
+
+    await db.product.updateMany({
+      where: { id: { in: ids } },
+      data: updateData
     });
 
-    return new NextResponse("Import successful", { status: 200 });
-  } catch (error: any) {
-    console.error("[PRODUCTS_BULK_POST]", error);
-    return new NextResponse(`Internal Error: ${error.message}`, { status: 500 });
+    return NextResponse.json({ message: "Products updated successfully" });
+  } catch (error) {
+    console.error("[PRODUCTS_BULK_PATCH]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

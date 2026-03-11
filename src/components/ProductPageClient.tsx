@@ -120,7 +120,11 @@ export default function ProductPageClient({
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white p-4 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
               <div className="relative">
-                <ProductImageGallery images={product.images} productName={product.name} />
+                <ProductImageGallery 
+                  images={product.images} 
+                  productName={product.name} 
+                  videoUrl={product.videoUrl}
+                />
                 {/* Badges Overlay */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
                   {product.isFeatured && (

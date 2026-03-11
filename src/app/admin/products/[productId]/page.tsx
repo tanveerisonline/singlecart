@@ -127,23 +127,28 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
     stockStatus: "in_stock",
     discount: "0",
     salePrice: "0.00",
-    wholesalePriceType: ""
+    wholesalePriceType: "",
+    crossSellIds: "",
+    videoUrl: ""
   });
 
   // For variant generation
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string[]>>({});
   const [variants, setVariants] = useState<{id?: string, name: string, sku: string, price: string, stock: string}[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [crossSellSearch, setCrossSellSearch] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [catRes, attrRes, prodRes, brandRes, tagRes] = await Promise.all([
+        const [catRes, attrRes, prodRes, brandRes, tagRes, allProdRes] = await Promise.all([
           axios.get("/api/categories"),
           axios.get("/api/admin/attributes"),
           axios.get(`/api/products/${productId}`),
           axios.get("/api/brands"),
-          axios.get("/api/tags")
+          axios.get("/api/tags"),
+          axios.get("/api/products")
         ]);
         
         const cats = Array.isArray(catRes.data) ? catRes.data : (catRes.data.categories || []);
@@ -151,6 +156,7 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
         setAttributes(attrRes.data);
         setBrands(brandRes.data);
         setAvailableTags(tagRes.data);
+        setAllProducts(allProdRes.data.filter((p: any) => p.id !== productId));
         
         const p = prodRes.data;
         setData({
@@ -193,7 +199,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           stockStatus: p.stockStatus || "in_stock",
           discount: p.discount?.toString() || "0",
           salePrice: p.salePrice?.toFixed(2) || "0.00",
-          wholesalePriceType: p.wholesalePriceType || ""
+          wholesalePriceType: p.wholesalePriceType || "",
+          crossSellIds: p.crossSellIds || ""
         });
         
         if (p.variants) {
@@ -333,7 +340,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
       const productData = {
         ...data,
         isActive: status,
-        variants: variants
+        variants: variants,
+        videoUrl: data.videoUrl
       };
       await axios.patch(`/api/products/${productId}`, productData);
       toast.success("Product updated successfully!");
@@ -739,6 +747,20 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                         </button>
                       </div>
                     </div>
+
+                    {/* Video URL */}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <Monitor className="h-3 w-3" /> Product Video URL
+                      </label>
+                      <input
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-medium"
+                        placeholder="YouTube or Vimeo URL..."
+                        value={data.videoUrl}
+                        onChange={(e) => setData({ ...data, videoUrl: e.target.value })}
+                      />
+                      <p className="text-[9px] text-gray-400 ml-1 italic">Provide a link to a product demonstration video.</p>
+                    </div>
                   </div>
 
                   {/* Right Column - Gallery */}
@@ -1076,6 +1098,80 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    {/* Cross-sell Products */}
+                    <div className="space-y-1.5 pt-4">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <ShoppingCart className="h-3 w-3" /> Cross-sell Products
+                      </label>
+                      <div className="space-y-3">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <input
+                            type="text"
+                            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-medium"
+                            placeholder="Search products to link..."
+                            value={crossSellSearch}
+                            onChange={(e) => setCrossSellSearch(e.target.value)}
+                          />
+                        </div>
+                        
+                        {crossSellSearch && (
+                          <div className="max-h-40 overflow-y-auto border border-gray-100 rounded-xl bg-white shadow-sm p-2 space-y-1 custom-scrollbar">
+                            {allProducts
+                              .filter(p => p.name.toLowerCase().includes(crossSellSearch.toLowerCase()))
+                              .map(p => {
+                                const isLinked = data.crossSellIds.includes(p.id);
+                                return (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => {
+                                      let currentIds = data.crossSellIds ? data.crossSellIds.split(',').filter(id => id) : [];
+                                      if (currentIds.includes(p.id)) {
+                                        currentIds = currentIds.filter(id => id !== p.id);
+                                      } else {
+                                        currentIds.push(p.id);
+                                      }
+                                      setData({ ...data, crossSellIds: currentIds.join(',') });
+                                    }}
+                                    className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+                                      isLinked ? "bg-primary/10 text-primary" : "hover:bg-gray-50"
+                                    }`}
+                                  >
+                                    <div className="h-8 w-8 rounded bg-gray-100 relative overflow-hidden">
+                                      <Image src={p.thumbnailUrl || "/placeholder-product.svg"} alt="" fill className="object-cover" />
+                                    </div>
+                                    <span className="text-xs font-bold flex-1 truncate">{p.name}</span>
+                                    {isLinked ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4 text-gray-300" />}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap gap-2">
+                          {data.crossSellIds.split(',').filter(id => id).map(id => {
+                            const p = allProducts.find(prod => prod.id === id);
+                            if (!p) return null;
+                            return (
+                              <div key={id} className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">
+                                <span className="text-[10px] font-black uppercase text-gray-600">{p.name}</span>
+                                <button 
+                                  onClick={() => {
+                                    const updated = data.crossSellIds.split(',').filter(cid => cid !== id).join(',');
+                                    setData({ ...data, crossSellIds: updated });
+                                  }}
+                                  className="text-gray-400 hover:text-rose-500"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
 

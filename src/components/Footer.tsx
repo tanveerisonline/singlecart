@@ -80,7 +80,7 @@ export default function Footer({ theme }: FooterProps) {
               <li><Link href="/contact" className="text-gray-500 hover:text-primary text-sm transition-colors">Contact Us</Link></li>
               <li><Link href="/p/shipping-policy" className="text-gray-500 hover:text-primary text-sm transition-colors">Shipping Policy</Link></li>
               <li><Link href="/p/returns-and-exchanges" className="text-gray-500 hover:text-primary text-sm transition-colors">Returns & Exchanges</Link></li>
-              <li><Link href="/p/faq" className="text-gray-500 hover:text-primary text-sm transition-colors">FAQ</Link></li>
+              <li><Link href="/faq" className="text-gray-500 hover:text-primary text-sm transition-colors">FAQ</Link></li>
             </ul>
           </div>
 

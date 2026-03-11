@@ -35,8 +35,12 @@ export default function CheckoutPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [giftCardCode, setGiftCardCode] = useState("");
+  const [appliedGiftCard, setAppliedGiftCard] = useState<any>(null);
   const [couponError, setCouponError] = useState("");
+  const [giftCardError, setGiftCardError] = useState("");
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [isValidatingGiftCard, setIsValidatingGiftCard] = useState(false);
   
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
   const [enabledMethods, setEnabledMethods] = useState<any>(null);
@@ -93,6 +97,12 @@ export default function CheckoutPage() {
     return Math.min(appliedCoupon.discountValue, subtotal);
   }, [appliedCoupon, subtotal]);
 
+  const giftCardValue = useMemo(() => {
+    if (!appliedGiftCard) return 0;
+    const remainingAfterCoupon = subtotal - discountValue;
+    return Math.min(appliedGiftCard.balance, remainingAfterCoupon);
+  }, [appliedGiftCard, subtotal, discountValue]);
+
   const shipping = useMemo(() => {
     const isUS = address.country?.toLowerCase() === 'us' || address.country?.toLowerCase() === 'united states';
     return subtotal > 100 ? 0 : (isUS ? 5 : 15);
@@ -101,12 +111,12 @@ export default function CheckoutPage() {
   const tax = useMemo(() => {
     const state = address.state?.toUpperCase();
     if (state === 'CA' || state === 'NY') {
-      return (subtotal - discountValue) * 0.10;
+      return (subtotal - discountValue - giftCardValue) * 0.10;
     }
     return 0;
-  }, [subtotal, discountValue, address.state]);
+  }, [subtotal, discountValue, giftCardValue, address.state]);
 
-  const total = subtotal + shipping + tax - discountValue;
+  const total = Math.max(0, subtotal + shipping + tax - discountValue - giftCardValue);
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -127,6 +137,22 @@ export default function CheckoutPage() {
       setAppliedCoupon(null);
     } finally {
       setIsValidatingCoupon(false);
+    }
+  };
+
+  const applyGiftCard = async () => {
+    if (!giftCardCode.trim()) return;
+    try {
+      setIsValidatingGiftCard(true);
+      setGiftCardError("");
+      const res = await axios.get(`/api/gift-cards/validate?code=${giftCardCode}`);
+      setAppliedGiftCard(res.data);
+      toast.success("Gift card applied!");
+    } catch (error: any) {
+      setGiftCardError(error.response?.data || "Invalid card.");
+      setAppliedGiftCard(null);
+    } finally {
+      setIsValidatingGiftCard(false);
     }
   };
 
@@ -156,6 +182,7 @@ export default function CheckoutPage() {
           })),
           address,
           couponId: appliedCoupon?.id,
+          giftCardCode: appliedGiftCard?.code,
           paymentMethod
         };
 
@@ -383,15 +410,38 @@ export default function CheckoutPage() {
                 </ul>
 
                 <div className="space-y-4 pt-8 border-t border-gray-50">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      placeholder="PROMO CODE"
-                      className="flex-1 bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 text-[10px] font-black uppercase tracking-widest outline-none"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                    />
-                    <button onClick={applyCoupon} className="bg-gray-900 text-white px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">Apply</button>
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="PROMO CODE"
+                        className="flex-1 bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 text-[10px] font-black uppercase tracking-widest outline-none"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                      />
+                      <button onClick={applyCoupon} className="bg-gray-900 text-white px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">Apply</button>
+                    </div>
+                    {couponError && <p className="text-rose-500 text-[8px] font-bold uppercase ml-1">{couponError}</p>}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="GIFT CARD CODE"
+                        className="flex-1 bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 text-[10px] font-black uppercase tracking-widest outline-none"
+                        value={giftCardCode}
+                        onChange={(e) => setGiftCardCode(e.target.value)}
+                      />
+                      <button onClick={applyGiftCard} className="bg-gray-900 text-white px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">Apply</button>
+                    </div>
+                    {giftCardError && <p className="text-rose-500 text-[8px] font-bold uppercase ml-1">{giftCardError}</p>}
+                    {appliedGiftCard && (
+                      <div className="flex items-center justify-between bg-emerald-50 text-emerald-600 p-2 rounded-lg border border-emerald-100">
+                        <span className="text-[10px] font-black uppercase tracking-widest">Balance: ${appliedGiftCard.balance.toFixed(2)}</span>
+                        <button onClick={() => setAppliedGiftCard(null)} className="text-[10px] font-black uppercase underline">Remove</button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-4 py-6">
@@ -403,6 +453,12 @@ export default function CheckoutPage() {
                       <div className="flex items-center justify-between text-[10px] font-black text-emerald-600 uppercase tracking-widest">
                         <span>Discount</span>
                         <span className="text-sm">-${discountValue.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {giftCardValue > 0 && (
+                      <div className="flex items-center justify-between text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                        <span>Gift Card</span>
+                        <span className="text-sm">-${giftCardValue.toLocaleString()}</span>
                       </div>
                     )}
                     <div className="flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">

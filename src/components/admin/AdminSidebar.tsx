@@ -29,7 +29,8 @@ import {
   Layout,
   Star,
   Filter,
-  CreditCard
+  CreditCard,
+  RefreshCw
 } from "lucide-react";
 import Image from "next/image";
 
@@ -69,10 +70,14 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
     { label: "Media", icon: ImageIcon, href: "/admin/media" },
     { label: "Orders", icon: ShoppingBag, href: "/admin/orders" },
+    { label: "Returns", icon: RefreshCw, href: "/admin/returns" },
+    { label: "Abandoned Carts", icon: ShoppingBag, href: "/admin/marketing/abandoned-carts" },
     { label: "Customers", icon: Users, href: "/admin/customers" },
     { label: "Staff", icon: Shield, href: "/admin/users" },
     { label: "Coupons", icon: Ticket, href: "/admin/coupons" },
+    { label: "Gift Cards", icon: Ticket, href: "/admin/gift-cards" },
     { label: "Banners & Sections", icon: Layout, href: "/admin/sections" },
+    { label: "FAQ", icon: HelpCircle, href: "/admin/faqs" },
     { label: "Pages", icon: FileText, href: "/admin/pages" },
     { label: "Slider", icon: Globe, href: "/admin/slider" },
     { label: "Filter Setting", icon: Filter, href: "/admin/settings/filters" },

@@ -36,6 +36,9 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -45,8 +48,7 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/categories");
-        // Handle both old array response and new object response
-        const cats = Array.isArray(response.data) ? response.data : response.data.categories;
+        const cats = Array.isArray(response.data) ? response.data : (response.data.categories || []);
         setCategories(cats.filter((c: any) => c.isActive).slice(0, 8));
       } catch (error) {
         console.error("Failed to fetch categories", error);
@@ -61,10 +63,33 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchQuery.length >= 2) {
+        setIsSearching(true);
+        try {
+          const res = await axios.get(`/api/products/search?q=${encodeURIComponent(searchQuery)}`);
+          setSearchResults(res.data);
+          setShowAutocomplete(true);
+        } catch (error) {
+          console.error("Autocomplete error", error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+        setShowAutocomplete(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowAutocomplete(false);
       setIsMobileMenuOpen(false);
     }
   };
@@ -153,18 +178,75 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
             <Link href="/contact" className="text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-primary transition-colors">Support</Link>
           </nav>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md">
+          <div className="hidden md:flex flex-1 max-w-md relative">
             <form onSubmit={handleSearch} className="relative w-full group">
               <input
                 type="text"
                 placeholder="Search premium products..."
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary focus:outline-none transition-all text-sm font-bold placeholder:text-gray-400"
                 value={searchQuery}
+                onFocus={() => searchQuery.length >= 2 && setShowAutocomplete(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
             </form>
+
+            {/* Autocomplete Dropdown */}
+            {showAutocomplete && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="p-2">
+                  {isSearching ? (
+                    <div className="p-4 flex items-center justify-center gap-2 text-gray-400">
+                      <RefreshCcw className="h-4 w-4 animate-spin" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">Searching...</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="space-y-1">
+                      {searchResults.map((product) => (
+                        <Link
+                          key={product.id}
+                          href={`/product/${product.slug}`}
+                          onClick={() => setShowAutocomplete(false)}
+                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all group/item"
+                        >
+                          <div className="h-12 w-12 rounded-lg bg-gray-100 relative overflow-hidden border border-gray-100 shrink-0">
+                            <Image 
+                              src={product.thumbnailUrl || product.images?.[0]?.url || "/placeholder-product.svg"} 
+                              alt={product.name} 
+                              fill 
+                              className="object-cover" 
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-900 truncate group-hover/item:text-primary transition-colors">{product.name}</p>
+                            <p className="text-xs font-black text-primary">${product.price.toFixed(2)}</p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-gray-300 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
+                        </Link>
+                      ))}
+                      <Link 
+                        href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                        onClick={() => setShowAutocomplete(false)}
+                        className="block w-full p-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-primary hover:bg-gray-50 transition-all border-t border-gray-50"
+                      >
+                        View All Results
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center">
+                      <p className="text-sm font-bold text-gray-400">No products found for "{searchQuery}"</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {/* Click backdrop to close */}
+            {showAutocomplete && (
+              <div 
+                className="fixed inset-0 z-[-1]" 
+                onClick={() => setShowAutocomplete(false)}
+              />
+            )}
           </div>
 
           {/* Action Icons */}

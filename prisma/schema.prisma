@@ -27,6 +27,7 @@ model User {
   orders           Order[]
   reviews          Review[]
   wishlist         WishlistItem[]
+  giftCards        GiftCard[]
 }
 
 model Address {
@@ -77,6 +78,7 @@ model Product {
   sku                String           @unique
   stock              Int              @default(0)
   lowStockThreshold  Int              @default(10)
+  reservedUntil      DateTime?        // For temporary stock reservation during checkout
   categoryId         String
   brandId            String?
   specifications     String?
@@ -100,6 +102,7 @@ model Product {
   wholesalePriceType String?
   isRandomRelated    Boolean          @default(false)
   crossSellIds       String?          // Comma-separated IDs or JSON string
+  videoUrl           String?
   metaTitle          String?
   metaDescription    String?
   metaImageUrl       String?
@@ -230,6 +233,43 @@ model Order {
   user              User        @relation(fields: [userId], references: [id])
   items             OrderItem[]
   payments          Payment[]
+  returnRequest     ReturnRequest?
+}
+
+model ReturnRequest {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  reason      String
+  description String?
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, COMPLETED
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  order       Order    @relation(fields: [orderId], references: [id])
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String   @default("General")
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GiftCard {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  balance       Float
+  initialAmount Float
+  isActive      Boolean  @default(true)
+  expiryDate    DateTime?
+  userId        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User?    @relation(fields: [userId], references: [id])
 }
 
 model OrderItem {

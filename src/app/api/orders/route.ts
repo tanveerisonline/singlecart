@@ -12,6 +12,35 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    // 0. Stock Reservation Cleanup (Release expired holds)
+    const expiredOrders = await db.order.findMany({
+      where: {
+        status: "PENDING",
+        paymentStatus: "PENDING",
+        createdAt: {
+          lt: new Date(Date.now() - 15 * 60 * 1000) // 15 mins ago
+        }
+      },
+      include: { items: true }
+    });
+
+    if (expiredOrders.length > 0) {
+      for (const oldOrder of expiredOrders) {
+        // Return stock
+        for (const item of oldOrder.items) {
+          await db.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } }
+          }).catch(() => {});
+        }
+        // Mark as cancelled/expired
+        await db.order.update({
+          where: { id: oldOrder.id },
+          data: { status: "CANCELLED" }
+        }).catch(() => {});
+      }
+    }
+
     const user = await db.user.findUnique({ where: { id: session.user.id } });
     if (!user) return new NextResponse("User not found", { status: 404 });
 

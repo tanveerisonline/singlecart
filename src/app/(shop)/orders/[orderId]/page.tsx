@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import InvoiceDownloadButton from "@/components/InvoiceDownloadButton";
+import ReturnRequestButton from "@/components/ReturnRequestButton";
 
 interface OrderPageProps {
   params: Promise<{
@@ -44,6 +45,7 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
         },
       },
       shippingAddress: true,
+      returnRequest: true,
     },
   });
 
@@ -92,7 +94,14 @@ export default async function OrderDetailsPage({ params }: OrderPageProps) {
               </div>
            </div>
            
-           <InvoiceDownloadButton order={order} userName={session.user.name || "Customer"} />
+           <div className="flex gap-3">
+              <ReturnRequestButton 
+                orderId={order.id} 
+                orderStatus={order.status} 
+                hasReturnRequest={!!order.returnRequest} 
+              />
+              <InvoiceDownloadButton order={order} userName={session.user.name || "Customer"} />
+           </div>
         </div>
 
         {/* Order Tracking Progress */}

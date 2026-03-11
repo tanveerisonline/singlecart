@@ -157,13 +157,49 @@ export default async function ProductPage({ params }: ProductPageProps) {
     }
   }
 
+  // Create JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.images.map(img => img.url),
+    "description": product.description,
+    "sku": product.sku,
+    "brand": {
+      "@type": "Brand",
+      "name": product.brand?.name || "Generic"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `${process.env.NEXT_PUBLIC_APP_URL}/product/${product.slug}`,
+      "priceCurrency": "USD",
+      "price": product.price,
+      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Shop"
+      }
+    },
+    "aggregateRating": product.reviews.length > 0 ? {
+      "@type": "AggregateRating",
+      "ratingValue": product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length,
+      "reviewCount": product.reviews.length
+    } : undefined
+  };
+
   return (
-    <ProductPageClient 
-      product={product} 
-      relatedProducts={relatedProducts as any} 
-      recentProducts={recentProducts as any}
-      crossSellProducts={crossSellProducts as any}
-      theme={theme}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductPageClient 
+        product={product} 
+        relatedProducts={relatedProducts as any} 
+        recentProducts={recentProducts as any}
+        crossSellProducts={crossSellProducts as any}
+        theme={theme}
+      />
+    </>
   );
 }

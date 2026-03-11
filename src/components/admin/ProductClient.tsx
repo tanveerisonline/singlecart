@@ -21,6 +21,10 @@ export default function ProductClient({ products }: ProductClientProps) {
   const [targetId, setTargetId] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   
+  // Bulk actions state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkLoading, setIsBulkLoading] = useState(false);
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -29,6 +33,61 @@ export default function ProductClient({ products }: ProductClientProps) {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.length === currentItems.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(currentItems.map(p => p.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const onBulkAction = async (action: string, value?: any) => {
+    if (selectedIds.length === 0) return;
+    
+    try {
+      setIsBulkLoading(true);
+      await axios.patch("/api/products/bulk", {
+        ids: selectedIds,
+        action,
+        value
+      });
+      toast.success("Bulk action completed successfully");
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      toast.error("Bulk action failed");
+    } finally {
+      setIsBulkLoading(false);
+    }
+  };
+
+  const onBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} products?`)) return;
+
+    try {
+      setIsBulkLoading(true);
+      await axios.patch("/api/products/bulk", {
+        ids: selectedIds,
+        action: "DELETE"
+      });
+      toast.success("Products deleted successfully");
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      toast.error("Bulk delete failed");
+    } finally {
+      setIsBulkLoading(false);
+    }
+  };
 
   // Calculate pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -125,15 +184,40 @@ export default function ProductClient({ products }: ProductClientProps) {
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="relative w-full sm:w-96 group">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Search products..." 
-              value={searchTerm}
-              onChange={handleSearch}
-              className="w-full bg-gray-50 border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none font-medium"
-            />
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            {selectedIds.length > 0 && (
+              <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
+                <span className="text-[10px] font-black uppercase bg-primary text-white px-2 py-1 rounded-md">
+                  {selectedIds.length} Selected
+                </span>
+                <div className="h-4 w-[1px] bg-gray-200 mx-1" />
+                <select 
+                  onChange={(e) => {
+                    if (e.target.value === "DELETE") onBulkDelete();
+                    else onBulkAction(e.target.value.split(':')[0], e.target.value.split(':')[1]);
+                    e.target.value = "";
+                  }}
+                  className="bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl outline-none cursor-pointer hover:bg-black transition-all"
+                >
+                  <option value="">Bulk Actions</option>
+                  <option value="UPDATE_STATUS:active">Set Active</option>
+                  <option value="UPDATE_STATUS:inactive">Set Inactive</option>
+                  <option value="UPDATE_STOCK_STATUS:in_stock">Set In Stock</option>
+                  <option value="UPDATE_STOCK_STATUS:out_of_stock">Set Out of Stock</option>
+                  <option value="DELETE">Delete Selected</option>
+                </select>
+              </div>
+            )}
+            <div className="relative flex-1 sm:w-96 group">
+              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Search products..." 
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full bg-gray-50 border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none font-medium"
+              />
+            </div>
           </div>
           <div className="flex gap-2">
             <label className="cursor-pointer bg-white border border-gray-100 text-gray-600 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all text-xs font-bold flex items-center shadow-sm">
@@ -159,6 +243,14 @@ export default function ProductClient({ products }: ProductClientProps) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                <th className="px-6 py-4 w-10">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedIds.length === currentItems.length && currentItems.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                </th>
                 <th className="px-6 py-4">Product Info</th>
                 <th className="px-6 py-4">Category</th>
                 <th className="px-6 py-4">Price</th>
@@ -169,7 +261,7 @@ export default function ProductClient({ products }: ProductClientProps) {
             <tbody className="divide-y divide-gray-50">
               {currentItems.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-20 text-center">
+                  <td colSpan={6} className="px-6 py-20 text-center">
                     <div className="flex flex-col items-center">
                       <div className="bg-gray-50 p-4 rounded-full mb-4">
                         <Package className="h-8 w-8 text-gray-300" />
@@ -180,7 +272,15 @@ export default function ProductClient({ products }: ProductClientProps) {
                 </tr>
               ) : (
                 currentItems.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50/50 transition-all duration-200 group">
+                  <tr key={product.id} className={`hover:bg-gray-50/50 transition-all duration-200 group ${selectedIds.includes(product.id) ? "bg-primary/[0.02]" : ""}`}>
+                    <td className="px-6 py-4">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedIds.includes(product.id)}
+                        onChange={() => toggleSelect(product.id)}
+                        className="rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="h-12 w-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden relative mr-4 flex-shrink-0">
@@ -197,7 +297,12 @@ export default function ProductClient({ products }: ProductClientProps) {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-gray-900 truncate max-w-[200px] group-hover:text-primary transition-colors">{product.name}</div>
+                          <div className="text-sm font-bold text-gray-900 truncate max-w-[200px] group-hover:text-primary transition-colors">
+                            {product.name}
+                            {!product.isActive && (
+                              <span className="ml-2 text-[8px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded uppercase tracking-widest font-black">Inactive</span>
+                            )}
+                          </div>
                           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{product.sku}</div>
                         </div>
                       </div>
