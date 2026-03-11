@@ -37,17 +37,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const page = params.page ? parseInt(params.page) : 1;
   const limit = 12;
 
+  // Split multi-word queries
+  const words = query.trim().split(/\s+/).filter(w => w.length > 0);
+
   const where: any = {
     isActive: true,
-    AND: [
-      {
-        OR: [
-          { name: { contains: query } },
-          { description: { contains: query } },
-          { tags: { some: { name: { contains: query } } } },
-        ],
-      },
-    ]
+    AND: words.map(word => ({
+      OR: [
+        { name: { contains: word } },
+        { description: { contains: word } },
+        { tags: { some: { name: { contains: word } } } },
+      ],
+    }))
   };
 
   if (categorySlug) where.AND.push({ category: { slug: categorySlug } });
