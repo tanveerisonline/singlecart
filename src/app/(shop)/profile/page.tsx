@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { 
   User, 
   Gift, 
@@ -41,8 +41,14 @@ export default function ProfilePage() {
       ]);
       setProfile(profileRes.data);
       setAddresses(addressRes.data);
-    } catch (error) {
-      console.error("Failed to fetch profile data");
+    } catch (error: any) {
+      console.error("Failed to fetch profile data:", error);
+      if (error.response?.status === 401 || error.response?.status === 404) {
+        toast.error("Session expired or user not found. Please login again.");
+        signOut({ callbackUrl: "/login" });
+      } else {
+        toast.error("An error occurred while loading your profile.");
+      }
     } finally {
       setLoading(false);
     }
