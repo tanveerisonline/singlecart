@@ -152,7 +152,8 @@ export default function NewProductPage() {
           axios.get("/api/products")
         ]);
         
-        setCategories(catRes.data);
+        const cats = Array.isArray(catRes.data) ? catRes.data : (catRes.data.categories || []);
+        setCategories(cats);
         setAttributes(attrRes.data);
         setBrands(brandRes.data);
         setAvailableTags(tagRes.data);

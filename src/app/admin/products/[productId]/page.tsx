@@ -146,7 +146,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           axios.get("/api/tags")
         ]);
         
-        setCategories(catRes.data);
+        const cats = Array.isArray(catRes.data) ? catRes.data : (catRes.data.categories || []);
+        setCategories(cats);
         setAttributes(attrRes.data);
         setBrands(brandRes.data);
         setAvailableTags(tagRes.data);

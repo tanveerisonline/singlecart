@@ -40,7 +40,8 @@ export default function ProductFilter() {
           axios.get("/api/brands"),
           axios.get("/api/settings/filters")
         ]);
-        setCategories(catsRes.data);
+        const cats = Array.isArray(catsRes.data) ? catsRes.data : (catsRes.data.categories || []);
+        setCategories(cats);
         setBrands(brandsRes.data);
         setSettings(settingsRes.data);
       } catch (error) {
