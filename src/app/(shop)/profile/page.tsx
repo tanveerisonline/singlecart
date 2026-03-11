@@ -9,38 +9,68 @@ import {
   Copy, 
   CheckCircle2, 
   RefreshCcw,
-  Users
+  Users,
+  MapPin,
+  Plus,
+  Trash2,
+  Edit,
+  Home,
+  Building2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import AddressForm from "@/components/AddressForm";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showAddressForm, setShowAddressOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<any>(null);
+
+  const fetchProfileData = async () => {
+    if (status !== "authenticated") return;
+    try {
+      setLoading(true);
+      const [profileRes, addressRes] = await Promise.all([
+        axios.get("/api/user/profile"),
+        axios.get("/api/user/addresses")
+      ]);
+      setProfile(profileRes.data);
+      setAddresses(addressRes.data);
+    } catch (error) {
+      console.error("Failed to fetch profile data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login?callbackUrl=/profile");
+    } else if (status === "authenticated") {
+      fetchProfileData();
     }
   }, [status, router]);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (status !== "authenticated") return;
-      try {
-        const res = await axios.get("/api/user/profile");
-        setProfile(res.data);
-      } catch (error) {
-        console.error("Failed to fetch profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [status]);
+  const onDeleteAddress = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this address?")) return;
+    try {
+      await axios.delete(`/api/user/addresses/${id}`);
+      toast.success("Address deleted");
+      fetchProfileData();
+    } catch (error) {
+      toast.error("Failed to delete address");
+    }
+  };
+
+  const onEditAddress = (address: any) => {
+    setEditingAddress(address);
+    setShowAddressOpen(true);
+  };
 
   const copyToClipboard = () => {
     if (profile?.referralCode) {
@@ -72,6 +102,103 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-black text-gray-900 tracking-tight">{profile?.name || "Customer"}</h1>
             <p className="text-sm text-gray-500 font-medium">{profile?.email}</p>
           </div>
+        </div>
+
+        {/* Addresses Section */}
+        <div className="bg-white p-8 md:p-12 rounded-[32px] border border-gray-100 shadow-sm space-y-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-primary/5 text-primary rounded-2xl">
+                <MapPin className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Saved Addresses</h2>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Manage your shipping locations</p>
+              </div>
+            </div>
+            {!showAddressForm && (
+              <button 
+                onClick={() => {
+                  setEditingAddress(null);
+                  setShowAddressOpen(true);
+                }}
+                className="bg-gray-900 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-primary transition-all shadow-lg shadow-gray-900/10"
+              >
+                <Plus className="h-4 w-4" /> Add New
+              </button>
+            )}
+          </div>
+
+          {showAddressForm ? (
+            <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 animate-in fade-in slide-in-from-top-4">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="font-black text-gray-900 uppercase tracking-tight">
+                  {editingAddress ? "Edit Address" : "New Address"}
+                </h3>
+                <button 
+                  onClick={() => setShowAddressOpen(false)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5 text-gray-400" />
+                </button>
+              </div>
+              <AddressForm 
+                initialData={editingAddress}
+                onSuccess={() => {
+                  setShowAddressOpen(false);
+                  fetchProfileData();
+                }}
+                onCancel={() => setShowAddressOpen(false)}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {addresses.length === 0 ? (
+                <div className="col-span-full py-20 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-100">
+                  <MapPin className="h-12 w-12 text-gray-200 mx-auto mb-4" />
+                  <p className="text-gray-500 font-bold">No addresses saved yet.</p>
+                </div>
+              ) : (
+                addresses.map((addr) => (
+                  <div key={addr.id} className="p-6 rounded-[2rem] border border-gray-100 bg-gray-50/30 hover:border-primary/20 hover:bg-white transition-all group relative">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-white rounded-xl border border-gray-100 text-gray-400 group-hover:text-primary transition-colors">
+                          {addr.label === 'Home' ? <Home className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
+                        </div>
+                        <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{addr.label}</span>
+                        {addr.isDefault && (
+                          <span className="text-[8px] font-black uppercase bg-emerald-500 text-white px-2 py-0.5 rounded shadow-sm">Default</span>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={() => onEditAddress(addr)}
+                          className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button 
+                          onClick={() => onDeleteAddress(addr.id)}
+                          className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <p className="font-black text-gray-900 uppercase tracking-tight">{addr.fullName}</p>
+                      <p className="text-xs font-medium text-gray-500">{addr.phone}</p>
+                      <p className="text-xs font-medium text-gray-500 leading-relaxed mt-2">
+                        {addr.street}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {/* Referral Program */}
@@ -121,4 +248,24 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}
+
+function X(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  )
 }

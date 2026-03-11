@@ -44,20 +44,28 @@ export default function CheckoutPage() {
   
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
   const [enabledMethods, setEnabledMethods] = useState<any>(null);
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showAddressForm, setShowAddressOpen] = useState(false);
 
-  const [address, setAddress] = useState({
-    street: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
-    label: "Home",
-  });
+  const fetchAddresses = async () => {
+    try {
+      const res = await axios.get("/api/user/addresses");
+      setAddresses(res.data);
+      const defaultAddr = res.data.find((a: any) => a.isDefault);
+      if (defaultAddr) setSelectedAddressId(defaultAddr.id);
+      else if (res.data.length > 0) setSelectedAddressId(res.data[0].id);
+    } catch (error) {
+      console.error("Failed to fetch addresses");
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true);
     if (status === "unauthenticated") {
       router.push("/login?callbackUrl=/checkout");
+    } else if (status === "authenticated") {
+      fetchAddresses();
     }
   }, [status, router]);
 
@@ -77,11 +85,9 @@ export default function CheckoutPage() {
     fetchEnabledMethods();
   }, []);
 
-  useEffect(() => {
-    if (isMounted && cart.items.length === 0 && !loading && !redirecting) {
-      router.push("/cart");
-    }
-  }, [isMounted, cart.items.length, router, loading, redirecting]);
+  const selectedAddress = useMemo(() => {
+    return addresses.find(a => a.id === selectedAddressId);
+  }, [addresses, selectedAddressId]);
 
   const subtotal = useMemo(() => {
     return cart.items.reduce((total, item) => total + (item.selectedVariant?.price || item.price) * item.quantity, 0);
@@ -104,17 +110,19 @@ export default function CheckoutPage() {
   }, [appliedGiftCard, subtotal, discountValue]);
 
   const shipping = useMemo(() => {
-    const isUS = address.country?.toLowerCase() === 'us' || address.country?.toLowerCase() === 'united states';
+    if (!selectedAddress) return 15;
+    const isUS = selectedAddress.country?.toLowerCase() === 'us' || selectedAddress.country?.toLowerCase() === 'united states';
     return subtotal > 100 ? 0 : (isUS ? 5 : 15);
-  }, [subtotal, address.country]);
+  }, [subtotal, selectedAddress]);
 
   const tax = useMemo(() => {
-    const state = address.state?.toUpperCase();
+    if (!selectedAddress) return 0;
+    const state = selectedAddress.state?.toUpperCase();
     if (state === 'CA' || state === 'NY') {
       return (subtotal - discountValue - giftCardValue) * 0.10;
     }
     return 0;
-  }, [subtotal, discountValue, giftCardValue, address.state]);
+  }, [subtotal, discountValue, giftCardValue, selectedAddress]);
 
   const total = Math.max(0, subtotal + shipping + tax - discountValue - giftCardValue);
 
@@ -161,8 +169,8 @@ export default function CheckoutPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!address.street || !address.city || !address.postalCode || !address.country) {
-      toast.error("Please complete your shipping information.");
+    if (!selectedAddressId) {
+      toast.error("Please select or add a shipping address.");
       return;
     }
 
@@ -180,7 +188,7 @@ export default function CheckoutPage() {
             price: Number(item.selectedVariant?.price || item.price),
             variantId: item.selectedVariant?.id
           })),
-          address,
+          address: selectedAddress,
           couponId: appliedCoupon?.id,
           giftCardCode: appliedGiftCard?.code,
           paymentMethod
@@ -277,71 +285,84 @@ export default function CheckoutPage() {
           <div className="lg:col-span-7 space-y-8">
             <form onSubmit={onSubmit} className="space-y-8">
               <div className="bg-white rounded-[32px] p-8 sm:p-10 border border-gray-100 shadow-sm space-y-8">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                    <MapPin className="h-5 w-5" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Shipping Details</h2>
                   </div>
-                  <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Shipping Details</h2>
+                  <button 
+                    type="button"
+                    onClick={() => setShowAddressOpen(true)}
+                    className="text-xs font-black text-primary uppercase tracking-widest hover:underline decoration-2 underline-offset-4"
+                  >
+                    + Add New Address
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Street Address</label>
-                    <input
-                      required
-                      type="text"
-                      className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
-                      value={address.street}
-                      onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                {showAddressForm ? (
+                  <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                    <AddressForm 
+                      onSuccess={(newAddr) => {
+                        setAddresses([newAddr, ...addresses]);
+                        setSelectedAddressId(newAddr.id);
+                        setShowAddressOpen(false);
+                      }} 
+                      onCancel={() => setShowAddressOpen(false)} 
                     />
                   </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">City / Town</label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
-                        value={address.city}
-                        onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">State / Province</label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
-                        value={address.state}
-                        onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                      />
-                    </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {addresses.length === 0 ? (
+                      <div className="text-center py-10 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-100">
+                        <p className="text-sm font-bold text-gray-400">No saved addresses found.</p>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowAddressOpen(true)}
+                          className="mt-4 bg-gray-900 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg"
+                        >
+                          Add Your First Address
+                        </button>
+                      </div>
+                    ) : (
+                      addresses.map((addr) => (
+                        <div 
+                          key={addr.id}
+                          onClick={() => setSelectedAddressId(addr.id)}
+                          className={`p-6 rounded-[24px] border-2 cursor-pointer transition-all relative group ${
+                            selectedAddressId === addr.id 
+                            ? "border-primary bg-primary/5 ring-4 ring-primary/5" 
+                            : "border-gray-50 bg-gray-50/30 hover:border-gray-100"
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase bg-white px-2 py-0.5 rounded border border-gray-100 text-gray-400">
+                                  {addr.label}
+                                </span>
+                                {addr.isDefault && (
+                                  <span className="text-[10px] font-black uppercase text-emerald-600">Default</span>
+                                )}
+                              </div>
+                              <p className="font-black text-gray-900 uppercase tracking-tight">{addr.fullName}</p>
+                              <p className="text-xs font-medium text-gray-500">{addr.phone}</p>
+                              <p className="text-xs font-medium text-gray-500 leading-relaxed max-w-sm">
+                                {addr.street}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}
+                              </p>
+                            </div>
+                            <div className={`h-6 w-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                              selectedAddressId === addr.id ? "border-primary" : "border-gray-200"
+                            }`}>
+                              {selectedAddressId === addr.id && <div className="h-3 w-3 rounded-full bg-primary" />}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Postal Code</label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
-                        value={address.postalCode}
-                        onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Country</label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:bg-white focus:border-primary transition-all outline-none text-sm font-bold"
-                        value={address.country}
-                        onChange={(e) => setAddress({ ...address, country: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="bg-white rounded-[32px] p-8 sm:p-10 border border-gray-100 shadow-sm space-y-8">

@@ -33,6 +33,7 @@ interface Customer {
   name: string | null;
   email: string;
   createdAt: Date;
+  addresses: any[];
   orders: {
     id: string;
     orderNumber: string;
@@ -48,8 +49,10 @@ interface CustomerClientProps {
 
 export default function CustomerClient({ initialCustomers }: CustomerClientProps) {
   const router = useRouter();
+  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [searchTerm, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isActivityOpen, setIsActivityOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -59,13 +62,33 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
 
   const itemsPerPage = 10;
 
-  const filteredCustomers = initialCustomers.filter((customer) => {
+  const filteredCustomers = customers.filter((customer) => {
     const searchLower = searchTerm.toLowerCase();
     return (
       customer.name?.toLowerCase().includes(searchLower) ||
       customer.email.toLowerCase().includes(searchLower)
     );
   });
+
+  const toggleExpand = (id: string) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
+  const deleteAddress = async (customerId: string, addressId: string) => {
+    if (!confirm("Are you sure you want to remove this address?")) return;
+    try {
+      await axios.delete(`/api/user/addresses/${addressId}`);
+      toast.success("Address removed");
+      setCustomers(prev => prev.map(c => {
+        if (c.id === customerId) {
+          return { ...c, addresses: c.addresses.filter((a: any) => a.id !== addressId) };
+        }
+        return c;
+      }));
+    } catch (error) {
+      toast.error("Failed to delete address");
+    }
+  };
 
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -449,6 +472,9 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                                   <button onClick={() => viewActivity(customer)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
                                     <Clock className="h-4 w-4" /> View Activity
                                   </button>
+                                  <button onClick={() => toggleExpand(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                    <MapPin className="h-4 w-4" /> Manage Addresses
+                                  </button>
                                   <button onClick={() => copyEmail(customer.email)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
                                     <Copy className="h-4 w-4" /> Copy Email
                                   </button>
@@ -463,10 +489,52 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                         </div>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
+                    {expandedId === customer.id && (
+                      <tr className="bg-gray-50/50 animate-in fade-in slide-in-from-top-2">
+                        <td colSpan={5} className="px-8 py-8 border-b border-gray-100">
+                          <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Stored Shipping Locations ({customer.addresses.length})</h4>
+                            </div>
+                            
+                            {customer.addresses.length === 0 ? (
+                              <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 border-dashed">
+                                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">No addresses saved by this user</p>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {customer.addresses.map((addr: any) => (
+                                  <div key={addr.id} className="bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm relative group/addr">
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-[8px] font-black uppercase bg-primary/10 text-primary px-2 py-0.5 rounded">{addr.label}</span>
+                                        {addr.isDefault && <span className="text-[8px] font-black uppercase text-emerald-600">Default</span>}
+                                      </div>
+                                      <button 
+                                        onClick={() => deleteAddress(customer.id, addr.id)}
+                                        className="p-1.5 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg opacity-0 group-hover/addr:opacity-100 transition-all"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
+                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{addr.fullName}</p>
+                                    <p className="text-[10px] font-bold text-gray-400 mt-0.5">{addr.phone}</p>
+                                    <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+                                      {addr.street}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })
+            )}
+          </tbody>
           </table>
         </div>
 

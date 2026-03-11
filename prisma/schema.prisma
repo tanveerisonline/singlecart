@@ -37,7 +37,9 @@ model User {
 model Address {
   id         String   @id @default(cuid())
   userId     String
-  label      String
+  label      String   // e.g., "Home", "Office"
+  fullName   String
+  phone      String
   street     String
   city       String
   state      String
