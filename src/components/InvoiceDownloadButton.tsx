@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FileText, Loader2 } from "lucide-react";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -57,7 +57,7 @@ export default function InvoiceDownloadButton({ order, userName }: InvoiceDownlo
         `$${(item.price * item.quantity).toFixed(2)}`
       ]);
 
-      doc.autoTable({
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 75,
@@ -67,7 +67,7 @@ export default function InvoiceDownloadButton({ order, userName }: InvoiceDownlo
       });
 
       // Add Summary
-      const finalY = doc.lastAutoTable.finalY + 10;
+      const finalY = (doc as any).lastAutoTable.finalY + 10;
       doc.setFontSize(10);
       doc.text("Subtotal:", 140, finalY);
       doc.text(`$${(order.totalAmount - order.shippingCost).toFixed(2)}`, 180, finalY, { align: "right" });
