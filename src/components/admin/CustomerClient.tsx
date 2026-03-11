@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { 
   Users, 
   Search, 
@@ -32,6 +32,7 @@ interface Customer {
   id: string;
   name: string | null;
   email: string;
+  phone: string | null;
   createdAt: Date;
   addresses: any[];
   orders: {
@@ -94,14 +95,14 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage);
 
-  const totalCustomers = initialCustomers.length;
-  const newThisMonth = initialCustomers.filter(c => {
+  const totalCustomers = customers.length;
+  const newThisMonth = customers.filter(c => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     return new Date(c.createdAt) >= startOfMonth;
   }).length;
   
-  const activeCustomers = initialCustomers.filter(c => c.orders.length > 0).length;
+  const activeCustomers = customers.filter(c => c.orders.length > 0).length;
 
   const handleEmailAll = () => {
     if (filteredCustomers.length === 0) {
@@ -164,7 +165,7 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
       setIsDeleteing(true);
       await axios.delete(`/api/admin/users/${targetDeleteId}`);
       toast.success("Customer deleted successfully");
-      router.refresh();
+      setCustomers(prev => prev.filter(c => c.id !== targetDeleteId));
       setIsDeleteModalOpen(false);
     } catch (error) {
       toast.error("Failed to delete customer");
@@ -412,129 +413,130 @@ export default function CustomerClient({ initialCustomers }: CustomerClientProps
                   const initials = (customer.name?.[0] || customer.email[0]).toUpperCase();
                   
                   return (
-                    <tr key={customer.id} className="hover:bg-gray-50/30 transition-all duration-200 group">
-                      <td className="px-8 py-6">
-                        <div className="flex items-center">
-                          <div className="h-12 w-12 rounded-2xl bg-white text-primary flex items-center justify-center font-black text-sm border border-gray-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                            {initials}
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-black text-gray-900 group-hover:text-primary transition-colors uppercase tracking-tight">
-                              {customer.name || "Anonymous User"}
+                    <React.Fragment key={customer.id}>
+                      <tr className="hover:bg-gray-50/30 transition-all duration-200 group">
+                        <td className="px-8 py-6">
+                          <div className="flex items-center">
+                            <div className="h-12 w-12 rounded-2xl bg-white text-primary flex items-center justify-center font-black text-sm border border-gray-100 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                              {initials}
                             </div>
-                            <div className="text-[10px] text-gray-400 flex items-center gap-1.5 mt-1 font-bold">
-                              <Mail className="h-3 w-3 text-primary/40" />
-                              {customer.email}
+                            <div className="ml-4">
+                              <div className="text-sm font-black text-gray-900 group-hover:text-primary transition-colors uppercase tracking-tight">
+                                {customer.name || "Anonymous User"}
+                              </div>
+                              <div className="text-[10px] text-gray-400 flex items-center gap-1.5 mt-1 font-bold">
+                                <Mail className="h-3 w-3 text-primary/40" />
+                                {customer.email}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2.5 text-gray-500 font-bold text-xs">
-                          <Calendar className="h-3.5 w-3.5 text-gray-300" />
-                          <span>
-                            {format(new Date(customer.createdAt), "MMM d, yyyy")}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="inline-flex items-center gap-2 bg-gray-100/50 px-3 py-1.5 rounded-xl border border-gray-100">
-                          <ShoppingBag className="h-3.5 w-3.5 text-gray-400" />
-                          <span className="text-xs font-black text-gray-900">{customer.orders.length} Orders</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-1 text-emerald-600 font-black text-sm">
-                          <DollarSign className="h-3.5 w-3.5" />
-                          {totalSpent.toFixed(2)}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 text-right relative">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => viewActivity(customer)}
-                            className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-white border border-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest hover:border-primary/20 hover:text-primary transition-all shadow-sm"
-                          >
-                            Activity
-                          </button>
-                          <div className="relative">
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-2.5 text-gray-500 font-bold text-xs">
+                            <Calendar className="h-3.5 w-3.5 text-gray-300" />
+                            <span>
+                              {format(new Date(customer.createdAt), "MMM d, yyyy")}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="inline-flex items-center gap-2 bg-gray-100/50 px-3 py-1.5 rounded-xl border border-gray-100">
+                            <ShoppingBag className="h-3.5 w-3.5 text-gray-400" />
+                            <span className="text-xs font-black text-gray-900">{customer.orders.length} Orders</span>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-1 text-emerald-600 font-black text-sm">
+                            <DollarSign className="h-3.5 w-3.5" />
+                            {totalSpent.toFixed(2)}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 text-right relative">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
-                              onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
-                              className={`p-2.5 rounded-xl border border-gray-100 shadow-sm transition-all ${openMenuId === customer.id ? 'bg-primary text-white' : 'bg-white text-gray-400 hover:text-gray-600'}`}
+                              onClick={() => viewActivity(customer)}
+                              className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-white border border-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-widest hover:border-primary/20 hover:text-primary transition-all shadow-sm"
                             >
-                              <MoreVertical className="h-4 w-4" />
+                              Activity
                             </button>
-                            
-                            {openMenuId === customer.id && (
-                              <>
-                                <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-20 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                                  <button onClick={() => viewActivity(customer)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
-                                    <Clock className="h-4 w-4" /> View Activity
-                                  </button>
-                                  <button onClick={() => toggleExpand(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
-                                    <MapPin className="h-4 w-4" /> Manage Addresses
-                                  </button>
-                                  <button onClick={() => copyEmail(customer.email)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
-                                    <Copy className="h-4 w-4" /> Copy Email
-                                  </button>
-                                  <div className="h-px bg-gray-50 my-1 mx-2" />
-                                  <button onClick={() => openDeleteModal(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-all">
-                                    <Trash2 className="h-4 w-4" /> Delete Account
-                                  </button>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    {expandedId === customer.id && (
-                      <tr className="bg-gray-50/50 animate-in fade-in slide-in-from-top-2">
-                        <td colSpan={5} className="px-8 py-8 border-b border-gray-100">
-                          <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Stored Shipping Locations ({customer.addresses.length})</h4>
-                            </div>
-                            
-                            {customer.addresses.length === 0 ? (
-                              <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 border-dashed">
-                                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">No addresses saved by this user</p>
-                              </div>
-                            ) : (
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {customer.addresses.map((addr: any) => (
-                                  <div key={addr.id} className="bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm relative group/addr">
-                                    <div className="flex justify-between items-start mb-3">
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-[8px] font-black uppercase bg-primary/10 text-primary px-2 py-0.5 rounded">{addr.label}</span>
-                                        {addr.isDefault && <span className="text-[8px] font-black uppercase text-emerald-600">Default</span>}
-                                      </div>
-                                      <button 
-                                        onClick={() => deleteAddress(customer.id, addr.id)}
-                                        className="p-1.5 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg opacity-0 group-hover/addr:opacity-100 transition-all"
-                                      >
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                      </button>
-                                    </div>
-                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{addr.fullName}</p>
-                                    <p className="text-[10px] font-bold text-gray-400 mt-0.5">{addr.phone}</p>
-                                    <p className="text-xs text-gray-500 mt-3 leading-relaxed">
-                                      {addr.street}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}
-                                    </p>
+                            <div className="relative">
+                              <button 
+                                onClick={() => setOpenMenuId(openMenuId === customer.id ? null : customer.id)}
+                                className={`p-2.5 rounded-xl border border-gray-100 shadow-sm transition-all ${openMenuId === customer.id ? 'bg-primary text-white' : 'bg-white text-gray-400 hover:text-gray-600'}`}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
+                              
+                              {openMenuId === customer.id && (
+                                <>
+                                  <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
+                                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 z-20 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                                    <button onClick={() => viewActivity(customer)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                      <Clock className="h-4 w-4" /> View Activity
+                                    </button>
+                                    <button onClick={() => toggleExpand(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                      <MapPin className="h-4 w-4" /> Manage Addresses
+                                    </button>
+                                    <button onClick={() => copyEmail(customer.email)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:text-primary transition-all">
+                                      <Copy className="h-4 w-4" /> Copy Email
+                                    </button>
+                                    <div className="h-px bg-gray-50 my-1 mx-2" />
+                                    <button onClick={() => openDeleteModal(customer.id)} className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-all">
+                                      <Trash2 className="h-4 w-4" /> Delete Account
+                                    </button>
                                   </div>
-                                ))}
-                              </div>
-                            )}
+                                </>
+                              )}
+                            </div>
                           </div>
                         </td>
                       </tr>
-                    )}
-                  </>
-                );
-              })
-            )}
-          </tbody>
+                      {expandedId === customer.id && (
+                        <tr className="bg-gray-50/50 animate-in fade-in slide-in-from-top-2">
+                          <td colSpan={5} className="px-8 py-8 border-b border-gray-100">
+                            <div className="space-y-6">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] ml-1">Stored Shipping Locations ({customer.addresses.length})</h4>
+                              </div>
+                              
+                              {customer.addresses.length === 0 ? (
+                                <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 border-dashed">
+                                  <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">No addresses saved by this user</p>
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  {customer.addresses.map((addr: any) => (
+                                    <div key={addr.id} className="bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm relative group/addr">
+                                      <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[8px] font-black uppercase bg-primary/10 text-primary px-2 py-0.5 rounded">{addr.label}</span>
+                                          {addr.isDefault && <span className="text-[8px] font-black uppercase text-emerald-600">Default</span>}
+                                        </div>
+                                        <button 
+                                          onClick={() => deleteAddress(customer.id, addr.id)}
+                                          className="p-1.5 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg opacity-0 group-hover/addr:opacity-100 transition-all"
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </button>
+                                      </div>
+                                      <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{addr.fullName}</p>
+                                      <p className="text-[10px] font-bold text-gray-400 mt-0.5">{addr.phone}</p>
+                                      <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+                                        {addr.street}, {addr.city}, {addr.state} {addr.postalCode}, {addr.country}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </tbody>
           </table>
         </div>
 

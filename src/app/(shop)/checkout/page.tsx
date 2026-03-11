@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import AddressForm from "@/components/AddressForm";
 
 type PaymentMethod = "STRIPE" | "PAYPAL" | "RAZORPAY" | "COD";
 

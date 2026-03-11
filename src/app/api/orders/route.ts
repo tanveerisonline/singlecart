@@ -121,6 +121,8 @@ export async function POST(req: Request) {
     let shippingAddress = await db.address.findFirst({
       where: {
         userId: session.user.id,
+        fullName: address.fullName,
+        phone: address.phone,
         street: address.street,
         city: address.city,
         postalCode: address.postalCode,
@@ -131,6 +133,8 @@ export async function POST(req: Request) {
     if (!shippingAddress) {
       shippingAddress = await db.address.create({
         data: {
+          fullName: address.fullName,
+          phone: address.phone,
           street: address.street,
           city: address.city,
           state: address.state || "",

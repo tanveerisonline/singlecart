@@ -7,6 +7,7 @@ export default async function AdminCustomersPage() {
       role: "USER",
     },
     include: {
+      addresses: true,
       orders: {
         orderBy: {
           createdAt: "desc"
