@@ -5,7 +5,7 @@ import { Product, ProductVariant } from "@prisma/client";
 import { ShoppingCart } from "lucide-react";
 
 interface AddToCartButtonProps {
-  product: Product;
+  product: any;
   variant?: ProductVariant;
   disabled?: boolean;
 }

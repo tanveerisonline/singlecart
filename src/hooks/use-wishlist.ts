@@ -4,8 +4,8 @@ import { Product } from "@prisma/client";
 import { toast } from "sonner";
 
 interface WishlistStore {
-  items: Product[];
-  addItem: (product: Product) => void;
+  items: any[];
+  addItem: (product: any) => void;
   removeItem: (id: string) => void;
   isInWishlist: (id: string) => boolean;
   clearWishlist: () => void;
@@ -15,7 +15,7 @@ export const useWishlist = create<WishlistStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product: Product) => {
+      addItem: (product: any) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === product.id);
 

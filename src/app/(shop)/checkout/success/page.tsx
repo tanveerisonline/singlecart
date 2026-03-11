@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,11 +13,12 @@ import {
   Truck, 
   ShieldCheck,
   Star,
-  Eye
+  Eye,
+  RefreshCcw
 } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const [latestProducts, setLatestProducts] = useState<any[]>([]);
@@ -34,7 +35,6 @@ export default function CheckoutSuccessPage() {
 
         // Load recently viewed from localStorage
         const stored = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
-        // Remove current products from recently viewed if needed, or just show last 4
         setRecentlyViewed(stored.slice(0, 4));
       } catch (error) {
         console.error("Error fetching success page data:", error);
@@ -159,5 +159,17 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center py-40 bg-white">
+        <RefreshCcw className="h-12 w-12 text-primary animate-spin opacity-20" />
+      </div>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }

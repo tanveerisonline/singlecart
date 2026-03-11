@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Client, Environment } from "@paypal/paypal-server-sdk";
+import paypal from "@paypal/checkout-server-sdk";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -30,14 +30,10 @@ export async function POST(req: Request) {
       return new NextResponse("Payment system is not fully configured (PayPal). Please contact support.", { status: 503 });
     }
 
-    const client = new Client({
-      clientCredentialsAuthCredentials: {
-        oAuthClientId: clientId,
-        oAuthClientSecret: clientSecret,
-      },
-      timeout: 0,
-      environment: mode === "live" ? Environment.Production : Environment.Sandbox,
-    });
+    const environment = mode === "live" 
+      ? new paypal.core.LiveEnvironment(clientId, clientSecret)
+      : new paypal.core.SandboxEnvironment(clientId, clientSecret);
+    const client = new paypal.core.PayPalHttpClient(environment);
 
     const body = await req.json();
     const { orderId } = body;
@@ -48,26 +44,26 @@ export async function POST(req: Request) {
 
     if (!order) return new NextResponse("Order not found", { status: 404 });
 
-    const request = {
-      body: {
-        intent: "CAPTURE",
-        purchaseUnits: [
-          {
-            amount: {
-              currencyCode: "USD",
-              value: order.totalAmount.toFixed(2),
-            },
-            referenceId: order.id,
+    const request = new paypal.orders.OrdersCreateRequest();
+    request.prefer("return=representation");
+    request.requestBody({
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: order.totalAmount.toFixed(2),
           },
-        ],
-      },
-    };
+          reference_id: order.id,
+        },
+      ],
+    });
 
-    const response = await client.ordersController.ordersCreate(request);
+    const response = await client.execute(request);
 
     return NextResponse.json({ id: response.result.id });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[PAYPAL_ERROR]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return new NextResponse(error.message || "Internal Error", { status: 500 });
   }
 }

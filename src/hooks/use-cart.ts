@@ -5,13 +5,18 @@ import { toast } from "sonner";
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Product, variant?: ProductVariant) => void;
+  addItem: (product: any, variant?: ProductVariant) => void;
   removeItem: (id: string, variantId?: string) => void;
   updateQuantity: (id: string, quantity: number, variantId?: string) => void;
   clearCart: () => void;
 }
 
-interface CartItem extends Product {
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  slug: string;
+  thumbnailUrl?: string | null;
   quantity: number;
   selectedVariant?: ProductVariant;
 }
@@ -20,7 +25,7 @@ export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product: Product, variant?: ProductVariant) => {
+      addItem: (product: any, variant?: ProductVariant) => {
         const currentItems = get().items;
         
         // Find if item with same variant already exists
@@ -41,7 +46,15 @@ export const useCart = create<CartStore>()(
         } else {
           // If product doesn't have a variant price, use product price
           const price = variant?.price || product.price;
-          set({ items: [...get().items, { ...product, price: Number(price), quantity: 1, selectedVariant: variant }] });
+          set({ items: [...get().items, { 
+            id: product.id,
+            name: product.name,
+            price: Number(price),
+            slug: product.slug,
+            thumbnailUrl: product.thumbnailUrl || (product.images?.[0]?.url),
+            quantity: 1, 
+            selectedVariant: variant 
+          }] });
         }
         
         const label = variant ? `${product.name} (${variant.name})` : product.name;

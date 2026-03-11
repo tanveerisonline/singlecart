@@ -4,7 +4,7 @@
 import { POST } from '../route';
 import { getServerSession } from 'next-auth';
 import { db } from '@/lib/db';
-import { Client } from '@paypal/paypal-server-sdk';
+import paypal from "@paypal/checkout-server-sdk";
 
 jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
@@ -15,18 +15,32 @@ jest.mock('@/lib/db', () => ({
     order: {
       findUnique: jest.fn(),
     },
+    paymentSetting: {
+      findUnique: jest.fn().mockResolvedValue({
+        id: 'default',
+        paypalIsEnabled: true,
+        paypalClientId: 'test-client-id',
+        paypalSecretKey: 'test-secret-key',
+        paypalMode: 'sandbox',
+      }),
+    },
   },
 }));
 
-jest.mock('@paypal/paypal-server-sdk', () => {
+jest.mock('@paypal/checkout-server-sdk', () => {
   return {
-    Client: jest.fn().mockImplementation(() => ({
-      ordersController: {
-        ordersCreate: jest.fn().mockResolvedValue({ result: { id: 'paypal_test_order_id' } }),
-      },
-    })),
-    Environment: {
-      Sandbox: 'sandbox',
+    core: {
+      SandboxEnvironment: jest.fn(),
+      LiveEnvironment: jest.fn(),
+      PayPalHttpClient: jest.fn().mockImplementation(() => ({
+        execute: jest.fn().mockResolvedValue({ result: { id: 'paypal_test_order_id' } }),
+      })),
+    },
+    orders: {
+      OrdersCreateRequest: jest.fn().mockImplementation(() => ({
+        prefer: jest.fn(),
+        requestBody: jest.fn(),
+      })),
     },
   };
 });

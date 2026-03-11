@@ -14,6 +14,8 @@ import ReviewForm from "@/components/ReviewForm";
 import ProductCarousel from "@/components/ProductCarousel";
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/hooks/use-cart";
+import { useRouter } from "next/navigation";
 
 interface ProductWithRelations extends Product {
   images: ProductImage[];
@@ -39,6 +41,8 @@ export default function ProductPageClient({
   crossSellProducts,
   theme
 }: ProductPageClientProps) {
+  const cart = useCart();
+  const router = useRouter();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     product.variants.length > 0 ? product.variants[0] : undefined
   );
@@ -90,6 +94,14 @@ export default function ProductPageClient({
     }
     if (shareUrl) window.open(shareUrl, '_blank');
   };
+
+  const onBuyNow = () => {
+    cart.clearCart();
+    cart.addItem(product as any, selectedVariant);
+    router.push("/checkout");
+  };
+
+  const isOutOfStock = !product.isActive || (selectedVariant ? selectedVariant.stock === 0 : product.stock === 0);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20">
@@ -243,13 +255,25 @@ export default function ProductPageClient({
                 </div>
               )}
 
-              {/* Add to Cart */}
-              <div className="pt-6 space-y-6">
-                <AddToCartButton 
-                  product={product as any} 
-                  variant={selectedVariant}
-                  disabled={!product.isActive || (selectedVariant ? selectedVariant.stock === 0 : product.stock === 0)} 
-                />
+              {/* Action Buttons */}
+              <div className="pt-6 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <AddToCartButton 
+                      product={product as any} 
+                      variant={selectedVariant}
+                      disabled={isOutOfStock} 
+                    />
+                  </div>
+                  <button
+                    onClick={onBuyNow}
+                    disabled={isOutOfStock}
+                    className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-xl text-base font-black uppercase tracking-widest hover:bg-black transition-all active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl"
+                  >
+                    <Zap className="h-5 w-5 text-amber-400" />
+                    Buy Now
+                  </button>
+                </div>
                 
                 {/* Social Share */}
                 {product.isSocialShare && (
