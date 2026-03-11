@@ -28,7 +28,8 @@ import {
   FileText,
   Layout,
   Star,
-  Filter
+  Filter,
+  CreditCard
 } from "lucide-react";
 import Image from "next/image";
 
@@ -75,6 +76,7 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Pages", icon: FileText, href: "/admin/pages" },
     { label: "Slider", icon: Globe, href: "/admin/slider" },
     { label: "Filter Setting", icon: Filter, href: "/admin/settings/filters" },
+    { label: "Payment Gateways", icon: CreditCard, href: "/admin/settings/payments" },
     { label: "Theme Setting", icon: Palette, href: "/admin/theme" },
     { label: "Settings", icon: Settings, href: "/admin/settings" },
   ];

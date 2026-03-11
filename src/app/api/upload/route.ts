@@ -1,10 +1,14 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { writeFile, stat } from "fs/promises";
-import path from "path";
-import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: Request) {
   try {
@@ -21,32 +25,30 @@ export async function POST(req: Request) {
       return new NextResponse("No image data provided", { status: 400 });
     }
 
-    // Check if it's a base64 image
     if (image.startsWith("data:image")) {
-      const base64Data = image.split(",")[1];
-      const buffer = Buffer.from(base64Data, "base64");
-      
-      const mimeType = image.split(";")[0].split(":")[1];
-      const fileExtension = mimeType.split("/")[1];
-      const fileName = `${randomUUID()}.${fileExtension}`;
-      const relativePath = `/uploads/${fileName}`;
-      const absolutePath = path.join(process.cwd(), "public", "uploads", fileName);
+      const uploadResponse = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(
+          image,
+          { folder: "shop_uploads" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+      });
 
-      await writeFile(absolutePath, buffer);
-      
-      const fileStat = await stat(absolutePath);
+      const result = uploadResponse as any;
 
-      // Log in Media table
       await (db.media as any).create({
         data: {
-          name: name || fileName,
-          url: relativePath,
-          type: mimeType,
-          size: fileStat.size,
+          name: name || result.original_filename || "upload",
+          url: result.secure_url,
+          type: result.format,
+          size: result.bytes,
         }
       });
       
-      return NextResponse.json({ url: relativePath });
+      return NextResponse.json({ url: result.secure_url });
     }
 
     return new NextResponse("Invalid image format", { status: 400 });

@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { hasPermission } from "@/lib/rbac";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || !hasPermission(session.user.role, "MANAGE_SETTINGS")) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -30,7 +31,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || !hasPermission(session.user.role, "MANAGE_SETTINGS")) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -39,9 +40,6 @@ export async function PATCH(req: Request) {
     // Remove immutable fields if present
     const { id, updatedAt, createdAt, ...updateData } = body;
 
-    // We use (db.storeSetting as any).upsert to bypass the stale Prisma Client types 
-    // caused by EPERM locking the query engine during generation.
-    // The database itself IS updated, but the TypeScript types in node_modules are stale.
     const settings = await (db.storeSetting as any).upsert({
       where: { id: "default" },
       update: updateData,

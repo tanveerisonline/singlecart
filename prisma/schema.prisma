@@ -423,3 +423,24 @@ model FilterSetting {
   showDiscount     Boolean  @default(true)
   updatedAt        DateTime @updatedAt
 }
+
+model PaymentSetting {
+  id                   String   @id @default("default")
+  
+  stripeIsEnabled      Boolean  @default(false)
+  stripeSecretKey      String?
+  stripePublishableKey String?
+  
+  paypalIsEnabled      Boolean  @default(false)
+  paypalClientId       String?
+  paypalSecretKey      String?
+  paypalMode           String   @default("sandbox") // sandbox or live
+  
+  razorpayIsEnabled    Boolean  @default(false)
+  razorpayKeyId        String?
+  razorpayKeySecret    String?
+  
+  codIsEnabled         Boolean  @default(true)
+  
+  updatedAt            DateTime @updatedAt
+}
