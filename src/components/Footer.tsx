@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, CreditCard, ShieldCheck, Truck, ShoppingBag } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, CreditCard, ShieldCheck, Truck, ShoppingBag, Send } from "lucide-react";
 import { ThemeSetting } from "@prisma/client";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface FooterProps {
   theme?: ThemeSetting | null;
@@ -9,6 +14,23 @@ interface FooterProps {
 
 export default function Footer({ theme }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/newsletter/subscribe", { email });
+      toast.success(res.data.message);
+      setEmail("");
+    } catch (error: any) {
+      toast.error(error.response?.data || "Subscription failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
@@ -108,6 +130,31 @@ export default function Footer({ theme }: FooterProps) {
               </li>
             </ul>
           </div>
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="bg-gray-50 rounded-[32px] p-8 md:p-12 mb-16 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="max-w-md">
+            <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight mb-2">Join Our Newsletter</h3>
+            <p className="text-gray-500 text-sm font-medium">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+          </div>
+          <form onSubmit={onSubscribe} className="flex w-full md:max-w-md gap-3">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 bg-white border border-gray-200 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm font-bold shadow-sm"
+              required
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary transition-all disabled:opacity-50 flex items-center justify-center shadow-lg"
+            >
+              {loading ? "..." : <Send className="h-4 w-4" />}
+            </button>
+          </form>
         </div>
 
         {/* Bottom Bar */}

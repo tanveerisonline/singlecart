@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     if (!user) return new NextResponse("User not found", { status: 404 });
 
     const body = await req.json();
-    const { items, address, couponId } = body;
+    const { items, address, couponId, giftCardCode } = body;
 
     if (!items || items.length === 0) {
       return new NextResponse("Your cart is empty", { status: 400 });
@@ -89,6 +89,21 @@ export async function POST(req: Request) {
       }
     }
 
+    // 2.5 Calculate Gift Card Deduction
+    let giftCardDeduction = 0;
+    let giftCardId = null;
+    if (giftCardCode) {
+      const giftCard = await db.giftCard.findUnique({ where: { code: giftCardCode.toUpperCase() } });
+      if (giftCard && giftCard.isActive && giftCard.balance > 0) {
+        const isExpired = giftCard.expiryDate && new Date(giftCard.expiryDate) < new Date();
+        if (!isExpired) {
+          const remainingAfterCoupon = subtotal - discount;
+          giftCardDeduction = Math.min(giftCard.balance, remainingAfterCoupon);
+          giftCardId = giftCard.id;
+        }
+      }
+    }
+
     // 3. Advanced Shipping Logic
     const isUS = address.country?.toLowerCase() === 'us' || address.country?.toLowerCase() === 'united states';
     let calculatedShipping = subtotal > 100 ? 0 : (isUS ? 5 : 15);
@@ -97,10 +112,10 @@ export async function POST(req: Request) {
     const state = address.state?.toUpperCase();
     let tax = 0;
     if (state === 'CA' || state === 'NY') {
-      tax = (subtotal - discount) * 0.10;
+      tax = (subtotal - discount - giftCardDeduction) * 0.10;
     }
 
-    const totalAmount = subtotal - discount + calculatedShipping + tax;
+    const totalAmount = Math.max(0, subtotal - discount - giftCardDeduction + calculatedShipping + tax);
 
     // 5. Find or create address record
     let shippingAddress = await db.address.findFirst({
@@ -138,7 +153,7 @@ export async function POST(req: Request) {
         shippingAddressId: shippingAddress.id,
         couponId: couponId || null,
         status: "PENDING",
-        paymentStatus: "PENDING",
+        paymentStatus: giftCardDeduction >= (subtotal - discount + calculatedShipping + tax) ? "PAID" : "PENDING",
         items: {
           create: orderItemsCreate
         }
@@ -150,6 +165,13 @@ export async function POST(req: Request) {
         where: { id: couponId },
         data: { usageCount: { increment: 1 } }
       }).catch(err => console.error("Coupon update fail", err));
+    }
+
+    if (giftCardId) {
+      await db.giftCard.update({
+        where: { id: giftCardId },
+        data: { balance: { decrement: giftCardDeduction } }
+      }).catch(err => console.error("Gift card update fail", err));
     }
 
     for (const item of items) {

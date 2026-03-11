@@ -25,6 +25,7 @@ export default function RegisterPage() {
     email: "",
     phone: "",
     password: "",
+    referralCode: "",
   });
 
   const registerUser = async (e: React.FormEvent) => {
@@ -144,6 +145,25 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 text-gray-900 text-sm font-bold rounded-2xl focus:ring-2 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all outline-none"
                   onChange={(e) => setData({ ...data, password: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                Referral Code (Optional)
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User className="h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
+                </div>
+                <input
+                  id="referralCode"
+                  name="referralCode"
+                  type="text"
+                  placeholder="REF-XXXXXX"
+                  className="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 text-gray-900 text-sm font-bold rounded-2xl focus:ring-2 focus:ring-primary/10 focus:border-primary/20 focus:bg-white transition-all outline-none uppercase"
+                  onChange={(e) => setData({ ...data, referralCode: e.target.value.toUpperCase() })}
                 />
               </div>
             </div>

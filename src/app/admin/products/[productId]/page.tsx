@@ -200,7 +200,8 @@ export default function EditProductPage({ params }: { params: Promise<{ productI
           discount: p.discount?.toString() || "0",
           salePrice: p.salePrice?.toFixed(2) || "0.00",
           wholesalePriceType: p.wholesalePriceType || "",
-          crossSellIds: p.crossSellIds || ""
+          crossSellIds: p.crossSellIds || "",
+          videoUrl: p.videoUrl || ""
         });
         
         if (p.variants) {

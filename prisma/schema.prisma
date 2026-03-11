@@ -19,6 +19,8 @@ model User {
   twoFactorEnabled Boolean        @default(false)
   resetToken       String?
   resetTokenExpiry DateTime?
+  referralCode     String?        @unique @default(cuid())
+  referredById     String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   activityLogs     ActivityLog[]
@@ -28,6 +30,8 @@ model User {
   reviews          Review[]
   wishlist         WishlistItem[]
   giftCards        GiftCard[]
+  referredBy       User?          @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals        User[]         @relation("UserReferrals")
 }
 
 model Address {
@@ -127,6 +131,7 @@ model Product {
   stockLogs          StockLog[]
   wishlist           WishlistItem[]
   tags               Tag[]            @relation("ProductTags")
+  bundles            Bundle[]         @relation("ProductBundles")
 }
 
 model Tag {
@@ -232,9 +237,9 @@ model Order {
   shippingAddress   Address     @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
   user              User        @relation(fields: [userId], references: [id])
   items             OrderItem[]
-  payments          Payment[]
-  returnRequest     ReturnRequest?
-}
+  payments           Payment[]
+  returnRequest      ReturnRequest?
+  }
 
 model ReturnRequest {
   id          String   @id @default(cuid())
@@ -270,6 +275,18 @@ model GiftCard {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   user          User?    @relation(fields: [userId], references: [id])
+}
+
+model Bundle {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  isActive    Boolean   @default(true)
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[] @relation("ProductBundles")
 }
 
 model OrderItem {
@@ -387,7 +404,16 @@ model StoreSetting {
   shippingFee           Float    @default(5.00)
   freeShippingThreshold Float    @default(100.00)
   homeLayout            String   @default("default")
+  hotjarId              String?
+  clarityId             String?
   updatedAt             DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 model ThemeSetting {

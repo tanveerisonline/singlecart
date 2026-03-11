@@ -30,7 +30,10 @@ import {
   Star,
   Filter,
   CreditCard,
-  RefreshCw
+  RefreshCw,
+  HelpCircle,
+  Activity,
+  Mail
 } from "lucide-react";
 import Image from "next/image";
 
@@ -58,6 +61,7 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Add Product", icon: PlusCircle, href: "/admin/products/new" },
     { label: "All Products", icon: List, href: "/admin/products" },
     { label: "Inventory", icon: History, href: "/admin/inventory" },
+    { label: "Bundles", icon: Layers, href: "/admin/products/bundles" },
     { label: "Attributes", icon: Settings2, href: "/admin/attributes" },
     { label: "Categories", icon: Layers, href: "/admin/categories" },
     { label: "Tags", icon: TagsIcon, href: "/admin/tags" },
@@ -74,6 +78,9 @@ export default function AdminSidebar({ session, logoUrl }: AdminSidebarProps) {
     { label: "Abandoned Carts", icon: ShoppingBag, href: "/admin/marketing/abandoned-carts" },
     { label: "Customers", icon: Users, href: "/admin/customers" },
     { label: "Staff", icon: Shield, href: "/admin/users" },
+    { label: "Activity Logs", icon: History, href: "/admin/logs" },
+    { label: "Analytics", icon: Activity, href: "/admin/analytics" },
+    { label: "Newsletter", icon: Mail, href: "/admin/newsletter" },
     { label: "Coupons", icon: Ticket, href: "/admin/coupons" },
     { label: "Gift Cards", icon: Ticket, href: "/admin/gift-cards" },
     { label: "Banners & Sections", icon: Layout, href: "/admin/sections" },

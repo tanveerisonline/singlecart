@@ -13,7 +13,8 @@ import {
   ShoppingBag,
   HelpCircle,
   Phone,
-  LayoutGrid
+  LayoutGrid,
+  RefreshCcw
 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
@@ -269,7 +270,7 @@ export default function Navbar({ logoUrl, logoWidth = 128, logoHeight = 40 }: Na
               )}
             </Link>
 
-            <Link href="/login" className="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center hover:bg-primary transition-all shadow-lg shadow-gray-200">
+            <Link href="/profile" className="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center hover:bg-primary transition-all shadow-lg shadow-gray-200">
               <UserIcon className="h-5 w-5" />
             </Link>
 
